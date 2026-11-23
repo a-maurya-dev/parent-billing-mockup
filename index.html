@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OceanFriends · Parent Billing (mobile) — clickable mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --red:#B91C1C; --red-bg:#FEF2F2;
+  --green:#0E9F6E; --green-bg:#EAF8F2;
+  --amber:#B45309; --amber-bg:#FFF4E5;
+  --navy:#163A71; --navy-bg:#EAF0FA;
+  --primary:#4185F3; --primary-bg:rgba(65,133,243,.08);
+  --bg:#F2F3F8; --card:#fff; --text:#1D2939; --muted:#667085; --border:#E4E7EC;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Poppins,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:#E9ECF3;color:var(--text);font-size:14px}
+button{font:inherit;color:inherit;cursor:pointer}
+input,textarea,select{font:inherit}
+
+/* ---------- page layout ---------- */
+.layout{display:grid;grid-template-columns:280px 400px 1fr;gap:28px;padding:24px;min-height:100vh;align-items:start;max-width:1400px;margin:0 auto}
+@media (max-width:1100px){.layout{grid-template-columns:1fr;justify-items:center}.panel,.notes{width:100%;max-width:400px}}
+.panel,.notes{background:#fff;border-radius:16px;padding:18px;border:1px solid var(--border);position:sticky;top:24px}
+.panel h1{font-size:16px;margin:0 0 2px}
+.panel .sub{color:var(--muted);font-size:12px;margin-bottom:14px}
+.panel h3,.notes h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
+.jump{display:flex;flex-wrap:wrap;gap:6px}
+.jump button{border:1px solid var(--border);background:#fff;border-radius:999px;padding:5px 10px;font-size:12px}
+.jump button:hover{border-color:var(--primary);color:var(--primary)}
+.ctl{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;font-size:13px}
+.ctl select{border:1px solid var(--border);border-radius:8px;padding:4px 6px;font-size:12px}
+.notes h2{font-size:15px;margin:0 0 6px}
+.notes ul{margin:0;padding-left:18px;color:#344054;font-size:12.5px;line-height:1.6}
+.notes code{background:#F2F4F7;border-radius:4px;padding:1px 4px;font-size:11.5px}
+
+/* ---------- phone ---------- */
+.phone{width:390px;height:844px;background:#0B1220;border-radius:54px;padding:12px;box-shadow:0 30px 60px rgba(16,24,40,.25);position:relative}
+.screen{width:100%;height:100%;background:var(--bg);border-radius:44px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.statusbar{height:44px;flex:none;display:flex;justify-content:space-between;align-items:flex-end;padding:0 28px 6px;font-size:13px;font-weight:600}
+.island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:110px;height:30px;background:#0B1220;border-radius:20px;z-index:5}
+.topbar{flex:none;display:flex;align-items:center;gap:8px;padding:6px 16px 10px;min-height:48px}
+.topbar h2{font-size:18px;font-weight:600;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iconbtn{width:36px;height:36px;border-radius:12px;border:none;background:#fff;display:grid;place-items:center;flex:none;box-shadow:0 1px 2px rgba(16,24,40,.06)}
+.childbtn{display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:#fff;border-radius:999px;padding:4px 10px 4px 4px;font-size:13px;font-weight:500}
+.avatar{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:600}
+.view{flex:1;overflow-y:auto;padding:0 16px 24px;scrollbar-width:none}
+.view::-webkit-scrollbar{display:none}
+.view.enter{animation:viewIn .2s ease-out}
+@keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tabbar{flex:none;display:flex;justify-content:space-around;background:#fff;border-top:1px solid var(--border);padding:8px 8px 22px}
+.tabbar button{border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--muted);padding:4px 10px;border-radius:10px}
+.tabbar button.on{color:var(--navy);font-weight:600}
+.tabbar svg{width:22px;height:22px}
+
+/* ---------- building blocks ---------- */
+.card{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--border)}
+.section-title{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:20px 2px 8px;display:flex;justify-content:space-between;align-items:center}
+.section-title button{border:none;background:none;color:var(--primary);font-size:12px;font-weight:500;text-transform:none;letter-spacing:0}
+.muted{color:var(--muted)} .small{font-size:12px} .xs{font-size:11px}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:600;white-space:nowrap}
+.pill.red{color:var(--red);background:var(--red-bg)} .pill.green{color:var(--green);background:var(--green-bg)}
+.pill.amber{color:var(--amber);background:var(--amber-bg)} .pill.navy{color:var(--navy);background:var(--navy-bg)}
+.pill.grey{color:#475467;background:#F2F4F7} .pill.blue{color:var(--primary);background:var(--primary-bg)}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;border:none;border-radius:12px;padding:13px 16px;font-weight:600;font-size:15px;background:var(--navy);color:#fff;transition:opacity .15s,transform .15s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.secondary{background:#fff;color:var(--navy);border:1px solid var(--border)}
+.btn.ghost{background:transparent;color:var(--primary);padding:10px}
+.btn.danger{background:#fff;color:var(--red);border:1px solid #FECDCA}
+.btn.sm{padding:8px 12px;font-size:13px;width:auto;border-radius:10px}
+.btnrow{display:flex;gap:8px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none;margin:0 -16px;padding-left:16px;padding-right:16px}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--border);background:#fff;border-radius:999px;padding:6px 12px;font-size:12.5px;white-space:nowrap;font-weight:500}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.seg{display:flex;background:#E4E7EC;border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;border:none;background:none;border-radius:9px;padding:7px 6px;font-size:12.5px;font-weight:500;color:#475467}
+.seg button.on{background:#fff;color:var(--navy);font-weight:600;box-shadow:0 1px 2px rgba(16,24,40,.08)}
+
+/* balance card */
+.balance{background:linear-gradient(160deg,#163A71 0%,#1F4E94 100%);color:#fff;border-radius:20px;padding:18px;position:relative;overflow:hidden}
+.balance .lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.8;font-weight:600}
+.balance .amt{font-size:34px;font-weight:600;margin:4px 0 2px;letter-spacing:-.5px}
+.balance .note{font-size:12.5px;opacity:.85;margin-bottom:14px}
+.balance .badge{position:absolute;top:16px;right:16px}
+.balance .btn{background:#fff;color:var(--navy)}
+.balance.settled{background:linear-gradient(160deg,#0E7F5A 0%,#0E9F6E 100%)}
+.balance.credit{background:linear-gradient(160deg,#1F4E94 0%,#4185F3 100%)}
+.balance .contact{background:rgba(255,255,255,.14);border-radius:10px;padding:10px 12px;font-size:12.5px}
+.clinicname{font-weight:600;font-size:14px;margin:2px 2px 8px;display:flex;align-items:center;gap:6px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px}
+.stat .k{font-size:11.5px;color:var(--muted)} .stat .v{font-size:18px;font-weight:600;margin-top:2px}
+.stat .v.red{color:var(--red)} .stat .v.green{color:var(--green)}
+.shortcuts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.shortcut{background:#fff;border:1px solid var(--border);border-radius:14px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:500}
+.shortcut svg{width:20px;height:20px;color:var(--navy)}
+
+/* lists */
+.list{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.li{display:flex;align-items:center;gap:10px;padding:12px 14px;border:none;background:none;width:100%;text-align:left;border-bottom:1px solid #F2F4F7}
+.li:last-child{border-bottom:none}
+.li .ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;flex:none;font-size:15px}
+.li .body{flex:1;min-width:0}
+.li .t{font-weight:500;font-size:13.5px}
+.li .s{font-size:12px;color:var(--muted)}
+.chev{color:#98A2B3;flex:none}
+
+/* activity rows */
+.month{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:16px 2px 8px}
+.row{display:flex;gap:10px;width:100%;text-align:left;background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:8px;align-items:flex-start}
+.row.pending{border-style:dashed;background:#FCFCFD}
+.row.failed{background:#FFFBFA;border-color:#FECDCA}
+.dot{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:none}
+.dot.amber{background:#F59E0B} .dot.green{background:var(--green)} .dot.red{background:var(--red)} .dot.navy{background:var(--navy)}
+.dot.pending{border:2px dashed #98A2B3;background:transparent}
+.dot.half{background:linear-gradient(90deg,#F59E0B 50%,#FDE7C2 50%)}
+.row .body{flex:1;min-width:0}
+.row .t{font-weight:600;font-size:13.5px}
+.row .s{font-size:12px;color:var(--muted);margin-top:1px}
+.row .amt{font-weight:600;font-size:14px;text-align:right;white-space:nowrap}
+.row .amt.ok{color:var(--green)} .row .amt.muted{color:#98A2B3} .row .amt.navy{color:var(--navy)}
+.search{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:9px 12px;margin-bottom:10px}
+.search input{border:none;outline:none;flex:1;background:none}
+.rangebar{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);margin:8px 2px 0}
+.rangebar button{border:none;background:none;color:var(--primary);font-weight:500;font-size:12px}
+.footer-totals{position:sticky;bottom:-24px;margin:12px -16px -24px;background:#fff;border-top:1px solid var(--border);padding:10px 16px 14px}
+.footer-totals .main{display:flex;justify-content:space-between;align-items:center;font-weight:600;width:100%;border:none;background:none;padding:0}
+.footer-totals .grid{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:12.5px;margin-top:8px;color:#344054}
+
+/* money breakdown */
+.kv{display:flex;justify-content:space-between;padding:6px 0;font-size:13.5px}
+.kv.total{border-top:1px solid var(--border);margin-top:4px;padding-top:10px;font-weight:600}
+.kv .neg{color:var(--green)}
+.kv.big{font-size:16px}
+
+/* bottom sheet */
+.backdrop{position:absolute;inset:0;background:rgba(16,24,40,.45);opacity:0;pointer-events:none;transition:opacity .2s ease-out;z-index:20}
+.backdrop.open{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:88%;background:#fff;border-radius:24px 24px 0 0;transform:translateY(100%);transition:transform .22s cubic-bezier(.2,.8,.2,1);z-index:21;display:flex;flex-direction:column}
+.sheet.open{transform:none}
+.sheet.closing{transition-duration:.16s}
+.sheet .grab{width:40px;height:4px;background:#D0D5DD;border-radius:4px;margin:10px auto 4px;flex:none}
+.sheet .sc{overflow-y:auto;padding:8px 18px 28px;scrollbar-width:none}
+.sheet h3{font-size:18px;margin:4px 0 2px}
+.acc{border:1px solid var(--border);border-radius:12px;margin-top:10px;overflow:hidden}
+.acc>button{width:100%;display:flex;justify-content:space-between;align-items:center;border:none;background:#fff;padding:12px 14px;font-weight:600;font-size:13.5px}
+.acc>.in{padding:0 14px 12px;display:none}
+.acc.open>.in{display:block}
+.acc.open>button .chev{transform:rotate(90deg)}
+.chev{transition:transform .15s}
+
+/* steps */
+.steps{list-style:none;padding:0;margin:14px 0}
+.steps li{display:flex;gap:12px;align-items:flex-start;position:relative;padding-bottom:16px}
+.steps li:not(:last-child)::before{content:"";position:absolute;left:11px;top:24px;bottom:0;width:2px;background:var(--border)}
+.steps li.done:not(:last-child)::before{background:var(--green)}
+.steps .b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;flex:none;border:2px solid var(--border);background:#fff;color:#98A2B3}
+.steps li.done .b{background:var(--green);border-color:var(--green);color:#fff}
+.steps li.now .b{border-color:var(--amber);color:var(--amber)}
+
+/* forms */
+.field{margin-top:12px}
+.field label{display:block;font-size:12.5px;font-weight:500;margin-bottom:6px;color:#344054}
+.input{width:100%;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff;outline:none}
+.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(65,133,243,.15)}
+.hosted{border:1px dashed #98A2B3;border-radius:12px;padding:12px;color:#475467;background:#FCFCFD;font-size:13px;display:flex;justify-content:space-between}
+.hosted .tag{font-size:10px;color:#98A2B3;text-transform:uppercase;letter-spacing:.06em}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--border);border-radius:14px;padding:12px;background:#fff;margin-bottom:8px}
+.opt.on{border-color:var(--navy);background:#F5F8FD}
+.radio{width:20px;height:20px;border-radius:50%;border:2px solid #D0D5DD;flex:none;display:grid;place-items:center}
+.opt.on .radio{border-color:var(--navy)}
+.opt.on .radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--navy)}
+.opt.dashed{border-style:dashed}
+.radiorow{display:flex;gap:8px;flex-wrap:wrap}
+.radiorow button{border:1.5px solid var(--border);background:#fff;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:500}
+.radiorow button.on{border-color:var(--navy);background:#F5F8FD;color:var(--navy)}
+.stepper{display:flex;gap:6px;margin:0 0 14px}
+.stepper span{flex:1;height:4px;border-radius:4px;background:#D0D5DD}
+.stepper span.on{background:var(--navy)}
+.info{display:flex;gap:8px;background:var(--primary-bg);color:#1E4FA8;border-radius:12px;padding:10px 12px;font-size:12.5px;margin-top:10px;line-height:1.45}
+.info.warn{background:var(--amber-bg);color:var(--amber)}
+.info.err{background:var(--red-bg);color:var(--red)}
+.consent{font-size:11.5px;color:var(--muted);line-height:1.5;margin:12px 2px}
+
+/* cards (payment methods) */
+.ccard{border-radius:16px;padding:16px;color:#fff;background:linear-gradient(135deg,#1D2939,#344054);margin-bottom:10px}
+.ccard.visa{background:linear-gradient(135deg,#163A71,#4185F3)}
+.ccard.mc{background:linear-gradient(135deg,#7A2E0E,#E04F16)}
+.ccard .top{display:flex;justify-content:space-between;align-items:center;font-weight:600}
+.ccard .num{font-size:18px;letter-spacing:2px;margin:18px 0 6px}
+.ccard .bot{display:flex;justify-content:space-between;font-size:12px;opacity:.9}
+.ccard-actions{background:#fff;border:1px solid var(--border);border-radius:0 0 14px 14px;margin:-18px 0 12px;padding:22px 14px 10px}
+.switch{width:42px;height:24px;border-radius:999px;background:#D0D5DD;border:none;position:relative;flex:none;transition:background .15s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.switch.on{background:var(--green)} .switch.on::after{transform:translateX(18px)}
+
+/* result */
+.result{text-align:center;padding:40px 8px 0}
+.result .big{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;margin:0 auto 16px;font-size:40px}
+.result .big.ok{background:var(--green-bg);color:var(--green)}
+.result .big.bad{background:var(--red-bg);color:var(--red)}
+.result.pop .big{animation:pop .3s ease-out}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+
+/* chart */
+.chart svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;font-size:11.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+
+/* toast */
+.toast{position:absolute;left:16px;right:16px;bottom:96px;background:#101828;color:#fff;border-radius:12px;padding:12px 14px;font-size:13px;opacity:0;transform:translateY(8px);transition:opacity .18s,transform .18s;z-index:30;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+
+/* skeleton */
+.sk{background:linear-gradient(90deg,#E4E7EC 25%,#F2F4F7 50%,#E4E7EC 75%);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:12px}
+@keyframes sk{from{background-position:200% 0}to{background-position:-200% 0}}
+
+.empty{text-align:center;padding:40px 16px;color:var(--muted)}
+.empty .em{font-size:40px;margin-bottom:8px}
+.empty b{display:block;color:var(--text);font-size:15px;margin-bottom:4px}
+table.mini{width:100%;border-collapse:collapse;font-size:12.5px}
+table.mini td{padding:6px 0;border-bottom:1px solid #F2F4F7}
+table.mini td:last-child{text-align:right}
+.tl{border-left:2px solid var(--border);margin:8px 0 0 6px;padding-left:14px}
+.tl .ev{position:relative;padding-bottom:12px}
+.tl .ev::before{content:"";position:absolute;left:-20px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--c,#98A2B3)}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ===== Control panel ===== -->
+  <aside class="panel">
+    <h1>Parent Billing — mobile</h1>
+    <div class="sub">Clickable mockup, based on the clinic web Financial Account. Mock data only.</div>
+
+    <h3>Jump to screen</h3>
+    <div class="jump" id="jump"></div>
+
+    <h3>Clinic billing settings</h3>
+    <div class="ctl"><span>Convenience fee</span>
+      <select id="set-fee">
+        <option value="stripe">Pass-through (Stripe)</option>
+        <option value="flat">Flat fee $3.00</option>
+        <option value="off">Off</option>
+      </select></div>
+    <label class="ctl"><span>Show insurance details</span><input type="checkbox" id="set-insurance" checked></label>
+    <label class="ctl"><span>Parents can remove cards</span><input type="checkbox" id="set-delete" checked></label>
+    <label class="ctl"><span>Client invoicing on</span><input type="checkbox" id="set-invoices" checked></label>
+    <label class="ctl"><span>Autopay enabled</span><input type="checkbox" id="set-autopay" checked></label>
+
+    <h3>Scenarios</h3>
+    <label class="ctl"><span>Show loading state</span><input type="checkbox" id="sc-loading"></label>
+    <label class="ctl"><span>Empty account</span><input type="checkbox" id="sc-empty"></label>
+    <label class="ctl"><span>Next payment fails</span><input type="checkbox" id="sc-fail"></label>
+    <div style="margin-top:12px"><button class="btn secondary sm" onclick="location.reload()">Reset demo</button></div>
+  </aside>
+
+  <!-- ===== Phone ===== -->
+  <div class="phone">
+    <div class="screen" id="screen">
+      <div class="island"></div>
+      <div class="statusbar"><span>9:41</span><span>●●● 5G ▮</span></div>
+      <header class="topbar" id="topbar"></header>
+      <main class="view" id="view"></main>
+      <nav class="tabbar" id="tabbar"></nav>
+      <div class="backdrop" id="backdrop" onclick="closeSheet()"></div>
+      <div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="grab"></div><div class="sc" id="sheet-sc"></div></div>
+      <div class="toast" id="toast" role="status"></div>
+    </div>
+  </div>
+
+  <!-- ===== Design notes ===== -->
+  <aside class="notes" id="notes"></aside>
+</div>
+
+<script>
+/* ============================================================
+   Helpers
+   ============================================================ */
+const TODAY = '2026-11-23';
+const r2 = n => Math.round(n * 100) / 100;
+const fmt = (n, c = 'USD') => new Intl.NumberFormat('en-US', { style: 'currency', currency: c }).format(n);
+const dt = s => new Date(s.slice(0, 10) + 'T12:00:00');
+const fd = (s, o = { month: 'short', day: 'numeric' }) => dt(s).toLocaleDateString('en-US', o);
+const fdy = s => fd(s, { month: 'short', day: 'numeric', year: 'numeric' });
+const daysAgo = s => Math.round((dt(TODAY) - dt(s)) / 864e5);
+const sum = (a, f) => a.reduce((t, x) => t + (f(x) || 0), 0);
+const pill = (t, tone) => `<span class="pill ${tone}">${t}</span>`;
+const CHEV = `<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>`;
+const BACK = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>`;
+const ICONS = {
+  home: '<path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/>',
+  list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  doc: '<path d="M14 3H6a1 1 0 00-1 1v16a1 1 0 001 1h12a1 1 0 001-1V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+  card: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+  receipt: '<path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
+  est: '<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h9"/>',
+  stmt: '<path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+};
+const icon = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ============================================================
+   Mock data (shapes mirror getSingleAccountmongo / getPayment / getInvoices)
+   ============================================================ */
+const DATA = {
+  aarav: {
+    name: 'Aarav Sharma', short: 'Aarav', initials: 'AS',
+    cards: [
+      { id: 'k1', brand: 'Visa', last4: '4242', exp: '12/27', type: 'credit', hsa: false, isDefault: true },
+      { id: 'k2', brand: 'Mastercard', last4: '5555', exp: '08/27', type: 'credit', hsa: true, isDefault: false }
+    ],
+    clinics: [
+      {
+        id: 'sunrise', name: 'Sunrise Therapy Center', cur: 'USD', enrolled: true, lastStatement: '2026-11-20',
+        items: [
+          { id: 's1', kind: 'session', date: '2026-11-14', title: 'Occupational Therapy', clinician: 'Dr. Rao', charged: 180, ins: 120, share: 45, paid: 0,
+            claims: [{ role: 'Primary', payer: 'Aetna', status: 'Paid' }, { role: 'Secondary', payer: 'Medicaid', status: 'With insurance' }],
+            why: [{ label: 'Copay', code: 'PR-3', amt: 25 }, { label: 'Deductible', code: 'PR-1', amt: 20 }],
+            prChanges: [{ date: '2026-11-16', from: 60, to: 45 }], applied: [] },
+          { id: 'c1', kind: 'pending', date: '2026-11-12', title: 'Speech Therapy', clinician: 'Ms. Lee', step: 2, statusText: 'Insurance reviewing' },
+          { id: 't1', kind: 'tentative', date: '2026-11-10', title: 'Physical Therapy', clinician: 'Mr. Khan', charged: 30, share: 30, paid: 0,
+            charges: [{ type: 'Session fee', amt: 30, date: '2026-11-10' }], applied: [] },
+          { id: 's2', kind: 'session', date: '2026-11-07', title: 'Occupational Therapy', clinician: 'Dr. Rao', charged: 180, ins: 110, share: 70, paid: 70,
+            claims: [{ role: 'Primary', payer: 'Aetna', status: 'Paid' }], why: [{ label: 'Coinsurance', code: 'PR-2', amt: 70 }],
+            applied: [{ date: '2026-11-09', method: 'Mastercard •5555', amt: 70 }] },
+          { id: 'm1', kind: 'charge', date: '2026-11-03', title: 'Assessment fee', sub: 'Annual developmental assessment', charged: 150, share: 150, paid: 0, applied: [] },
+          { id: 's3', kind: 'session', date: '2026-10-28', title: 'Speech Therapy', clinician: 'Ms. Lee', charged: 160, ins: 120, share: 40, paid: 20,
+            claims: [{ role: 'Primary', payer: 'Aetna', status: 'Paid' }], why: [{ label: 'Copay', code: 'PR-3', amt: 40 }],
+            applied: [{ date: '2026-10-30', method: 'Cash', amt: 20 }] },
+          { id: 's4', kind: 'session', date: '2026-10-21', title: 'Speech Therapy', clinician: 'Ms. Lee', charged: 160, ins: 100, share: 60, paid: 60,
+            claims: [{ role: 'Primary', payer: 'Aetna', status: 'Paid' }], why: [{ label: 'Deductible', code: 'PR-1', amt: 60 }],
+            applied: [{ date: '2026-10-22', method: 'Visa •4242', amt: 60 }] },
+          { id: 's5', kind: 'session', date: '2026-10-14', title: 'Occupational Therapy', clinician: 'Dr. Rao', charged: 180, ins: 80, share: 100, paid: 100,
+            claims: [{ role: 'Primary', payer: 'Aetna', status: 'Paid' }], why: [{ label: 'Deductible', code: 'PR-1', amt: 100 }],
+            applied: [{ date: '2026-11-18', method: 'Visa •4242', amt: 100 }] }
+        ],
+        payments: [
+          { id: 'p1', date: '2026-11-18', amount: 100, method: 'Visa', last4: '4242', desc: 'November sessions', status: 'applied', remaining: 0, receipt: true,
+            alloc: [{ dos: '2026-10-14', desc: 'Occupational Therapy · Dr. Rao', billed: 180, ins: 80, share: 100, thisPay: 100, other: 0, bal: 0 }] },
+          { id: 'p2', date: '2026-11-09', amount: 70, method: 'Mastercard', last4: '5555', desc: '', status: 'applied', remaining: 0, receipt: true,
+            alloc: [{ dos: '2026-11-07', desc: 'Occupational Therapy · Dr. Rao', billed: 180, ins: 110, share: 70, thisPay: 70, other: 0, bal: 0 }] },
+          { id: 'p5', date: '2026-10-30', amount: 20, method: 'Cash', desc: 'Paid at front desk', status: 'applied', remaining: 0, receipt: false,
+            alloc: [{ dos: '2026-10-28', desc: 'Speech Therapy · Ms. Lee', billed: 160, ins: 120, share: 40, thisPay: 20, other: 0, bal: 20 }] },
+          { id: 'p3', date: '2026-10-30', amount: 60, method: 'Visa', last4: '4242', status: 'failed', failure: 'Card declined — insufficient funds', remaining: 0 },
+          { id: 'p4', date: '2026-10-22', amount: 60, method: 'Visa', last4: '4242', desc: 'October sessions', status: 'applied', remaining: 0, receipt: true, feeCharged: true,
+            history: [
+              { type: 'Original', amount: 80, date: '2026-10-22' },
+              { type: 'Refunded', amount: 60, diff: -20, date: '2026-10-24', processed: '2026-10-26' }
+            ],
+            alloc: [{ dos: '2026-10-21', desc: 'Speech Therapy · Ms. Lee', billed: 160, ins: 100, share: 60, thisPay: 60, other: 0, bal: 0 }] }
+        ],
+        invoices: [
+          { num: 'INV-1049', status: 'outstanding', start: '2026-11-01', end: '2026-11-15', issued: '2026-11-16', due: '2026-12-01', amount: 195, paid: 0,
+            earlier: [{ num: 'INV-1046', amount: 150, issued: '2026-11-08' }] },
+          { num: 'INV-1031', status: 'overdue', start: '2026-10-01', end: '2026-10-31', issued: '2026-11-01', due: '2026-11-15', amount: 20, paid: 0, earlier: [] },
+          { num: 'INV-1018', status: 'paid', start: '2026-09-01', end: '2026-09-30', issued: '2026-10-01', due: '2026-10-15', amount: 160, paid: 160, earlier: [] },
+          { num: 'INV-0997', status: 'nodue', start: '2026-08-01', end: '2026-08-31', issued: '2026-09-01', due: '2026-09-15', amount: 0, paid: 0, earlier: [] }
+        ],
+        statements: [{ title: 'Statement · Aug 1 – Oct 31, 2026', created: '2026-11-20' }],
+        superbills: [{ title: 'Superbill · Jul – Sep 2026', created: '2026-10-05' }],
+        estimates: [
+          { id: 'g1', name: 'Speech Therapy Plan', date: '2026-09-28',
+            services: [{ name: 'Speech evaluation', code: '92523', amt: 300 }, { name: 'Speech therapy × 12 visits', code: '92507', amt: 1500 }],
+            taxes: [{ label: 'Sales tax', rate: '0%', amt: 0 }], total: 1800, applied: 1500, owed: 300,
+            funding: 'Confirmed by J. Patel (plan manager) on Oct 1, 2026' }
+        ]
+      },
+      {
+        id: 'bayview', name: 'Bayview Kids Clinic', cur: 'CAD', enrolled: false, lastStatement: '2026-09-30',
+        items: [{ id: 'b1', kind: 'charge', date: '2026-09-12', title: 'Evaluation fee', sub: 'Initial evaluation', charged: 40, share: 40, paid: 0, applied: [] }],
+        payments: [], invoices: [], statements: [], superbills: [], estimates: []
+      }
+    ]
+  },
+  meera: {
+    name: 'Meera Sharma', short: 'Meera', initials: 'MS',
+    cards: [{ id: 'k3', brand: 'Visa', last4: '1881', exp: '03/28', type: 'debit', hsa: false, isDefault: true }],
+    clinics: [{
+      id: 'sunrise', name: 'Sunrise Therapy Center', cur: 'USD', enrolled: true, lastStatement: '2026-11-20',
+      items: [
+        { id: 'ms1', kind: 'session', date: '2026-11-11', title: 'Occupational Therapy', clinician: 'Dr. Rao', charged: 180, ins: 120, share: 60, paid: 60,
+          claims: [{ role: 'Primary', payer: 'BlueCross', status: 'Paid' }], why: [{ label: 'Copay', code: 'PR-3', amt: 60 }], applied: [{ date: '2026-11-02', method: 'Visa •1881', amt: 60 }] },
+        { id: 'ms2', kind: 'session', date: '2026-10-28', title: 'Occupational Therapy', clinician: 'Dr. Rao', charged: 180, ins: 120, share: 60, paid: 60,
+          claims: [{ role: 'Primary', payer: 'BlueCross', status: 'Paid' }], why: [{ label: 'Copay', code: 'PR-3', amt: 60 }], applied: [{ date: '2026-11-02', method: 'Visa •1881', amt: 60 }] }
+      ],
+      payments: [
+        { id: 'q2', date: '2026-11-15', amount: 25, method: 'Visa', last4: '1881', desc: 'Advance payment', status: 'unapplied', remaining: 25, receipt: true, alloc: [] },
+        { id: 'q1', date: '2026-11-02', amount: 120, method: 'Visa', last4: '1881', desc: '', status: 'applied', remaining: 0, receipt: true,
+          alloc: [{ dos: '2026-10-28', desc: 'Occupational Therapy · Dr. Rao', billed: 180, ins: 120, share: 60, thisPay: 60, other: 0, bal: 0 },
+                  { dos: '2026-11-11', desc: 'Occupational Therapy · Dr. Rao', billed: 180, ins: 120, share: 60, thisPay: 60, other: 0, bal: 0 }] }
+      ],
+      invoices: [{ num: 'INV-1050', status: 'overpaid', start: '2026-11-01', end: '2026-11-15', issued: '2026-11-16', due: '2026-12-01', amount: 0, paid: 25, earlier: [] }],
+      statements: [], superbills: [], estimates: []
+    }]
+  }
+};
+const EMPTY_CLINIC = { id: 'empty', name: 'Sunrise Therapy Center', cur: 'USD', enrolled: true, lastStatement: null, items: [], payments: [], invoices: [], statements: [], superbills: [], estimates: [] };
+
+/* ============================================================
+   State
+   ============================================================ */
+const S = {
+  child: 'aarav', clinicIdx: 0, route: 'home', params: {}, stack: [],
+  filter: 'all', search: '', range: '90', payFilter: 'all', docsTab: 'invoices', footerOpen: false, trendOpen: false,
+  settings: { fee: 'stripe', flat: 3, blocked: ['debit', 'prepaid'], insurance: true, allowDelete: true, invoices: true, autopay: true, autopayMax: 200, checkIn: true,
+              consent: '' },
+  scenario: { loading: false, empty: false, failPay: false },
+  pay: null, result: null
+};
+const child = () => DATA[S.child];
+const clinic = () => S.scenario.empty ? EMPTY_CLINIC : child().clinics[S.clinicIdx] || child().clinics[0];
+const clinics = () => S.scenario.empty ? [EMPTY_CLINIC] : child().clinics;
+const billable = cl => cl.items.filter(i => ['session', 'charge', 'tentative'].includes(i.kind));
+
+/* Balance rules mirror the clinic ledger's describeBalance() */
+function totals(cl) {
+  const b = billable(cl);
+  const owed = r2(sum(b, i => i.share)), paid = r2(sum(b, i => i.paid));
+  const still = r2(owed - paid);
+  const credit = r2(sum(cl.payments.filter(p => p.status !== 'failed'), p => p.remaining));
+  const amountDue = r2(still - credit);
+  const unbilled = r2(sum(b.filter(i => i.kind === 'tentative'), i => i.share - i.paid));
+  const received = r2(sum(cl.payments.filter(p => p.status !== 'failed'), p => p.amount));
+  let state = 'settled';
+  if (amountDue > 0.01) state = 'due';
+  else if (amountDue < -0.01 || credit > 0.01) state = 'credit';
+  return { owed, paid, still, credit, amountDue, unbilled, received, state };
+}
+
+/* ============================================================
+   Navigation
+   ============================================================ */
+const TABS = [['home', 'Home', 'home'], ['activity', 'Activity', 'list'], ['documents', 'Documents', 'doc'], ['cards', 'Cards', 'card']];
+const TITLES = { home: 'Billing', activity: 'Activity', payments: 'Payments', documents: 'Documents', cards: 'Payment methods', estimates: 'Estimates',
+  estimate: 'Estimate', 'pay-amount': 'Make a payment', 'pay-card': 'Payment method', 'pay-review': 'Review & pay', 'pay-result': '' };
+function go(route, params = {}) { S.stack.push({ route: S.route, params: S.params }); S.route = route; S.params = params; render(); }
+function back() { const p = S.stack.pop(); if (!p) return; S.route = p.route; S.params = p.params; render(); }
+function tab(route) { S.stack = []; S.route = route; S.params = {}; closeSheet(true); render(); }
+
+function render() {
+  const v = document.getElementById('view');
+  const isTab = TABS.some(t => t[0] === S.route);
+  // top bar
+  let tb = '';
+  if (S.stack.length) tb += `<button class="iconbtn" aria-label="Back" onclick="back()">${BACK}</button>`;
+  tb += `<h2>${TITLES[S.route] ?? ''}</h2>`;
+  if (S.route === 'home' || S.route === 'activity') {
+    const c = child();
+    tb += `<button class="childbtn" onclick="openChildSwitcher()" aria-label="Switch child"><span class="avatar">${c.initials}</span>${c.short} ▾</button>`;
+  }
+  document.getElementById('topbar').innerHTML = tb;
+  // body
+  v.innerHTML = (SCREENS[S.route] || (() => ''))();
+  v.scrollTop = 0;
+  v.classList.remove('enter'); void v.offsetWidth; v.classList.add('enter');
+  // tab bar
+  const tbar = document.getElementById('tabbar');
+  tbar.style.display = isTab ? 'flex' : 'none';
+  tbar.innerHTML = TABS.map(([r, l, i]) => `<button class="${S.route === r ? 'on' : ''}" onclick="tab('${r}')" aria-current="${S.route === r}">${icon(i)}${l}</button>`).join('');
+  renderNotes();
+}
+
+/* ============================================================
+   Sheet + toast
+   ============================================================ */
+function openSheet(html) {
+  document.getElementById('sheet-sc').innerHTML = html;
+  document.getElementById('sheet-sc').scrollTop = 0;
+  const sh = document.getElementById('sheet');
+  sh.classList.remove('closing');
+  document.getElementById('backdrop').classList.add('open');
+  requestAnimationFrame(() => sh.classList.add('open'));
+}
+function closeSheet(instant) {
+  const sh = document.getElementById('sheet');
+  if (!sh.classList.contains('open')) return;
+  if (!instant) sh.classList.add('closing');
+  sh.classList.remove('open');
+  document.getElementById('backdrop').classList.remove('open');
+}
+let toastT;
+function toast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400);
+}
+function toggleAcc(el) { el.parentElement.classList.toggle('open'); }
+
+/* ============================================================
+   Shared fragments
+   ============================================================ */
+function payStatus(p) {
+  if (p.status === 'failed') return pill('Failed', 'red');
+  if (p.status === 'applied') return pill('Applied', 'green');
+  if (p.status === 'partial') return pill('Partly applied', 'amber');
+  return pill('Not applied yet', 'navy');
+}
+const refundOf = p => (p.history || []).filter(h => h.type === 'Refunded').reduce((t, h) => t - (h.diff || 0), 0);
+const methodLabel = p => p.last4 ? `${p.method} •${p.last4}` : p.method;
+
+function activityRows(cl) {
+  const rows = cl.items.map(i => ({ ...i }));
+  cl.payments.forEach(p => {
+    rows.push({ ...p, kind: 'payment', _p: p });
+    if (p.status !== 'failed' && p.remaining > 0.005) rows.push({ id: 'cr-' + p.id, kind: 'credit', date: p.date, remaining: p.remaining });
+  });
+  return rows.sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function rowHTML(it, cur) {
+  let dot = 'green', title = it.title, s1 = '', s2 = '', amt = '', amtCls = '', cls = '';
+  switch (it.kind) {
+    case 'session': case 'charge': {
+      const due = r2(it.share - it.paid);
+      dot = due > 0.005 ? 'amber' : 'green';
+      title = it.kind === 'session' ? `${it.title} session` : it.title;
+      s1 = fd(it.date) + (it.clinician ? ` · ${it.clinician}` : it.sub ? ` · ${it.sub}` : '');
+      s2 = `Your share ${fmt(it.share, cur)} · Paid ${fmt(it.paid, cur)}`;
+      amt = due > 0.005 ? fmt(due, cur) : '✓ Paid'; amtCls = due > 0.005 ? '' : 'ok'; break;
+    }
+    case 'pending':
+      dot = 'pending'; cls = 'pending'; title = `${it.title} session`;
+      s1 = `${fd(it.date)} · ${it.statusText}`; s2 = 'Your share not known yet'; amt = '—'; amtCls = 'muted'; break;
+    case 'tentative':
+      dot = 'half'; title = `${it.title} session`;
+      s1 = `${fd(it.date)} · Not billed yet`; s2 = `Estimated share ${fmt(it.share, cur)}`; amt = fmt(r2(it.share - it.paid), cur); break;
+    case 'payment':
+      if (it.status === 'failed') { dot = 'red'; cls = 'failed'; title = 'Payment failed'; s1 = `${fd(it.date)} · ${methodLabel(it)}`; s2 = it.failure; amt = fmt(it.amount, cur); amtCls = 'muted'; }
+      else {
+        title = 'Payment'; s1 = `${fd(it.date)} · ${methodLabel(it)}`;
+        const rf = refundOf(it);
+        s2 = ({ applied: 'Applied', partial: 'Partly applied', unapplied: 'Not applied yet' })[it.status] + (rf ? ` · Refunded ${fmt(rf, cur)}` : '') + (it.gfe ? ` · Estimate` : '');
+        amt = '−' + fmt(it.amount, cur); amtCls = 'ok';
+      }
+      break;
+    case 'credit':
+      dot = 'navy'; title = 'Credit on account'; s1 = `${fd(it.date)} · Received, not yet applied`; amt = fmt(it.remaining, cur); amtCls = 'navy'; break;
+  }
+  return `<button class="row ${cls}" onclick="openItem('${it.id}')">
+    <span class="dot ${dot}"></span>
+    <span class="body"><div class="t">${title}</div><div class="s">${s1}</div>${s2 ? `<div class="s">${s2}</div>` : ''}</span>
+    <span class="amt ${amtCls}">${amt}</span>${CHEV}</button>`;
+}
+
+/* ============================================================
+   Screens
+   ============================================================ */
+const SCREENS = {};
+
+SCREENS.home = () => {
+  if (S.scenario.loading) return skeleton('home');
+  const cl = clinic(), t = totals(cl), cur = cl.cur, cls = clinics();
+  let h = '';
+  if (cls.length > 1) {
+    h += `<div class="chips" style="margin-bottom:10px">${cls.map((c, i) => {
+      const tt = totals(c);
+      return `<button class="chip ${i === S.clinicIdx ? 'on' : ''}" onclick="S.clinicIdx=${i};render()">${c.name.split(' ')[0]} · ${tt.state === 'due' ? fmt(tt.amountDue, c.cur) : 'Paid up'}</button>`;
+    }).join('')}</div>`;
+  }
+  h += `<div class="clinicname">${cl.name}${cls.length > 1 ? `<span class="muted xs">· ${cl.cur}</span>` : ''}</div>`;
+  h += balanceCard(cl, t);
+  if (cl.lastStatement) h += `<div class="muted xs" style="margin:8px 4px 0">Last statement sent ${daysAgo(cl.lastStatement)} days ago</div>`;
+
+  h += `<div class="stats">
+    <div class="stat"><div class="k">Your share</div><div class="v">${fmt(t.owed, cur)}</div></div>
+    <div class="stat"><div class="k">You paid</div><div class="v green">${fmt(t.paid, cur)}</div></div>
+    <div class="stat"><div class="k">Still due</div><div class="v ${t.still > 0.005 ? 'red' : 'green'}">${fmt(t.still, cur)}</div></div>
+    <div class="stat"><div class="k">Credit on account</div><div class="v">${fmt(t.credit, cur)}</div></div></div>`;
+
+  h += `<div class="shortcuts">
+    <button class="shortcut" onclick="go('payments')">${icon('receipt')}Payments</button>
+    <button class="shortcut" onclick="go('estimates')">${icon('est')}Estimates</button>
+    <button class="shortcut" onclick="openStatementSheet()">${icon('stmt')}Statement</button></div>`;
+
+  // Things to know
+  const items = attention(cl);
+  h += `<div class="section-title">Things to know</div>`;
+  h += items.length ? `<div class="list">${items.join('')}</div>` : `<div class="card muted small">✓ Nothing needs your attention right now.</div>`;
+
+  // Recent
+  const rows = activityRows(cl).slice(0, 3);
+  h += `<div class="section-title">Recent activity <button onclick="tab('activity')">See all ›</button></div>`;
+  h += rows.length ? rows.map(r => rowHTML(r, cur)).join('') : emptyBlock('🧾', 'No charges yet', 'Visits appear here once they’re billed, and payments once they’re applied.');
+
+  // Trend
+  h += `<div class="acc ${S.trendOpen ? 'open' : ''}" style="background:#fff"><button onclick="S.trendOpen=!S.trendOpen;toggleAcc(this)">Balance over time ${CHEV}</button><div class="in">${trendChart(cl)}</div></div>`;
+  return h;
+};
+
+function balanceCard(cl, t) {
+  const cur = cl.cur;
+  if (!cl.enrolled) {
+    return `<div class="balance"><span class="badge">${pill('Due', 'red')}</span><div class="lbl">Amount due</div><div class="amt">${fmt(t.amountDue, cur)}</div>
+      <div class="contact">Please contact the clinic to pay this balance.</div></div>`;
+  }
+  if (t.state === 'due') {
+    return `<div class="balance"><span class="badge">${pill('Due', 'red')}</span><div class="lbl">Amount due</div><div class="amt">${fmt(t.amountDue, cur)}</div>
+      <div class="note">${t.unbilled > 0.005 ? `Includes ${fmt(t.unbilled, cur)} for visits not billed yet` : 'Across all billed visits and charges'}</div>
+      <button class="btn" onclick="startPay('balance')">Pay now</button></div>`;
+  }
+  if (t.state === 'credit') {
+    const cr = Math.max(t.credit, -t.amountDue);
+    return `<div class="balance credit"><span class="badge">${pill('Credit', 'green')}</span><div class="lbl">Credit on account</div><div class="amt">${fmt(cr, cur)} CR</div>
+      <div class="note">Received, not yet applied to a charge. The clinic will use it for your next visits.</div>
+      <button class="btn" onclick="startPay('balance')">Make a payment</button></div>`;
+  }
+  return `<div class="balance settled"><span class="badge">${pill('Paid up', 'green')}</span><div class="lbl">Amount due</div><div class="amt">${fmt(0, cur)}</div>
+    <div class="note">You’re all caught up.</div><button class="btn" onclick="startPay('balance')">Make a payment</button></div>`;
+}
+
+function attention(cl) {
+  const out = [], cur = cl.cur;
+  const li = (ic, bg, t, s, on) => `<button class="li" onclick="${on}"><span class="ic" style="background:${bg}">${ic}</span><span class="body"><div class="t">${t}</div><div class="s">${s}</div></span>${CHEV}</button>`;
+  const failed = cl.payments.filter(p => p.status === 'failed');
+  if (failed.length) out.push(li('⚠️', 'var(--red-bg)', `${failed.length} payment${failed.length > 1 ? 's' : ''} failed`, `${failed[0].failure} · Tap to retry`, `go('payments',{filter:'failed'})`));
+  const pend = cl.items.filter(i => i.kind === 'pending').length, tent = cl.items.filter(i => i.kind === 'tentative').length;
+  if (pend || tent) out.push(li('⏳', 'var(--amber-bg)', [pend && `${pend} visit${pend > 1 ? 's' : ''} with insurance`, tent && `${tent} not billed yet`].filter(Boolean).join(' · '), 'Your share will post once it’s known', `S.filter='pending';tab('activity')`));
+  if (S.settings.invoices) {
+    cl.invoices.filter(i => i.status === 'overdue').forEach(i => out.push(li('📄', 'var(--red-bg)', `Invoice ${i.num} is overdue`, `${fmt(i.amount - i.paid, cur)} · was due ${fd(i.due)}`, `S.docsTab='invoices';tab('documents')`)));
+    cl.invoices.filter(i => i.status === 'outstanding' && daysAgo(i.issued) <= 14).forEach(i => out.push(li('📄', 'var(--primary-bg)', `New invoice ${i.num}`, `${fmt(i.amount - i.paid, cur)} · due ${fd(i.due)}`, `S.docsTab='invoices';tab('documents')`)));
+  }
+  cl.estimates.filter(g => g.owed > 0).forEach(g => out.push(li('🧾', 'var(--navy-bg)', `Estimate: ${fmt(g.owed, cur)} still owed`, g.name, `go('estimate',{id:'${g.id}'})`)));
+  cl.payments.filter(p => p.refundStatus === 'processing').forEach(p => out.push(li('↩️', 'var(--amber-bg)', 'Refund in progress', methodLabel(p), `openItem('${p.id}')`)));
+  return out;
+}
+
+function trendChart(cl) {
+  const ev = [];
+  billable(cl).forEach(i => ev.push({ d: i.date, owed: i.share, paid: 0 }));
+  cl.payments.filter(p => p.status !== 'failed').forEach(p => ev.push({ d: p.date, owed: 0, paid: p.amount }));
+  ev.sort((a, b) => a.d.localeCompare(b.d));
+  if (ev.length < 2) return `<div class="muted small">Not enough history yet.</div>`;
+  let o = 0, p = 0; const pts = ev.map(e => ({ d: e.d, o: (o += e.owed), p: (p += e.paid) }));
+  const W = 320, H = 130, pad = 8, max = Math.max(...pts.map(x => Math.max(x.o, x.p))) || 1;
+  const t0 = dt(pts[0].d).getTime(), t1 = dt(pts[pts.length - 1].d).getTime() || t0 + 1;
+  const X = d => pad + (W - 2 * pad) * ((dt(d).getTime() - t0) / ((t1 - t0) || 1));
+  const Y = v => H - pad - (H - 2 * pad) * (v / max);
+  const line = k => pts.map((x, i) => `${i ? 'L' : 'M'}${X(x.d).toFixed(1)},${Y(x[k]).toFixed(1)}`).join(' ');
+  const area = `${line('o')} L${X(pts[pts.length - 1].d)},${H - pad} L${X(pts[0].d)},${H - pad} Z`;
+  return `<div class="chart" role="img" aria-label="Charged versus paid over time"><svg viewBox="0 0 ${W} ${H}">
+    <path d="${area}" fill="rgba(185,28,28,.12)" stroke="none"/>
+    <path d="${line('o')}" fill="none" stroke="#B91C1C" stroke-width="2"/>
+    <path d="${line('p')}" fill="none" stroke="#0E9F6E" stroke-width="2" stroke-dasharray="5 4"/></svg>
+    <div class="legend"><span><i style="background:#B91C1C"></i>Your share to date ${fmt(o, cl.cur)}</span><span><i style="background:#0E9F6E"></i>Paid to date ${fmt(p, cl.cur)}</span></div></div>`;
+}
+
+/* ---------- Activity ---------- */
+SCREENS.activity = () => {
+  if (S.scenario.loading) return skeleton('list');
+  const cl = clinic(), cur = cl.cur;
+  const F = [['all', 'All'], ['due', 'Due'], ['payments', 'Payments'], ['pending', 'Pending'], ['paid', 'Paid']];
+  let h = `<div class="search">🔍<input placeholder="Search visits, therapy, clinician…" value="${S.search}" oninput="S.search=this.value;refreshActivity()" aria-label="Search activity"></div>`;
+  h += `<div class="chips">${F.map(([k, l]) => `<button class="chip ${S.filter === k ? 'on' : ''}" onclick="S.filter='${k}';render()">${l}</button>`).join('')}</div>`;
+  const rl = { '30': 'Last 30 days', '90': 'Last 3 months', 'year': 'This year', 'all': 'All time' }[S.range];
+  h += `<div class="rangebar"><span>${rl}</span><button onclick="openRangeSheet()">Change</button></div>`;
+  h += `<div id="act-list">${activityList(cl)}</div>`;
+  return h;
+};
+function refreshActivity() { document.getElementById('act-list').innerHTML = activityList(clinic()); }
+function activityList(cl) {
+  const cur = cl.cur, q = S.search.trim().toLowerCase();
+  let rows = activityRows(cl);
+  const minDate = S.range === 'all' ? '0000' : S.range === 'year' ? '2026-01-01' : (() => { const d = dt(TODAY); d.setDate(d.getDate() - +S.range); return d.toISOString().slice(0, 10); })();
+  rows = rows.filter(r => r.date >= minDate);
+  rows = rows.filter(r => {
+    const due = ['session', 'charge', 'tentative'].includes(r.kind) ? r.share - r.paid : 0;
+    switch (S.filter) {
+      case 'due': return due > 0.005;
+      case 'payments': return r.kind === 'payment' || r.kind === 'credit';
+      case 'pending': return r.kind === 'pending' || r.kind === 'tentative';
+      case 'paid': return ['session', 'charge'].includes(r.kind) && due <= 0.005;
+      default: return true;
+    }
+  });
+  if (q) rows = rows.filter(r => [r.title, r.clinician, r.sub, r.method, r.desc, r.statusText].filter(Boolean).join(' ').toLowerCase().includes(q));
+  if (!cl.items.length && !cl.payments.length) return emptyBlock('🧾', 'No charges yet', 'Visits appear here once they’re billed, and payments once they’re applied.');
+  if (!rows.length) return `<div class="empty"><div class="em">🔎</div><b>Nothing matches these filters</b><button class="btn secondary sm" style="margin:10px auto 0" onclick="S.filter='all';S.search='';S.range='all';render()">Clear filters</button></div>`;
+  let h = '', m = '';
+  rows.forEach(r => {
+    const mm = fd(r.date, { month: 'long', year: 'numeric' });
+    if (mm !== m) { h += `<div class="month">${mm}</div>`; m = mm; }
+    h += rowHTML(r, cur);
+  });
+  const b = rows.filter(r => ['session', 'charge', 'tentative'].includes(r.kind));
+  const tc = { charged: sum(b, i => i.charged), ins: sum(b, i => i.ins), share: sum(b, i => i.share), paid: sum(b, i => i.paid) };
+  h += `<div class="footer-totals"><button class="main" onclick="S.footerOpen=!S.footerOpen;refreshActivity()" aria-expanded="${S.footerOpen}">
+      <span>Still due in this view</span><span>${fmt(r2(tc.share - tc.paid), cur)} ${S.footerOpen ? '▾' : '▴'}</span></button>
+    ${S.footerOpen ? `<div class="grid"><span>Clinic charges</span><b>${fmt(tc.charged, cur)}</b><span>Insurance paid</span><b>${fmt(tc.ins, cur)}</b>
+      <span>Your share</span><b>${fmt(tc.share, cur)}</b><span>You paid</span><b>${fmt(tc.paid, cur)}</b></div>` : ''}</div>`;
+  return h;
+}
+function openRangeSheet() {
+  const o = [['30', 'Last 30 days'], ['90', 'Last 3 months'], ['year', 'This year'], ['all', 'All time']];
+  openSheet(`<h3>Date range</h3><div style="margin-top:12px">${o.map(([k, l]) => `<button class="opt ${S.range === k ? 'on' : ''}" onclick="S.range='${k}';closeSheet();render()"><span class="radio"></span>${l}</button>`).join('')}</div>`);
+}
+
+/* ---------- Detail sheets ---------- */
+function openItem(id) {
+  const cl = clinic();
+  if (id.startsWith('cr-')) { const p = cl.payments.find(x => 'cr-' + x.id === id); return openSheet(creditSheet(p, cl)); }
+  const it = cl.items.find(x => x.id === id);
+  if (it) {
+    if (it.kind === 'pending') return openSheet(pendingSheet(it, cl));
+    if (it.kind === 'tentative') return openSheet(tentativeSheet(it, cl));
+    return openSheet(sessionSheet(it, cl));
+  }
+  const p = cl.payments.find(x => x.id === id);
+  if (p) openSheet(paymentSheet(p, cl));
+}
+
+function sessionSheet(it, cl) {
+  const cur = cl.cur, due = r2(it.share - it.paid), isS = it.kind === 'session';
+  const adj = isS ? r2(it.charged - it.ins - it.share) : 0;
+  let h = `<h3>${isS ? it.title : it.title}</h3><div class="muted small">${fdy(it.date)}${it.clinician ? ' · ' + it.clinician : ''} · ${cl.name}</div>
+    <div style="margin-top:8px">${due > 0.005 ? pill(fmt(due, cur) + ' still due', 'amber') : pill('✓ Paid', 'green')}</div>`;
+  h += `<div class="section-title">${isS ? 'How this was billed' : 'Charge'}</div><div class="card" style="padding:8px 14px">`;
+  if (isS) {
+    h += `<div class="kv"><span>Clinic charge</span><span>${fmt(it.charged, cur)}</span></div>
+          <div class="kv"><span>Insurance paid</span><span class="neg">−${fmt(it.ins, cur)}</span></div>
+          ${adj > 0.005 ? `<div class="kv"><span>Insurance adjustment</span><span class="neg">−${fmt(adj, cur)}</span></div>` : ''}
+          <div class="kv total"><span>Your share</span><span>${fmt(it.share, cur)}</span></div>`;
+  } else {
+    h += `<div class="kv"><span>${it.sub || 'Charge'}</span><span>${fmt(it.share, cur)}</span></div>`;
+  }
+  h += `<div class="kv"><span>You paid</span><span class="neg">−${fmt(it.paid, cur)}</span></div>
+        <div class="kv total big"><span>Still due</span><span style="color:${due > 0.005 ? 'var(--red)' : 'var(--green)'}">${fmt(due, cur)}</span></div></div>`;
+
+  if (isS && it.claims && S.settings.insurance) {
+    h += `<div class="acc open"><button onclick="toggleAcc(this)">Insurance details ${CHEV}</button><div class="in">
+      ${it.claims.map(c => `<div class="kv"><span>${c.role} · ${c.payer}</span>${pill(c.status, c.status === 'Paid' ? 'green' : 'amber')}</div>`).join('')}
+      ${it.why?.length ? `<div class="small" style="margin-top:8px;font-weight:600">Why you owe this</div>${it.why.map(w => `<div class="kv small"><span>• ${w.label} <span class="muted xs">(${w.code})</span></span><span>${fmt(w.amt, cur)}</span></div>`).join('')}` : ''}
+    </div></div>`;
+  }
+  if (it.applied?.length) {
+    h += `<div class="acc"><button onclick="toggleAcc(this)">Payments applied (${it.applied.length}) ${CHEV}</button><div class="in"><table class="mini">
+      ${it.applied.map(a => `<tr><td>${fd(a.date)} · ${a.method}</td><td>${fmt(a.amt, cur)}</td></tr>`).join('')}</table></div></div>`;
+  }
+  if (it.prChanges?.length) {
+    h += `<div class="acc"><button onclick="toggleAcc(this)">Changes to your share (${it.prChanges.length}) ${CHEV}</button><div class="in"><table class="mini">
+      ${it.prChanges.map(c => `<tr><td>${fd(c.date)}</td><td>${fmt(c.from, cur)} → <b>${fmt(c.to, cur)}</b></td></tr>`).join('')}</table></div></div>`;
+  }
+  h += `<div style="display:grid;gap:8px;margin-top:16px">
+    ${due > 0.005 && cl.enrolled ? `<button class="btn" onclick="startPay('visit','${it.id}')">Pay ${fmt(due, cur)}</button>` : ''}
+    <button class="btn secondary" onclick="askClinic('${(isS ? it.title + ' session' : it.title)} on ${fd(it.date)}')">Ask the clinic about this</button></div>`;
+  return h;
+}
+
+function pendingSheet(it, cl) {
+  const steps = ['Visit done', 'Sent to insurance', 'Insurance reviewing', 'Your share posted'];
+  return `<h3>${it.title} session</h3><div class="muted small">${fdy(it.date)} · ${it.clinician} · ${cl.name}</div>
+    <div style="margin-top:8px">${pill('With insurance', 'grey')}</div>
+    <ol class="steps">${steps.map((s, i) => `<li class="${i < it.step ? 'done' : i === it.step ? 'now' : ''}"><span class="b">${i < it.step ? '✓' : i + 1}</span><div><b class="small">${s}</b>${i === it.step ? '<div class="muted xs">In progress</div>' : ''}</div></li>`).join('')}</ol>
+    <div class="info">ℹ️ <span>We’ll show your share once insurance responds. <b>Nothing is due for this visit yet.</b></span></div>
+    <button class="btn secondary" style="margin-top:16px" onclick="askClinic('${it.title} session on ${fd(it.date)}')">Ask the clinic about this</button>`;
+}
+
+function tentativeSheet(it, cl) {
+  const cur = cl.cur, due = r2(it.share - it.paid);
+  return `<h3>${it.title} session</h3><div class="muted small">${fdy(it.date)} · ${it.clinician} · ${cl.name}</div>
+    <div style="margin-top:8px">${pill('Not billed yet', 'amber')}</div>
+    <div class="info warn">⏳ <span>This visit hasn’t been billed to insurance yet. The amount may change.</span></div>
+    <div class="section-title">Charges</div><div class="card" style="padding:6px 14px"><table class="mini">
+      ${it.charges.map(c => `<tr><td>${c.type} · ${fd(c.date)}</td><td>${fmt(c.amt, cur)}</td></tr>`).join('')}</table></div>
+    <div class="section-title">Payments applied</div><div class="card small muted">${it.applied.length ? it.applied.map(a => `${fd(a.date)} · ${a.method} · ${fmt(a.amt, cur)}`).join('<br>') : 'No payments applied yet.'}</div>
+    <div class="card" style="padding:8px 14px;margin-top:10px">
+      <div class="kv"><span>Charged</span><span>${fmt(it.share, cur)}</span></div>
+      <div class="kv"><span>Paid</span><span class="neg">−${fmt(it.paid, cur)}</span></div>
+      <div class="kv total"><span>Still due</span><span>${fmt(due, cur)}</span></div></div>
+    ${due > 0.005 && cl.enrolled ? `<button class="btn" style="margin-top:16px" onclick="startPay('visit','${it.id}')">Pay ${fmt(due, cur)}</button>` : ''}`;
+}
+
+function paymentSheet(p, cl) {
+  const cur = cl.cur, rf = refundOf(p);
+  let h = `<h3>${p.status === 'failed' ? 'Payment failed' : 'Payment'} · ${fmt(p.amount, cur)}</h3>
+    <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${payStatus(p)}${rf ? pill('Refunded ' + fmt(rf, cur), 'red') : ''}</div>
+    <div class="card" style="padding:8px 14px;margin-top:12px">
+      <div class="kv"><span class="muted">Date</span><span>${fdy(p.date)}</span></div>
+      <div class="kv"><span class="muted">Paid with</span><span>${methodLabel(p)}</span></div>
+      ${p.desc ? `<div class="kv"><span class="muted">Note</span><span>${p.desc}</span></div>` : ''}
+      <div class="kv"><span class="muted">Clinic</span><span>${cl.name}</span></div>
+      ${p.gfe ? `<div class="kv"><span class="muted">Applied to estimate</span><span>${p.gfe}</span></div>` : ''}
+      ${p.status !== 'failed' && p.remaining > 0.005 ? `<div class="kv"><span class="muted">Not applied yet</span><span style="color:var(--navy)">${fmt(p.remaining, cur)}</span></div>` : ''}
+    </div>`;
+  if (p.status === 'failed') {
+    h += `<div class="info err">⚠️ <span>${p.failure}</span></div>
+      ${cl.enrolled ? `<button class="btn" style="margin-top:16px" onclick="startPay('retry','${p.id}')">Try again</button>` : ''}`;
+    return h;
+  }
+  h += `<div class="btnrow" style="margin-top:12px">
+    ${p.receipt ? `<button class="btn secondary" onclick="toast('Opening receipt PDF…')">${icon('receipt', 18)} Receipt</button>` : ''}
+    ${p.alloc?.length ? `<button class="btn secondary" onclick="openSheet(allocationSheet(clinic().payments.find(x=>x.id==='${p.id}'), clinic()))">Where it went</button>` : ''}</div>`;
+  if (p.history?.length) {
+    const col = { Original: '#389e0d', Edited: '#096dd9', Refunded: '#cf1322' };
+    h += `<div class="section-title">Refund timeline</div><div class="tl">${p.history.map(e => `<div class="ev" style="--c:${col[e.type]}">
+      <b class="small">${e.type}</b> · <span class="small">${fmt(e.amount, cur)}${e.diff ? ` (${e.diff > 0 ? '+' : '−'}${fmt(Math.abs(e.diff), cur)})` : ''}</span>
+      <div class="muted xs">${fdy(e.date)}${e.processed ? ` · Refunded to card on ${fd(e.processed)}` : ''}</div></div>`).join('')}</div>
+      ${p.feeCharged ? `<div class="info">ℹ️ <span>Convenience fees aren’t refunded.</span></div>` : ''}`;
+  }
+  return h;
+}
+
+function allocationSheet(p, cl) {
+  const cur = cl.cur;
+  return `<h3>Where your payment went</h3><div class="muted small">${fmt(p.amount, cur)} · ${fdy(p.date)} · ${methodLabel(p)}</div>
+    ${p.alloc.map(a => `<div class="card" style="margin-top:10px;padding:10px 14px">
+      <div style="font-weight:600;font-size:13px">${a.desc}</div><div class="muted xs">Visit on ${fdy(a.dos)}</div>
+      <div class="kv small"><span>Billed</span><span>${fmt(a.billed, cur)}</span></div>
+      <div class="kv small"><span>Insurance paid</span><span>${fmt(a.ins, cur)}</span></div>
+      <div class="kv small"><span>Your share</span><span>${fmt(a.share, cur)}</span></div>
+      <div class="kv small"><span><b>This payment</b></span><span><b style="color:var(--green)">${fmt(a.thisPay, cur)}</b></span></div>
+      ${a.other ? `<div class="kv small"><span>Other payments</span><span>${fmt(a.other, cur)}</span></div>` : ''}
+      <div class="kv small total"><span>Still due on this visit</span><span>${fmt(a.bal, cur)}</span></div></div>`).join('')}
+    <button class="btn secondary" style="margin-top:14px" onclick="toast('Payment allocation report shared as PDF')">Share as PDF</button>`;
+}
+
+function creditSheet(p, cl) {
+  return `<h3>Credit on account</h3><div class="amt" style="font-size:28px;font-weight:600;color:var(--navy);margin:6px 0">${fmt(p.remaining, cl.cur)}</div>
+    <div class="info">ℹ️ <span>Received on ${fdy(p.date)} (${methodLabel(p)}) and not yet applied to a charge. The clinic will apply it to your next charges.</span></div>
+    <button class="btn secondary" style="margin-top:14px" onclick="openSheet(paymentSheet(clinic().payments.find(x=>x.id==='${p.id}'), clinic()))">View payment</button>`;
+}
+
+function askClinic(subject) {
+  openSheet(`<h3>Ask ${clinic().name}</h3><div class="field"><label>Subject</label><input class="input" value="Question about ${subject}"></div>
+    <div class="field"><label>Message</label><textarea class="input" rows="4" placeholder="Type your question…"></textarea></div>
+    <button class="btn" style="margin-top:14px" onclick="closeSheet();toast('Message sent to ${clinic().name}')">Send</button>`);
+}
+
+/* ---------- Payments ---------- */
+SCREENS.payments = () => {
+  const cl = clinic(), cur = cl.cur, t = totals(cl);
+  if (S.params.filter) { S.payFilter = S.params.filter; S.params.filter = null; }
+  const F = [['all', 'All'], ['applied', 'Applied'], ['partial', 'Partly applied'], ['unapplied', 'Not applied'], ['failed', 'Failed'], ['refunded', 'Refunded']];
+  let ps = cl.payments.slice().sort((a, b) => b.date.localeCompare(a.date));
+  if (S.payFilter === 'refunded') ps = ps.filter(p => refundOf(p) > 0);
+  else if (S.payFilter !== 'all') ps = ps.filter(p => p.status === S.payFilter);
+  let h = `<div class="card" style="display:flex;justify-content:space-between;padding:12px 14px;margin-bottom:10px">
+    <div><div class="muted xs">Received</div><b>${fmt(t.received, cur)}</b></div><div style="text-align:right"><div class="muted xs">Credit on account</div><b style="color:var(--navy)">${fmt(t.credit, cur)}</b></div></div>`;
+  h += `<div class="chips">${F.map(([k, l]) => `<button class="chip ${S.payFilter === k ? 'on' : ''}" onclick="S.payFilter='${k}';render()">${l}</button>`).join('')}</div><div style="height:8px"></div>`;
+  if (!cl.payments.length) return h + emptyBlock('💳', 'No payments yet', 'Payments you make will show up here with receipts.');
+  if (!ps.length) return h + `<div class="empty"><b>No payments match this filter</b></div>`;
+  h += ps.map(p => {
+    const rf = refundOf(p);
+    return `<div class="card" style="margin-bottom:8px;${p.status === 'failed' ? 'background:#FFFBFA;border-color:#FECDCA' : ''}">
+      <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:16px">${fmt(p.amount, cur)}</b>
+        <span style="display:flex;gap:4px">${rf ? pill('Refunded ' + fmt(rf, cur), 'red') : ''}${payStatus(p)}</span></div>
+      <div class="muted small">${fdy(p.date)} · ${methodLabel(p)}</div>
+      ${p.desc ? `<div class="small" style="margin-top:2px">“${p.desc}”</div>` : ''}
+      ${p.status === 'failed' ? `<div class="small" style="color:var(--red);margin-top:4px">${p.failure}</div>` : ''}
+      <div class="btnrow" style="margin-top:10px">
+        ${p.status === 'failed' ? (cl.enrolled ? `<button class="btn sm" onclick="startPay('retry','${p.id}')">Try again</button>` : '') :
+          `${p.receipt ? `<button class="btn secondary sm" onclick="toast('Opening receipt PDF…')">Receipt</button>` : ''}
+           ${p.alloc?.length ? `<button class="btn secondary sm" onclick="openSheet(allocationSheet(clinic().payments.find(x=>x.id==='${p.id}'), clinic()))">Where it went</button>` : ''}`}
+        <button class="btn ghost sm" onclick="openItem('${p.id}')">Details ›</button></div></div>`;
+  }).join('');
+  return h;
+};
+
+/* ---------- Documents ---------- */
+SCREENS.documents = () => {
+  const cl = clinic(), cur = cl.cur;
+  const tabs = [S.settings.invoices && ['invoices', 'Invoices'], ['statements', 'Statements'], ['superbills', 'Superbills']].filter(Boolean);
+  if (!tabs.find(t => t[0] === S.docsTab)) S.docsTab = tabs[0][0];
+  let h = `<div class="seg" role="tablist">${tabs.map(([k, l]) => `<button role="tab" class="${S.docsTab === k ? 'on' : ''}" onclick="S.docsTab='${k}';render()">${l}</button>`).join('')}</div><div style="height:12px"></div>`;
+  if (S.docsTab === 'invoices') {
+    const tone = { paid: ['Paid', 'green'], outstanding: ['Due', 'amber'], overdue: ['Overdue', 'red'], overpaid: ['Overpaid', 'navy'], nodue: ['Nothing due', 'grey'] };
+    if (!cl.invoices.length) return h + emptyBlock('📄', 'No invoices yet', 'Invoices from the clinic will appear here.');
+    h += `<div class="muted xs" style="margin:0 2px 8px">Each invoice includes billed visits up to the end of its cycle.</div>`;
+    h += cl.invoices.map(i => {
+      const [lab, tn] = tone[i.status]; const owe = r2(i.amount - i.paid);
+      return `<div class="card" style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><b>${i.num}</b>${pill(lab, tn)}</div>
+        <div class="muted small">${fd(i.start)} – ${fd(i.end)} · Issued ${fd(i.issued)} · Due ${fd(i.due)}</div>
+        <div class="small" style="margin-top:4px">${fmt(i.amount, cur)} · Paid ${fmt(i.paid, cur)}</div>
+        <div class="btnrow" style="margin-top:10px"><button class="btn secondary sm" onclick="toast('Opening ${i.num} PDF…')">View PDF</button>
+          ${owe > 0.005 && cl.enrolled ? `<button class="btn sm" onclick="startPay('invoice','${i.num}')">Pay ${fmt(owe, cur)}</button>` : ''}</div>
+        ${i.earlier.length ? `<div class="acc"><button onclick="toggleAcc(this)">Earlier invoices in this cycle (${i.earlier.length}) ${CHEV}</button><div class="in"><table class="mini">
+          ${i.earlier.map(e => `<tr><td>${e.num} · ${fd(e.issued)}</td><td>${fmt(e.amount, cur)} · <a href="#" onclick="toast('Opening PDF…');return false">PDF</a></td></tr>`).join('')}</table></div></div>` : ''}
+      </div>`;
+    }).join('');
+  } else if (S.docsTab === 'statements') {
+    h += `<button class="btn" onclick="openStatementSheet()">+ Create statement</button><div style="height:12px"></div>`;
+    h += cl.statements.length ? `<div class="list">${cl.statements.map(s => `<button class="li" onclick="toast('Opening statement PDF…')"><span class="ic" style="background:var(--navy-bg)">📄</span><span class="body"><div class="t">${s.title}</div><div class="s">Created ${fdy(s.created)}</div></span>${CHEV}</button>`).join('')}</div>`
+      : emptyBlock('📄', 'No statements yet', 'Create one for any date range.');
+  } else {
+    h += cl.superbills.length ? `<div class="list">${cl.superbills.map(s => `<button class="li" onclick="toast('Opening superbill PDF…')"><span class="ic" style="background:var(--green-bg)">🧾</span><span class="body"><div class="t">${s.title}</div><div class="s">Created ${fdy(s.created)} · For insurance reimbursement</div></span>${CHEV}</button>`).join('')}</div>`
+      : emptyBlock('🧾', 'No superbills yet', 'Your clinic creates superbills when you need to claim from insurance yourself.');
+  }
+  return h;
+};
+function openStatementSheet() {
+  openSheet(`<h3>Create a statement</h3><div class="muted small">A PDF of all charges and payments in this period.</div>
+    <div class="field"><label>From</label><input type="date" class="input" id="st-from" value="2026-10-23"></div>
+    <div class="field"><label>To</label><input type="date" class="input" id="st-to" value="${TODAY}"></div>
+    <button class="btn" style="margin-top:16px" onclick="makeStatement()">Create statement</button>`);
+}
+function makeStatement() {
+  const f = document.getElementById('st-from').value, t = document.getElementById('st-to').value;
+  clinic().statements.unshift({ title: `Statement · ${fd(f)} – ${fdy(t)}`, created: TODAY });
+  closeSheet(); toast('Statement ready — opening PDF');
+  if (S.route === 'documents') { S.docsTab = 'statements'; render(); }
+}
+
+/* ---------- Cards ---------- */
+SCREENS.cards = () => {
+  const c = child(), st = S.settings;
+  let h = c.cards.map(k => `<div class="ccard ${k.brand === 'Visa' ? 'visa' : 'mc'}">
+      <div class="top"><span>${k.brand.toUpperCase()}</span>${k.isDefault ? pill('★ Default', 'blue') : ''}</div>
+      <div class="num">•••• •••• •••• ${k.last4}</div>
+      <div class="bot"><span>Exp ${k.exp} · ${k.type}</span><span>${k.hsa ? 'HSA / FSA' : ''}</span></div></div>
+    <div class="ccard-actions">
+      <div class="kv"><span>HSA / FSA card</span><button class="switch ${k.hsa ? 'on' : ''}" role="switch" aria-checked="${k.hsa}" aria-label="HSA or FSA card" onclick="toggleHsa('${k.id}')"></button></div>
+      <div class="btnrow" style="margin-top:6px">
+        ${k.isDefault ? '' : `<button class="btn secondary sm" onclick="confirmDefault('${k.id}')">Set as default</button>`}
+        ${st.allowDelete ? `<button class="btn danger sm" onclick="confirmRemove('${k.id}')">Remove</button>` : ''}</div></div>`).join('');
+  if (!c.cards.length) h += emptyBlock('💳', 'No saved cards', 'Add a card to pay faster next time.');
+  h += `<button class="btn" onclick="openAddCard()">+ Add a card</button>`;
+  if (st.autopay) h += `<div class="info" style="margin-top:12px">🔁 <span><b>Autopay is on at this clinic.</b> ${clinic().name} may charge your default card ${st.checkIn ? 'when a visit is checked in' : 'after visits'}, up to ${fmt(st.autopayMax)} per charge.</span></div>`;
+  return h;
+};
+function toggleHsa(id) { const k = child().cards.find(x => x.id === id); k.hsa = !k.hsa; render(); toast(k.hsa ? 'Marked as HSA / FSA card' : 'Marked as regular card'); }
+function confirmDefault(id) {
+  const k = child().cards.find(x => x.id === id);
+  openSheet(`<h3>Make ${k.brand} •${k.last4} your default?</h3><div class="muted small" style="margin:6px 0 14px">It will be pre-selected when you pay${S.settings.autopay ? ' and used for autopay' : ''}.</div>
+    <button class="btn" onclick="child().cards.forEach(c=>c.isDefault=c.id==='${id}');closeSheet();render();toast('Default card updated')">Set as default</button>
+    <button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+}
+function confirmRemove(id) {
+  const k = child().cards.find(x => x.id === id);
+  openSheet(`<h3>Remove ${k.brand} •${k.last4}?</h3><div class="muted small" style="margin:6px 0 14px">You can add it again later.</div>
+    <button class="btn danger" onclick="DATA[S.child].cards=child().cards.filter(c=>c.id!=='${id}');if(!child().cards.some(c=>c.isDefault)&&child().cards[0])child().cards[0].isDefault=true;closeSheet();render();toast('Card removed')">Remove card</button>
+    <button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+}
+function openAddCard() {
+  openSheet(`<h3>Add a card</h3><div class="muted small">Saved securely by the clinic’s payment processor. You won’t be charged now.</div>
+    <div class="field"><label>Name on card</label><input class="input" value="Priya Sharma"></div>
+    <div class="field"><label>Email for receipts</label><input class="input" value="priya@example.com"></div>
+    <div class="field"><label>Card details</label><div class="hosted"><span>4242 4242 4242 4242 · 12/29 · 123</span><span class="tag">secure field</span></div></div>
+    <div class="field"><label>Is this an HSA or FSA card?</label><div class="radiorow" id="ac-hsa"><button onclick="pickIn(this)">Yes</button><button class="on" onclick="pickIn(this)">No</button></div></div>
+    <button class="btn" style="margin-top:16px" onclick="addCard()">Save card</button>`);
+}
+function pickIn(b) { b.parentElement.querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on'); }
+function addCard() {
+  const hsa = document.querySelector('#ac-hsa .on')?.textContent === 'Yes';
+  const c = child(); c.cards.push({ id: 'k' + Date.now(), brand: 'Visa', last4: '4242', exp: '12/29', type: 'credit', hsa, isDefault: !c.cards.length });
+  closeSheet(); render(); toast('Card added');
+}
+
+/* ---------- Estimates ---------- */
+SCREENS.estimates = () => {
+  const cl = clinic(), cur = cl.cur;
+  if (!cl.estimates.length) return emptyBlock('🧾', 'No estimates', 'Good Faith Estimates from your clinic will appear here.');
+  return cl.estimates.map(g => `<button class="row" onclick="go('estimate',{id:'${g.id}'})" style="flex-direction:column;gap:6px">
+    <div style="display:flex;justify-content:space-between;width:100%"><b>${g.name}</b>${g.owed > 0 ? pill(fmt(g.owed, cur) + ' owed', 'amber') : pill('Paid', 'green')}</div>
+    <div class="muted small">${fdy(g.date)} · ${g.services.map(s => s.name).join(', ')}</div>
+    <div class="small">Estimated total ${fmt(g.total, cur)} · ${fmt(g.applied, cur)} applied</div></button>`).join('');
+};
+SCREENS.estimate = () => {
+  const cl = clinic(), cur = cl.cur, g = cl.estimates.find(e => e.id === S.params.id);
+  if (!g) return '';
+  const sub = sum(g.services, s => s.amt);
+  return `<div class="card"><b style="font-size:16px">${g.name}</b><div class="muted small">${fdy(g.date)} · ${cl.name}</div>
+      <div style="margin-top:8px">${pill(g.funding ? 'Funding confirmed' : 'Awaiting funding', g.funding ? 'green' : 'amber')}</div>
+      ${g.funding ? `<div class="muted xs" style="margin-top:4px">${g.funding}</div>` : ''}</div>
+    <div class="section-title">Services</div><div class="card" style="padding:8px 14px">
+      ${g.services.map(s => `<div class="kv"><span>${s.name} <span class="muted xs">${s.code}</span></span><span>${fmt(s.amt, cur)}</span></div>`).join('')}
+      <div class="kv total"><span>Subtotal</span><span>${fmt(sub, cur)}</span></div>
+      ${g.taxes.map(t => `<div class="kv small"><span>${t.label} (${t.rate})</span><span>${fmt(t.amt, cur)}</span></div>`).join('')}
+      <div class="kv total big"><span>Total estimated cost</span><span>${fmt(g.total, cur)}</span></div>
+      <div class="kv"><span>Payments applied</span><span class="neg">−${fmt(g.applied, cur)}</span></div>
+      <div class="kv total"><span>Amount owed</span><span style="color:${g.owed > 0 ? 'var(--red)' : 'var(--green)'}">${fmt(g.owed, cur)}</span></div></div>
+    <div style="display:grid;gap:8px;margin-top:14px">
+      ${g.owed > 0 && cl.enrolled ? `<button class="btn" onclick="startPay('estimate','${g.id}')">Pay ${fmt(g.owed, cur)}</button>` : ''}
+      <button class="btn secondary" onclick="toast('Opening estimate PDF…')">View estimate (PDF)</button></div>`;
+};
+
+/* ============================================================
+   Pay flow
+   ============================================================ */
+function startPay(source, ref) {
+  closeSheet(true);
+  const cl = clinic(), t = totals(cl);
+  let max = 0, label = 'Amount due', prefill = null;
+  if (source === 'balance') { max = Math.max(t.amountDue, 0); }
+  else if (source === 'visit') { const it = cl.items.find(i => i.id === ref); max = it.share - it.paid; label = `${it.title} · ${fd(it.date)}`; }
+  else if (source === 'invoice') { const inv = cl.invoices.find(i => i.num === ref); max = inv.amount - inv.paid; label = `Invoice ${inv.num}`; }
+  else if (source === 'estimate') { const g = cl.estimates.find(e => e.id === ref); max = g.owed; label = `Estimate · ${g.name}`; }
+  else if (source === 'retry') { const p = cl.payments.find(x => x.id === ref); max = Math.max(t.amountDue, 0); prefill = p.amount; label = 'Amount due'; }
+  max = r2(max);
+  const def = child().cards.find(k => k.isDefault) || child().cards[0];
+  S.pay = { source, ref, max, label, mode: prefill ? 'other' : max > 0 ? 'full' : 'other', amount: prefill ?? (max > 0 ? max : 0), note: '',
+            cardId: def ? def.id : 'new', newCard: { hsa: null, type: null, save: true }, busy: false };
+  go('pay-amount');
+}
+const stepper = n => `<div class="stepper">${[0, 1, 2].map(i => `<span class="${i <= n ? 'on' : ''}"></span>`).join('')}</div>`;
+
+SCREENS['pay-amount'] = () => {
+  const cl = clinic(), cur = cl.cur, P = S.pay;
+  return `${stepper(0)}<div class="muted small">Pay ${cl.name}</div>
+    <div class="card" style="margin-top:8px;display:flex;justify-content:space-between;align-items:center"><span class="small">${P.label}</span><b style="font-size:18px">${fmt(P.max, cur)}</b></div>
+    <div style="margin-top:12px">
+      ${P.max > 0 ? `<button class="opt ${P.mode === 'full' ? 'on' : ''}" onclick="S.pay.mode='full';S.pay.amount=S.pay.max;render()"><span class="radio"></span><span style="flex:1">Pay in full</span><b>${fmt(P.max, cur)}</b></button>` : ''}
+      <button class="opt ${P.mode === 'other' ? 'on' : ''}" onclick="S.pay.mode='other';render();document.getElementById('amt').focus()"><span class="radio"></span><span style="flex:1">Other amount</span></button>
+    </div>
+    ${P.mode === 'other' ? `<div class="field"><label for="amt">Amount (${cur})</label><input id="amt" class="input" inputmode="decimal" placeholder="0.00" value="${P.amount || ''}" oninput="onAmt(this)"></div>
+      <div class="muted xs" id="amt-hint" style="margin-top:6px">${P.amount > P.max && P.max > 0 ? 'Anything over the amount due becomes credit on your account.' : ''}</div>` : ''}
+    <div class="field"><label>Note (optional)</label><input class="input" placeholder="e.g. November sessions" value="${P.note}" oninput="S.pay.note=this.value"></div>
+    <button class="btn" id="amt-next" style="margin-top:20px" ${P.amount > 0 ? '' : 'disabled'} onclick="go('pay-card')">Continue</button>`;
+};
+function onAmt(el) {
+  let v = el.value.replace(/[^0-9.]/g, ''); const parts = v.split('.');
+  if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join('');
+  if (parts[1]?.length > 2) v = parts[0] + '.' + parts[1].slice(0, 2);
+  el.value = v; S.pay.amount = r2(parseFloat(v) || 0);
+  document.getElementById('amt-next').disabled = !(S.pay.amount > 0);
+  document.getElementById('amt-hint').textContent = S.pay.amount > S.pay.max && S.pay.max > 0 ? 'Anything over the amount due becomes credit on your account.' : '';
+}
+function selectedCard() {
+  const P = S.pay;
+  if (P.cardId === 'new') return { brand: 'Visa', last4: '4242', hsa: P.newCard.hsa === true, type: P.newCard.type || 'credit', isNew: true };
+  return child().cards.find(k => k.id === P.cardId);
+}
+function feeFor(amount, card) {
+  const st = S.settings;
+  if (st.fee === 'off') return { applies: false, fee: 0, exempt: false };
+  const exempt = card.hsa || st.blocked.includes(card.type);
+  if (exempt) return { applies: true, fee: 0, exempt: true };
+  const fee = st.fee === 'stripe' ? (amount + 0.30) / 0.971 - amount : st.flat;
+  return { applies: true, fee: r2(fee), exempt: false };
+}
+SCREENS['pay-card'] = () => {
+  const P = S.pay, cards = child().cards, feeOn = S.settings.fee !== 'off';
+  const need = P.cardId === 'new' && feeOn && (P.newCard.hsa === null || P.newCard.type === null);
+  let h = `${stepper(1)}`;
+  h += cards.map(k => `<button class="opt ${P.cardId === k.id ? 'on' : ''}" onclick="S.pay.cardId='${k.id}';render()"><span class="radio"></span>
+      <span style="flex:1"><b class="small">${k.brand} •••• ${k.last4}</b><div class="muted xs">Exp ${k.exp} · ${k.type}</div></span>
+      <span style="display:flex;gap:4px;flex-direction:column;align-items:flex-end">${k.isDefault ? pill('Default', 'blue') : ''}${k.hsa ? pill('HSA/FSA', 'green') : ''}</span></button>`).join('');
+  h += `<button class="opt dashed ${P.cardId === 'new' ? 'on' : ''}" onclick="S.pay.cardId='new';render()"><span class="radio"></span><span style="flex:1;font-weight:500">+ Use a new card</span></button>`;
+  if (P.cardId === 'new') {
+    h += `<div class="card" style="margin-top:4px">
+      <div class="field" style="margin-top:0"><label>Card number</label><div class="hosted"><span>4242 4242 4242 4242</span><span class="tag">secure field</span></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="field"><label>Expiry</label><div class="hosted"><span>12 / 29</span></div></div>
+        <div class="field"><label>CVC</label><div class="hosted"><span>•••</span></div></div></div>
+      ${feeOn ? `<div class="field"><label>Is this an HSA or FSA card?</label><div class="radiorow">
+          <button class="${P.newCard.hsa === true ? 'on' : ''}" onclick="S.pay.newCard.hsa=true;render()">Yes</button>
+          <button class="${P.newCard.hsa === false ? 'on' : ''}" onclick="S.pay.newCard.hsa=false;render()">No</button></div></div>
+        <div class="field"><label>Card type</label><div class="radiorow">
+          ${['credit', 'debit', 'prepaid'].map(t => `<button class="${P.newCard.type === t ? 'on' : ''}" onclick="S.pay.newCard.type='${t}';render()">${t[0].toUpperCase() + t.slice(1)}</button>`).join('')}</div></div>` : ''}
+      <div class="kv" style="margin-top:8px"><span class="small">Save this card for next time</span><button class="switch ${P.newCard.save ? 'on' : ''}" role="switch" aria-checked="${P.newCard.save}" onclick="S.pay.newCard.save=!S.pay.newCard.save;render()"></button></div>
+    </div>`;
+  }
+  if (feeOn) h += `<div class="info">ℹ️ <span>A convenience fee applies to card payments. <b>HSA/FSA, debit and prepaid cards are exempt.</b></span></div>`;
+  h += `<button class="btn" style="margin-top:18px" ${need ? 'disabled' : ''} onclick="go('pay-review')">Continue</button>`;
+  if (need) h += `<div class="muted xs" style="text-align:center;margin-top:6px">Answer the HSA/FSA and card type questions to continue.</div>`;
+  return h;
+};
+SCREENS['pay-review'] = () => {
+  const cl = clinic(), cur = cl.cur, P = S.pay, card = selectedCard(), f = feeFor(P.amount, card);
+  const total = r2(P.amount + f.fee);
+  const consent = S.settings.consent || `By providing your card information, you allow ${cl.name} to charge your card for future payments in accordance with their terms.`;
+  return `${stepper(2)}<div class="card" style="padding:8px 14px">
+      <div class="kv"><span class="muted">Paying</span><span>${cl.name}</span></div>
+      <div class="kv"><span class="muted">For</span><span>${P.label}</span></div>
+      ${P.note ? `<div class="kv"><span class="muted">Note</span><span>${P.note}</span></div>` : ''}
+      <div class="kv"><span class="muted">Card</span><span>${card.brand} •${card.last4}${card.hsa ? ' · HSA/FSA' : ''}</span></div></div>
+    <div class="card" style="padding:8px 14px;margin-top:10px">
+      <div class="kv"><span>Payment</span><span>${fmt(P.amount, cur)}</span></div>
+      ${f.applies ? `<div class="kv"><span>Convenience fee</span><span>${f.exempt ? pill('Exempt', 'green') : fmt(f.fee, cur)}</span></div>` : ''}
+      <div class="kv total big"><span>Total</span><span>${fmt(total, cur)}</span></div></div>
+    <div class="consent">${consent}</div>
+    <button class="btn" id="paybtn" ${P.busy ? 'disabled' : ''} onclick="submitPay()">${P.busy ? 'Processing…' : 'Pay ' + fmt(total, cur)}</button>`;
+};
+function submitPay() {
+  S.pay.busy = true; render();
+  setTimeout(completePay, reduced ? 200 : 1100);
+}
+function completePay() {
+  const cl = clinic(), ch = child(), P = S.pay, card = selectedCard(), f = feeFor(P.amount, card);
+  const id = 'p' + Date.now();
+  if (S.scenario.failPay) {
+    cl.payments.unshift({ id, date: TODAY, amount: P.amount, method: card.brand, last4: card.last4, status: 'failed', failure: 'Card declined — do not honor', remaining: 0 });
+    S.scenario.failPay = false; document.getElementById('sc-fail').checked = false;
+    S.result = { ok: false, amount: P.amount, msg: 'Your card was declined (do not honor). No money was taken.' };
+  } else {
+    if (card.isNew && P.newCard.save) ch.cards.push({ id: 'k' + Date.now(), brand: card.brand, last4: card.last4, exp: '12/29', type: card.type, hsa: card.hsa, isDefault: !ch.cards.length });
+    const pay = { id, date: TODAY, amount: P.amount, method: card.brand, last4: card.last4, desc: P.note, receipt: true, feeCharged: f.fee > 0, alloc: [] };
+    if (P.source === 'estimate') {
+      const g = cl.estimates.find(e => e.id === P.ref); const x = Math.min(g.owed, P.amount);
+      g.applied = r2(g.applied + x); g.owed = r2(g.owed - x); pay.gfe = g.name; pay.status = 'applied'; pay.remaining = r2(P.amount - x);
+    } else applyPayment(cl, pay, P.source === 'visit' ? P.ref : null);
+    cl.payments.unshift(pay);
+    S.result = { ok: true, amount: r2(P.amount + f.fee), card: `${card.brand} •${card.last4}`, payId: id };
+  }
+  S.stack = []; S.route = 'pay-result'; S.params = {}; render();
+}
+/* Auto-apply to the target visit first, then oldest dues (mirrors server payment application) */
+function applyPayment(cl, pay, firstId) {
+  let left = pay.amount;
+  const b = billable(cl).slice().sort((a, b) => a.date.localeCompare(b.date));
+  if (firstId) b.sort((a, b) => (a.id === firstId ? -1 : b.id === firstId ? 1 : 0));
+  for (const i of b) {
+    const due = r2(i.share - i.paid); if (due <= 0.005) continue;
+    const x = r2(Math.min(due, left)); const before = i.paid;
+    i.paid = r2(i.paid + x); (i.applied ||= []).push({ date: TODAY, method: `${pay.method} •${pay.last4}`, amt: x });
+    pay.alloc.push({ dos: i.date, desc: `${i.title}${i.clinician ? ' · ' + i.clinician : ''}`, billed: i.charged || i.share, ins: i.ins || 0, share: i.share, thisPay: x, other: before, bal: r2(i.share - i.paid) });
+    left = r2(left - x); if (left <= 0.005) break;
+  }
+  pay.remaining = Math.max(0, left);
+  pay.status = left <= 0.005 ? 'applied' : left < pay.amount ? 'partial' : 'unapplied';
+}
+SCREENS['pay-result'] = () => {
+  const R = S.result, cur = clinic().cur;
+  if (R.ok) return `<div class="result pop"><div class="big ok">✓</div><h2 style="margin:0">Payment successful</h2>
+      <div class="muted" style="margin-top:6px">${fmt(R.amount, cur)} · ${R.card} · ${fdy(TODAY)}</div>
+      <div class="muted small" style="margin-top:4px">${clinic().name}</div></div>
+    <div style="display:grid;gap:8px;margin-top:32px">
+      <button class="btn secondary" onclick="toast('Opening receipt PDF…')">${icon('receipt', 18)} View receipt</button>
+      <button class="btn secondary" onclick="openSheet(allocationSheet(clinic().payments.find(x=>x.id==='${R.payId}'), clinic()))">Where it went</button>
+      <button class="btn" onclick="tab('home')">Done</button></div>`;
+  return `<div class="result pop"><div class="big bad">✕</div><h2 style="margin:0">Payment didn’t go through</h2>
+      <div class="muted" style="margin-top:6px">${R.msg}</div></div>
+    <div style="display:grid;gap:8px;margin-top:32px">
+      <button class="btn" onclick="S.pay.busy=false;S.stack=[{route:'home',params:{}},{route:'pay-amount',params:{}}];S.route='pay-card';render()">Try another card</button>
+      <button class="btn secondary" onclick="tab('home')">Cancel</button></div>`;
+};
+
+/* ============================================================
+   Misc: child switcher, skeletons, empty
+   ============================================================ */
+function openChildSwitcher() {
+  openSheet(`<h3>Whose billing?</h3><div style="margin-top:12px">${Object.entries(DATA).map(([k, c]) => {
+    const t = totals(c.clinics[0]);
+    return `<button class="opt ${S.child === k ? 'on' : ''}" onclick="S.child='${k}';S.clinicIdx=0;closeSheet();tab(S.route==='activity'?'activity':'home')">
+      <span class="avatar">${c.initials}</span><span style="flex:1"><b class="small">${c.name}</b><div class="muted xs">${c.clinics.length} clinic${c.clinics.length > 1 ? 's' : ''}</div></span>
+      ${t.state === 'due' ? pill(fmt(t.amountDue, c.clinics[0].cur) + ' due', 'red') : t.state === 'credit' ? pill('Credit', 'green') : pill('Paid up', 'green')}</button>`;
+  }).join('')}</div>`);
+}
+function skeleton(kind) {
+  const b = (h, mt = 10) => `<div class="sk" style="height:${h}px;margin-top:${mt}px"></div>`;
+  if (kind === 'home') return b(16, 0) + b(170) + `<div class="stats">${b(64, 0)}${b(64, 0)}${b(64, 0)}${b(64, 0)}</div>` + b(60, 20) + b(60) + b(60);
+  return b(42, 0) + b(30) + [1, 2, 3, 4, 5].map(() => b(72)).join('');
+}
+const emptyBlock = (em, t, s) => `<div class="empty"><div class="em">${em}</div><b>${t}</b><div class="small">${s}</div></div>`;
+
+/* ============================================================
+   Design notes panel
+   ============================================================ */
+const NOTES = {
+  home: ['Billing Home', [
+    'Based on: the ledger header (<code>describeBalance</code>) and the four header numbers in <code>AccountLedger.tsx</code>, plus the parent <code>ClinicBalanceCard</code>.',
+    'Amount due = the server’s amountDue + dues on visits not billed yet (same formula as the clinic ledger), so parent and clinic always see the same number.',
+    'Badge states: Due (red) · Credit (green, “CR”) · Paid up. A clinic the child isn’t enrolled at shows “Please contact the clinic” and no Pay button.',
+    '“Things to know” is the parent version of “Needs attention”: failed payments, visits with insurance, overdue or new invoices, estimates owed.',
+    '“Balance over time” is the clinic’s balance-trend chart (red: your share to date, green dashed: paid to date). It starts collapsed.',
+    'Try: switch to Meera (credit state), or tap the Bayview chip (another currency, not enrolled).']],
+  activity: ['Activity (ledger)', [
+    'Based on: the ledger rows (claim, charge, session, payment, unapplied credit) and the Statement tab (All/Paid/Unpaid filter and sticky Total row).',
+    'Filters: All · Due · Payments · Pending · Paid. Search by visit, therapy or clinician. Date range defaults to the last 3 months.',
+    'Dot key: amber = due · green = paid · dashed = with insurance · half-filled = not billed yet · navy = credit · red = failed.',
+    'The running balance and change columns are left out on purpose (too accounting-heavy for parents).',
+    'The sticky footer shows the Statement tab totals for the rows in view; tap it to expand.']],
+  payments: ['Payments', [
+    'Based on: the Payments tab, <code>PaymentHistoryCard</code>, the receipt link (<code>paymentPDFLink</code>) and the payment allocation report.',
+    'Status: Applied (green) · Partly applied (amber) · Not applied yet (navy, counts as credit) · Failed (red, with “Try again”).',
+    '“Refunded $X” comes from the payment’s edit history (refund edits). Refund steps: processing, then waiting for bank, then refunded.',
+    'Hidden from parents: staff names, payment source/call source, apply/unapply, attach/detach, change clinic.']],
+  documents: ['Documents', [
+    'Based on: the Invoice tab, the “Invoices & statements” list, Create Statement (<code>createReportv2</code>, actionBy “parent”) and superbills.',
+    'Invoice status: Paid · Due · Overdue · Overpaid · Nothing due. Earlier invoices from the same cycle are listed under each invoice.',
+    'The Invoices tab is hidden when the clinic turns invoicing off (toggle it in the left panel) or when the account is marked not to send invoices to parents.']],
+  cards: ['Payment methods', [
+    'Based on: Saved Cards (<code>PaymentMethod.tsx</code> / <code>NewCardUi</code>), set default, delete, and the HSA/FSA switch.',
+    'Remove is hidden when the clinic setting <code>allow_parent_delete_payment_method</code> is off.',
+    'The autopay note shows when the clinic has autopay on, with the maximum charge and the check-in rule. It is information only: there is no parent autopay consent today (gap).']],
+  estimates: ['Estimates (GFE)', [
+    'Based on: GFE summary (<code>pending_amount</code>), and payments applied to estimates (<code>gfeApplications</code>).',
+    'Confirming funding stays on the public link page (often a plan manager does it). The app only shows the status.']],
+  estimate: ['Estimate detail', ['Services and codes, subtotal, taxes, total estimated cost, payments applied, amount owed. Pay opens the Pay flow for this estimate.']],
+  'pay-amount': ['Pay · Amount', [
+    'Ways in: Pay now, a single visit, an invoice, an estimate, or a retry. Payment links from email or text prefill the amount.',
+    'Amount must be above 0, with at most 2 decimals. Paying more than is due is allowed and becomes credit.']],
+  'pay-card': ['Pay · Card', [
+    'Saved cards are listed for both Stripe and Payrix, with the default card pre-selected. (Stripe needs backend support: today only Payrix lists saved cards.)',
+    'When a convenience fee applies, the HSA/FSA and card type questions are required for a new card. Changing them recalculates the fee.',
+    'Card fields are the processor’s hosted iframes (PayFields or Stripe Elements). The app never touches the card number.']],
+  'pay-review': ['Pay · Review', [
+    'Stripe pass-through fee: (amount + 0.30) / 0.971 − amount. Flat fee: the clinic’s standardFee. HSA/FSA, debit and prepaid cards show “Exempt”.',
+    'Consent text comes from the clinic’s <code>paymentPageStripeMessage</code>, with a default when empty.',
+    'Try: turn on “Next payment fails” in the left panel.']],
+  'pay-result': ['Pay · Result', [
+    'New: a success screen with receipt and “Where it went”. Web has none today (receipts only show later in Payments).',
+    'The payment is applied to the chosen visit first, then the oldest dues; any leftover becomes credit.']]
+};
+function renderNotes() {
+  const [t, list] = NOTES[S.route] || ['', []];
+  document.getElementById('notes').innerHTML = `<h3>Design notes</h3><h2>${t}</h2><ul>${list.map(x => `<li>${x}</li>`).join('')}</ul>
+    <h3>Word list</h3><ul>
+      <li>Patient responsibility → <b>Your share</b></li><li>Outstanding → <b>Still due</b></li><li>Unapplied credit → <b>Credit on account</b></li>
+      <li>Tentative → <b>Not billed yet</b></li><li>In-flight claim → <b>With insurance</b></li><li>GFE → <b>Estimate</b></li></ul>`;
+}
+
+/* ============================================================
+   Panel wiring
+   ============================================================ */
+const JUMPS = [
+  ['Home', () => tab('home')], ['Activity', () => tab('activity')], ['Payments', () => { tab('home'); go('payments'); }],
+  ['Documents', () => tab('documents')], ['Cards', () => tab('cards')], ['Estimates', () => { tab('home'); go('estimates'); }],
+  ['Pay flow', () => { tab('home'); startPay('balance'); }],
+  ['Session sheet', () => { tab('activity'); openItem('s1'); }], ['With insurance', () => { tab('activity'); openItem('c1'); }],
+  ['Not billed yet', () => { tab('activity'); openItem('t1'); }], ['Refunded payment', () => { tab('activity'); openItem('p4'); }],
+  ['Failed payment', () => { tab('activity'); openItem('p3'); }], ['Credit (Meera)', () => { S.child = 'meera'; S.clinicIdx = 0; tab('home'); }],
+  ['Other clinic', () => { S.child = 'aarav'; S.clinicIdx = 1; tab('home'); }]
+];
+document.getElementById('jump').innerHTML = JUMPS.map((j, i) => `<button onclick="JUMPS[${i}][1]()">${j[0]}</button>`).join('');
+const bind = (id, fn) => document.getElementById(id).addEventListener('change', e => { fn(e.target); render(); });
+bind('set-fee', el => S.settings.fee = el.value);
+bind('set-insurance', el => S.settings.insurance = el.checked);
+bind('set-delete', el => S.settings.allowDelete = el.checked);
+bind('set-invoices', el => S.settings.invoices = el.checked);
+bind('set-autopay', el => S.settings.autopay = el.checked);
+bind('sc-loading', el => S.scenario.loading = el.checked);
+bind('sc-empty', el => { S.scenario.empty = el.checked; S.clinicIdx = 0; });
+bind('sc-fail', el => S.scenario.failPay = el.checked);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+
+render();
+</script>
+</body>
+</html>
