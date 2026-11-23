@@ -253,7 +253,7 @@ table.mini td:last-child{text-align:right}
   <!-- ===== Control panel ===== -->
   <aside class="panel">
     <h1>Parent Billing — mobile</h1>
-    <div class="sub">Clickable mockup, based on the clinic web Financial Account. Mock data only.</div>
+    <div class="sub">Clickable mockup, based on the clinic web Financial Account → <b>Statement</b> tab (plus Payments, Invoice and insurance data). Mock data only.</div>
 
     <h3>Jump to screen</h3>
     <div class="jump" id="jump"></div>
@@ -366,27 +366,23 @@ const DATA = {
     clinics: [
       {
         id: 'sunrise', name: 'Sunrise Therapy Center', cur: 'USD', enrolled: true, lastStatement: '2026-11-20',
+        /* Statement lines = sessions_due[] (session / custom item / payment) + meeting_sessions[] as Tentative (statementRows()) */
         items: [
-          { id: 's1', kind: 'session', date: '2026-11-14', title: 'Occupational Therapy', clinician: 'Dr. Rao', charged: 180, ins: 120, share: 45, paid: 0,
-            claims: [{ role: 'Primary', payer: 'Aetna', status: 'Paid' }, { role: 'Secondary', payer: 'Medicaid', status: 'With insurance' }],
-            why: [{ label: 'Copay', code: 'PR-3', amt: 25 }, { label: 'Deductible', code: 'PR-1', amt: 20 }],
-            prChanges: [{ date: '2026-11-16', from: 60, to: 45 }], applied: [] },
-          { id: 'c1', kind: 'pending', date: '2026-11-12', title: 'Speech Therapy', clinician: 'Ms. Lee', step: 2, statusText: 'Insurance reviewing' },
-          { id: 't1', kind: 'tentative', date: '2026-11-10', title: 'Physical Therapy', clinician: 'Mr. Khan', charged: 30, share: 30, paid: 0,
-            charges: [{ type: 'Session fee', amt: 30, date: '2026-11-10' }], applied: [] },
-          { id: 's2', kind: 'session', date: '2026-11-07', title: 'Occupational Therapy', clinician: 'Dr. Rao', charged: 180, ins: 110, share: 70, paid: 70,
-            claims: [{ role: 'Primary', payer: 'Aetna', status: 'Paid' }], why: [{ label: 'Coinsurance', code: 'PR-2', amt: 70 }],
-            applied: [{ date: '2026-11-09', method: 'Mastercard •5555', amt: 70 }] },
-          { id: 'm1', kind: 'charge', date: '2026-11-03', title: 'Assessment fee', sub: 'Annual developmental assessment', charged: 150, share: 150, paid: 0, applied: [] },
-          { id: 's3', kind: 'session', date: '2026-10-28', title: 'Speech Therapy', clinician: 'Ms. Lee', charged: 160, ins: 120, share: 40, paid: 20,
-            claims: [{ role: 'Primary', payer: 'Aetna', status: 'Paid' }], why: [{ label: 'Copay', code: 'PR-3', amt: 40 }],
-            applied: [{ date: '2026-10-30', method: 'Cash', amt: 20 }] },
-          { id: 's4', kind: 'session', date: '2026-10-21', title: 'Speech Therapy', clinician: 'Ms. Lee', charged: 160, ins: 100, share: 60, paid: 60,
-            claims: [{ role: 'Primary', payer: 'Aetna', status: 'Paid' }], why: [{ label: 'Deductible', code: 'PR-1', amt: 60 }],
-            applied: [{ date: '2026-10-22', method: 'Visa •4242', amt: 60 }] },
-          { id: 's5', kind: 'session', date: '2026-10-14', title: 'Occupational Therapy', clinician: 'Dr. Rao', charged: 180, ins: 80, share: 100, paid: 100,
-            claims: [{ role: 'Primary', payer: 'Aetna', status: 'Paid' }], why: [{ label: 'Deductible', code: 'PR-1', amt: 100 }],
-            applied: [{ date: '2026-11-18', method: 'Visa •4242', amt: 100 }] }
+          { id: 's1', kind: 'session', date: '2026-11-14', title: 'Occupational Therapy', sub: 'Therapeutic activities · Dr. Rao', charged: 180, ins: 120, share: 45, paid: 0,
+            claimStatus: 'paid', era: '2026-11-18',
+            prEdits: [{ date: '2026-11-16', service: 'Therapeutic activities', from: 60, to: 45, reason: 'Secondary insurance adjustment' }], payments: [] },
+          { id: 't1', kind: 'tentative', date: '2026-11-10', title: 'Physical Therapy', sub: 'Tentative patient responsibility', charged: 30, share: 30, paid: 0,
+            charges: [{ type: 'Visit charge', amt: 30, date: '2026-11-10' }], payments: [],
+            chargeHistory: [{ date: '2026-11-10', action: 'Added', prev: null, next: 30 }] },
+          { id: 's2', kind: 'session', date: '2026-11-07', title: 'Occupational Therapy', sub: 'Therapeutic activities · Dr. Rao', charged: 180, ins: 110, share: 70, paid: 70,
+            claimStatus: 'paid', era: '2026-11-08', payments: [{ date: '2026-11-09', amt: 70, mode: 'Card', desc: 'Mastercard •5555' }] },
+          { id: 'm1', kind: 'custom', date: '2026-11-03', title: 'Assessment fee', sub: 'Annual developmental assessment', charged: 150, share: 150, paid: 0, payments: [] },
+          { id: 's3', kind: 'session', date: '2026-10-28', title: 'Speech Therapy', sub: 'Speech treatment · Ms. Lee', charged: 160, ins: 120, share: 40, paid: 20,
+            claimStatus: 'paid', era: '2026-11-02', payments: [{ date: '2026-10-30', amt: 20, mode: 'Cash', desc: 'Paid at front desk' }] },
+          { id: 's4', kind: 'session', date: '2026-10-21', title: 'Speech Therapy', sub: 'Speech treatment · Ms. Lee', charged: 160, ins: 100, share: 60, paid: 60,
+            claimStatus: 'paid', era: '2026-10-25', payments: [{ date: '2026-10-22', amt: 60, mode: 'Card', desc: 'October sessions' }] },
+          { id: 's5', kind: 'session', date: '2026-10-14', title: 'Occupational Therapy', sub: 'Therapeutic activities · Dr. Rao', charged: 180, ins: 80, share: 100, paid: 100,
+            claimStatus: 'paid', era: '2026-10-20', payments: [{ date: '2026-11-18', amt: 100, mode: 'Card', desc: 'November sessions' }] }
         ],
         payments: [
           { id: 'p1', date: '2026-11-18', amount: 100, method: 'Visa', last4: '4242', desc: 'November sessions', status: 'applied', remaining: 0, receipt: true,
@@ -421,7 +417,7 @@ const DATA = {
       },
       {
         id: 'bayview', name: 'Bayview Kids Clinic', cur: 'CAD', enrolled: false, lastStatement: '2026-09-30',
-        items: [{ id: 'b1', kind: 'charge', date: '2026-09-12', title: 'Evaluation fee', sub: 'Initial evaluation', charged: 40, share: 40, paid: 0, applied: [] }],
+        items: [{ id: 'b1', kind: 'custom', date: '2026-09-12', title: 'Evaluation fee', sub: 'Initial evaluation', charged: 40, share: 40, paid: 0, payments: [] }],
         payments: [], invoices: [], statements: [], superbills: [], estimates: []
       }
     ]
@@ -440,10 +436,10 @@ const DATA = {
     clinics: [{
       id: 'sunrise', name: 'Sunrise Therapy Center', cur: 'USD', enrolled: true, lastStatement: '2026-11-20',
       items: [
-        { id: 'ms1', kind: 'session', date: '2026-11-11', title: 'Occupational Therapy', clinician: 'Dr. Rao', charged: 180, ins: 120, share: 60, paid: 60,
-          claims: [{ role: 'Primary', payer: 'BlueCross', status: 'Paid' }], why: [{ label: 'Copay', code: 'PR-3', amt: 60 }], applied: [{ date: '2026-11-02', method: 'Visa •1881', amt: 60 }] },
-        { id: 'ms2', kind: 'session', date: '2026-10-28', title: 'Occupational Therapy', clinician: 'Dr. Rao', charged: 180, ins: 120, share: 60, paid: 60,
-          claims: [{ role: 'Primary', payer: 'BlueCross', status: 'Paid' }], why: [{ label: 'Copay', code: 'PR-3', amt: 60 }], applied: [{ date: '2026-11-02', method: 'Visa •1881', amt: 60 }] }
+        { id: 'ms1', kind: 'session', date: '2026-11-11', title: 'Occupational Therapy', sub: 'Therapeutic activities · Dr. Rao', charged: 180, ins: 120, share: 60, paid: 60,
+          claimStatus: 'paid', era: '2026-11-14', payments: [{ date: '2026-11-02', amt: 60, mode: 'Card', desc: 'Visa •1881' }] },
+        { id: 'ms2', kind: 'session', date: '2026-10-28', title: 'Occupational Therapy', sub: 'Therapeutic activities · Dr. Rao', charged: 180, ins: 120, share: 60, paid: 60,
+          claimStatus: 'paid', era: '2026-10-31', payments: [{ date: '2026-11-02', amt: 60, mode: 'Card', desc: 'Visa •1881' }] }
       ],
       payments: [
         { id: 'q2', date: '2026-11-15', amount: 25, method: 'Visa', last4: '1881', desc: 'Advance payment', status: 'unapplied', remaining: 25, receipt: true, alloc: [] },
@@ -472,21 +468,32 @@ const S = {
 const child = () => DATA[S.child];
 const clinic = () => S.scenario.empty ? EMPTY_CLINIC : child().clinics[S.clinicIdx] || child().clinics[0];
 const clinics = () => S.scenario.empty ? [EMPTY_CLINIC] : child().clinics;
-const billable = cl => cl.items.filter(i => ['session', 'charge', 'tentative'].includes(i.kind));
+const billable = cl => cl.items.filter(i => ['session', 'custom', 'tentative'].includes(i.kind));
+const rowOut = i => r2((i.share || 0) - (i.paid || 0));            // rowOutstanding(): to_pay − patient_payment
+const fullyPaid = i => i.kind !== 'tentative' && rowOut(i) <= 0.005; // sessions_due[].fully_paid
+/* Row status, same as the parent web ParentStatementTable rowStatus() */
+function rowStatus(i) {
+  if (i.kind === 'payment') return ['Payment', 'blue'];
+  if (rowOut(i) <= 0.005) return ['Paid', 'green'];
+  if (i.paid > 0.005) return ['Partially paid', 'amber'];
+  return ['Due', 'red'];
+}
 
-/* Balance rules mirror the clinic ledger's describeBalance() */
+/* Numbers mirror the clinic Statement tab:
+   Outstanding Amount = accountOutstanding() = server amountDue (billed lines) + not-billed-yet visit dues
+   Unapplied Credit   = sum of paymentRemaining() over non-failed payments (shown separately, not subtracted)
+   Totals row         = statementTotals(): Amount Charged, Paid By Payer, Patient Responsibility, Patient Paid, Outstanding */
 function totals(cl) {
   const b = billable(cl);
-  const owed = r2(sum(b, i => i.share)), paid = r2(sum(b, i => i.paid));
-  const still = r2(owed - paid);
+  const charged = r2(sum(b, i => i.charged)), ins = r2(sum(b, i => i.ins)), owed = r2(sum(b, i => i.share)), paid = r2(sum(b, i => i.paid));
+  const serverAmountDue = r2(sum(b.filter(i => i.kind !== 'tentative'), rowOut));
+  const unbilled = r2(sum(b.filter(i => i.kind === 'tentative'), rowOut));
+  const amountDue = r2(serverAmountDue + unbilled);
+  const still = amountDue;
   const credit = r2(sum(cl.payments.filter(p => p.status !== 'failed'), p => p.remaining));
-  const amountDue = r2(still - credit);
-  const unbilled = r2(sum(b.filter(i => i.kind === 'tentative'), i => i.share - i.paid));
   const received = r2(sum(cl.payments.filter(p => p.status !== 'failed'), p => p.amount));
-  let state = 'settled';
-  if (amountDue > 0.01) state = 'due';
-  else if (amountDue < -0.01 || credit > 0.01) state = 'credit';
-  return { owed, paid, still, credit, amountDue, unbilled, received, state };
+  const state = amountDue > 0.01 ? 'due' : amountDue < -0.01 ? 'credit' : 'settled';
+  return { charged, ins, owed, paid, still, credit, amountDue, unbilled, received, state };
 }
 
 /* ============================================================
@@ -560,46 +567,24 @@ const refundOf = p => (p.history || []).filter(h => h.type === 'Refunded').reduc
 const methodLabel = p => p.last4 ? `${p.method} •${p.last4}` : p.method;
 
 function activityRows(cl) {
-  const rows = cl.items.map(i => ({ ...i }));
-  cl.payments.forEach(p => {
-    rows.push({ ...p, kind: 'payment', _p: p });
-    if (p.status !== 'failed' && p.remaining > 0.005) rows.push({ id: 'cr-' + p.id, kind: 'credit', date: p.date, remaining: p.remaining });
-  });
-  return rows.sort((a, b) => b.date.localeCompare(a.date));
+  return cl.items.slice().sort((a, b) => b.date.localeCompare(a.date));
 }
 
 function rowHTML(it, cur) {
-  let dot = 'green', title = it.title, s1 = '', s2 = '', amt = '', amtCls = '', cls = '';
-  switch (it.kind) {
-    case 'session': case 'charge': {
-      const due = r2(it.share - it.paid);
-      dot = due > 0.005 ? 'amber' : 'green';
-      title = it.kind === 'session' ? `${it.title} session` : it.title;
-      s1 = fd(it.date) + (it.clinician ? ` · ${it.clinician}` : it.sub ? ` · ${it.sub}` : '');
-      s2 = `Your share ${fmt(it.share, cur)} · Paid ${fmt(it.paid, cur)}`;
-      amt = due > 0.005 ? fmt(due, cur) : '✓ Paid'; amtCls = due > 0.005 ? '' : 'ok'; break;
-    }
-    case 'pending':
-      dot = 'pending'; cls = 'pending'; title = `${it.title} session`;
-      s1 = `${fd(it.date)} · ${it.statusText}`; s2 = 'Your share not known yet'; amt = '—'; amtCls = 'muted'; break;
-    case 'tentative':
-      dot = 'half'; title = `${it.title} session`;
-      s1 = `${fd(it.date)} · Not billed yet`; s2 = `Estimated share ${fmt(it.share, cur)}`; amt = fmt(r2(it.share - it.paid), cur); break;
-    case 'payment':
-      if (it.status === 'failed') { dot = 'red'; cls = 'failed'; title = 'Payment failed'; s1 = `${fd(it.date)} · ${methodLabel(it)}`; s2 = it.failure; amt = fmt(it.amount, cur); amtCls = 'muted'; }
-      else {
-        title = 'Payment'; s1 = `${fd(it.date)} · ${methodLabel(it)}`;
-        const rf = refundOf(it);
-        s2 = ({ applied: 'Applied', partial: 'Partly applied', unapplied: 'Not applied yet' })[it.status] + (rf ? ` · Refunded ${fmt(rf, cur)}` : '') + (it.gfe ? ` · Estimate` : '');
-        amt = '−' + fmt(it.amount, cur); amtCls = 'ok';
-      }
-      break;
-    case 'credit':
-      dot = 'navy'; title = 'Credit on account'; s1 = `${fd(it.date)} · Received, not yet applied`; amt = fmt(it.remaining, cur); amtCls = 'navy'; break;
+  const [lab, tone] = it.kind === 'tentative' ? ['Not billed yet', 'amber'] : rowStatus(it);
+  const out = rowOut(it);
+  let title = it.kind === 'session' || it.kind === 'tentative' ? `${it.title} session` : it.title;
+  let s1 = `${fd(it.date)} · ${it.sub || ''}`, s2 = '', amt = '', amtCls = '', dot = tone === 'green' ? 'green' : tone === 'blue' ? 'navy' : 'amber', cls = '';
+  if (it.kind === 'payment') { s2 = it.desc || ''; amt = '−' + fmt(it.amount, cur); amtCls = 'ok'; }
+  else if (it.kind === 'tentative') { dot = 'half'; s2 = `Estimated share ${fmt(it.share, cur)}`; amt = fmt(out, cur); }
+  else {
+    s2 = `Your share ${fmt(it.share, cur)} · Paid ${fmt(it.paid, cur)}`;
+    amt = out > 0.005 ? fmt(out, cur) : '✓ Paid'; amtCls = out > 0.005 ? '' : 'ok';
+    if (out > 0.005 && it.paid <= 0.005) dot = 'red';
   }
   return `<button class="row ${cls}" onclick="openItem('${it.id}')">
     <span class="dot ${dot}"></span>
-    <span class="body"><div class="t">${title}</div><div class="s">${s1}</div>${s2 ? `<div class="s">${s2}</div>` : ''}</span>
+    <span class="body"><div class="t">${title}</div><div class="s">${s1}</div>${s2 ? `<div class="s">${s2}</div>` : ''}<div style="margin-top:4px">${pill(lab, tone)}</div></span>
     <span class="amt ${amtCls}">${amt}</span>${CHEV}</button>`;
 }
 
@@ -623,10 +608,13 @@ SCREENS.home = () => {
   if (cl.lastStatement) h += `<div class="muted xs" style="margin:8px 4px 0">Last statement sent ${daysAgo(cl.lastStatement)} days ago</div>`;
 
   h += `<div class="stats">
+    <div class="stat"><div class="k">Clinic charges</div><div class="v">${fmt(t.charged, cur)}</div></div>
+    <div class="stat"><div class="k">Insurance paid</div><div class="v">${fmt(t.ins, cur)}</div></div>
     <div class="stat"><div class="k">Your share</div><div class="v">${fmt(t.owed, cur)}</div></div>
     <div class="stat"><div class="k">You paid</div><div class="v green">${fmt(t.paid, cur)}</div></div>
     <div class="stat"><div class="k">Still due</div><div class="v ${t.still > 0.005 ? 'red' : 'green'}">${fmt(t.still, cur)}</div></div>
-    <div class="stat"><div class="k">Credit on account</div><div class="v">${fmt(t.credit, cur)}</div></div></div>`;
+    <div class="stat"><div class="k">Credit on account</div><div class="v" style="color:var(--navy)">${fmt(t.credit, cur)}</div></div></div>
+    <div class="muted xs" style="margin:8px 4px 0">ℹ️ ${STATEMENT_NOTE}</div>`;
 
   h += `<div class="shortcuts">
     <button class="shortcut" onclick="go('payments')">${icon('receipt')}Payments</button>
@@ -642,10 +630,7 @@ SCREENS.home = () => {
   // Recent
   const rows = activityRows(cl).slice(0, 3);
   h += `<div class="section-title">Recent activity <button onclick="tab('activity')">See all ›</button></div>`;
-  h += rows.length ? rows.map(r => rowHTML(r, cur)).join('') : emptyBlock('🧾', 'No charges yet', 'Visits appear here once they’re billed, and payments once they’re applied.');
-
-  // Trend
-  h += `<div class="acc ${S.trendOpen ? 'open' : ''}" style="background:#fff"><button onclick="S.trendOpen=!S.trendOpen;toggleAcc(this)">Balance over time ${CHEV}</button><div class="in">${trendChart(cl)}</div></div>`;
+  h += rows.length ? rows.map(r => rowHTML(r, cur)).join('') : emptyBlock('🧾', 'No charges yet', 'Visits appear here once insurance has processed them, along with any other charges.');
   return h;
 };
 
@@ -655,28 +640,29 @@ function balanceCard(cl, t) {
     return `<div class="balance"><span class="badge">${pill('Due', 'red')}</span><div class="lbl">Amount due</div><div class="amt">${fmt(t.amountDue, cur)}</div>
       <div class="contact">Please contact the clinic to pay this balance.</div></div>`;
   }
+  const creditLine = t.credit > 0.005 ? `<div class="note">💙 ${fmt(t.credit, cur)} credit on account, received and not yet applied to a charge</div>` : '';
   if (t.state === 'due') {
-    return `<div class="balance"><span class="badge">${pill('Due', 'red')}</span><div class="lbl">Amount due</div><div class="amt">${fmt(t.amountDue, cur)}</div>
-      <div class="note">${t.unbilled > 0.005 ? `Includes ${fmt(t.unbilled, cur)} for visits not billed yet` : 'Across all billed visits and charges'}</div>
+    return `<div class="balance"><span class="badge">${pill('Due', 'red')}</span><div class="lbl">Outstanding amount</div><div class="amt">${fmt(t.amountDue, cur)}</div>
+      <div class="note">${t.unbilled > 0.005 ? `Includes ${fmt(t.unbilled, cur)} for visits not billed yet` : 'Across processed visits and other charges'}</div>${creditLine}
       <button class="btn" onclick="startPay('balance')">Pay now</button></div>`;
   }
   if (t.state === 'credit') {
-    const cr = Math.max(t.credit, -t.amountDue);
-    return `<div class="balance credit"><span class="badge">${pill('Credit', 'green')}</span><div class="lbl">Credit on account</div><div class="amt">${fmt(cr, cur)} CR</div>
-      <div class="note">Received, not yet applied to a charge. The clinic will use it for your next visits.</div>
+    return `<div class="balance credit"><span class="badge">${pill('Credit', 'green')}</span><div class="lbl">Outstanding amount</div><div class="amt">${fmt(-t.amountDue, cur)} CR</div>
+      <div class="note">You’ve paid more than your share so far.</div>${creditLine}
       <button class="btn" onclick="startPay('balance')">Make a payment</button></div>`;
   }
-  return `<div class="balance settled"><span class="badge">${pill('Paid up', 'green')}</span><div class="lbl">Amount due</div><div class="amt">${fmt(0, cur)}</div>
-    <div class="note">You’re all caught up.</div><button class="btn" onclick="startPay('balance')">Make a payment</button></div>`;
+  return `<div class="balance settled"><span class="badge">${pill('Paid up', 'green')}</span><div class="lbl">Outstanding amount</div><div class="amt">${fmt(0, cur)}</div>
+    <div class="note">You’re all caught up.</div>${creditLine}<button class="btn" onclick="startPay('balance')">Make a payment</button></div>`;
 }
+const STATEMENT_NOTE = 'Shows visits insurance has finished processing, plus other charges. Visits still with insurance appear once they’re processed.';
 
 function attention(cl) {
   const out = [], cur = cl.cur;
   const li = (ic, bg, t, s, on) => `<button class="li" onclick="${on}"><span class="ic" style="background:${bg}">${ic}</span><span class="body"><div class="t">${t}</div><div class="s">${s}</div></span>${CHEV}</button>`;
   const failed = cl.payments.filter(p => p.status === 'failed');
   if (failed.length) out.push(li('⚠️', 'var(--red-bg)', `${failed.length} payment${failed.length > 1 ? 's' : ''} failed`, `${failed[0].failure} · Tap to retry`, `go('payments',{filter:'failed'})`));
-  const pend = cl.items.filter(i => i.kind === 'pending').length, tent = cl.items.filter(i => i.kind === 'tentative').length;
-  if (pend || tent) out.push(li('⏳', 'var(--amber-bg)', [pend && `${pend} visit${pend > 1 ? 's' : ''} with insurance`, tent && `${tent} not billed yet`].filter(Boolean).join(' · '), 'Your share will post once it’s known', `S.filter='pending';tab('activity')`));
+  const tent = cl.items.filter(i => i.kind === 'tentative' && rowOut(i) > 0.005);
+  if (tent.length) out.push(li('⏳', 'var(--amber-bg)', `${tent.length} visit${tent.length > 1 ? 's' : ''} not billed yet · ${fmt(sum(tent, rowOut), cur)}`, 'Included in your outstanding amount; may change', `S.filter='tentative';tab('activity')`));
   if (S.settings.invoices) {
     cl.invoices.filter(i => i.status === 'overdue').forEach(i => out.push(li('📄', 'var(--red-bg)', `Invoice ${i.num} is overdue`, `${fmt(i.amount - i.paid, cur)} · was due ${fd(i.due)}`, `S.docsTab='invoices';tab('documents')`)));
     cl.invoices.filter(i => i.status === 'outstanding' && daysAgo(i.issued) <= 14).forEach(i => out.push(li('📄', 'var(--primary-bg)', `New invoice ${i.num}`, `${fmt(i.amount - i.paid, cur)} · due ${fd(i.due)}`, `S.docsTab='invoices';tab('documents')`)));
@@ -689,35 +675,16 @@ function attention(cl) {
   return out;
 }
 
-function trendChart(cl) {
-  const ev = [];
-  billable(cl).forEach(i => ev.push({ d: i.date, owed: i.share, paid: 0 }));
-  cl.payments.filter(p => p.status !== 'failed').forEach(p => ev.push({ d: p.date, owed: 0, paid: p.amount }));
-  ev.sort((a, b) => a.d.localeCompare(b.d));
-  if (ev.length < 2) return `<div class="muted small">Not enough history yet.</div>`;
-  let o = 0, p = 0; const pts = ev.map(e => ({ d: e.d, o: (o += e.owed), p: (p += e.paid) }));
-  const W = 320, H = 130, pad = 8, max = Math.max(...pts.map(x => Math.max(x.o, x.p))) || 1;
-  const t0 = dt(pts[0].d).getTime(), t1 = dt(pts[pts.length - 1].d).getTime() || t0 + 1;
-  const X = d => pad + (W - 2 * pad) * ((dt(d).getTime() - t0) / ((t1 - t0) || 1));
-  const Y = v => H - pad - (H - 2 * pad) * (v / max);
-  const line = k => pts.map((x, i) => `${i ? 'L' : 'M'}${X(x.d).toFixed(1)},${Y(x[k]).toFixed(1)}`).join(' ');
-  const area = `${line('o')} L${X(pts[pts.length - 1].d)},${H - pad} L${X(pts[0].d)},${H - pad} Z`;
-  return `<div class="chart" role="img" aria-label="Charged versus paid over time"><svg viewBox="0 0 ${W} ${H}">
-    <path d="${area}" fill="rgba(185,28,28,.12)" stroke="none"/>
-    <path d="${line('o')}" fill="none" stroke="#B91C1C" stroke-width="2"/>
-    <path d="${line('p')}" fill="none" stroke="#0E9F6E" stroke-width="2" stroke-dasharray="5 4"/></svg>
-    <div class="legend"><span><i style="background:#B91C1C"></i>Your share to date ${fmt(o, cl.cur)}</span><span><i style="background:#0E9F6E"></i>Paid to date ${fmt(p, cl.cur)}</span></div></div>`;
-}
-
-/* ---------- Activity ---------- */
+/* ---------- Activity (= clinic Statement tab) ---------- */
 SCREENS.activity = () => {
   if (S.scenario.loading) return skeleton('list');
-  const cl = clinic(), cur = cl.cur;
-  const F = [['all', 'All'], ['due', 'Due'], ['payments', 'Payments'], ['pending', 'Pending'], ['paid', 'Paid']];
-  let h = `<div class="search">🔍<input placeholder="Search visits, therapy, clinician…" value="${S.search}" oninput="S.search=this.value;refreshActivity()" aria-label="Search activity"></div>`;
+  const cl = clinic();
+  const F = [['all', 'All'], ['unpaid', 'Unpaid'], ['paid', 'Paid'], ['tentative', 'Not billed yet']];
+  let h = `<div class="search">🔍<input placeholder="Search item, therapy, description…" value="${S.search}" oninput="S.search=this.value;refreshActivity()" aria-label="Search statement"></div>`;
   h += `<div class="chips">${F.map(([k, l]) => `<button class="chip ${S.filter === k ? 'on' : ''}" onclick="S.filter='${k}';render()">${l}</button>`).join('')}</div>`;
   const rl = { '30': 'Last 30 days', '90': 'Last 3 months', 'year': 'This year', 'all': 'All time' }[S.range];
   h += `<div class="rangebar"><span>${rl}</span><button onclick="openRangeSheet()">Change</button></div>`;
+  h += `<div class="info" style="margin-top:8px">ℹ️ <span>${STATEMENT_NOTE}</span></div>`;
   h += `<div id="act-list">${activityList(cl)}</div>`;
   return h;
 };
@@ -728,17 +695,15 @@ function activityList(cl) {
   const minDate = S.range === 'all' ? '0000' : S.range === 'year' ? '2026-01-01' : (() => { const d = dt(TODAY); d.setDate(d.getDate() - +S.range); return d.toISOString().slice(0, 10); })();
   rows = rows.filter(r => r.date >= minDate);
   rows = rows.filter(r => {
-    const due = ['session', 'charge', 'tentative'].includes(r.kind) ? r.share - r.paid : 0;
     switch (S.filter) {
-      case 'due': return due > 0.005;
-      case 'payments': return r.kind === 'payment' || r.kind === 'credit';
-      case 'pending': return r.kind === 'pending' || r.kind === 'tentative';
-      case 'paid': return ['session', 'charge'].includes(r.kind) && due <= 0.005;
+      case 'unpaid': return r.kind !== 'payment' && !fullyPaid(r);   // Statement "Unpaid" (fully_paid false)
+      case 'paid': return fullyPaid(r);                               // Statement "Paid"
+      case 'tentative': return r.kind === 'tentative';
       default: return true;
     }
   });
-  if (q) rows = rows.filter(r => [r.title, r.clinician, r.sub, r.method, r.desc, r.statusText].filter(Boolean).join(' ').toLowerCase().includes(q));
-  if (!cl.items.length && !cl.payments.length) return emptyBlock('🧾', 'No charges yet', 'Visits appear here once they’re billed, and payments once they’re applied.');
+  if (q) rows = rows.filter(r => [r.title, r.sub, r.desc].filter(Boolean).join(' ').toLowerCase().includes(q));
+  if (!cl.items.length) return emptyBlock('🧾', 'No charges yet', 'Visits appear here once insurance has processed them, along with any other charges.');
   if (!rows.length) return `<div class="empty"><div class="em">🔎</div><b>Nothing matches these filters</b><button class="btn secondary sm" style="margin:10px auto 0" onclick="S.filter='all';S.search='';S.range='all';render()">Clear filters</button></div>`;
   let h = '', m = '';
   rows.forEach(r => {
@@ -746,12 +711,13 @@ function activityList(cl) {
     if (mm !== m) { h += `<div class="month">${mm}</div>`; m = mm; }
     h += rowHTML(r, cur);
   });
-  const b = rows.filter(r => ['session', 'charge', 'tentative'].includes(r.kind));
-  const tc = { charged: sum(b, i => i.charged), ins: sum(b, i => i.ins), share: sum(b, i => i.share), paid: sum(b, i => i.paid) };
+  // Statement "Total" row: statementTotals() over the lines in view
+  const b = rows.filter(r => r.kind !== 'payment');
+  const tc = { charged: sum(b, i => i.charged), ins: sum(b, i => i.ins), share: sum(b, i => i.share), paid: sum(b, i => i.paid), out: sum(b, rowOut) };
   h += `<div class="footer-totals"><button class="main" onclick="S.footerOpen=!S.footerOpen;refreshActivity()" aria-expanded="${S.footerOpen}">
-      <span>Still due in this view</span><span>${fmt(r2(tc.share - tc.paid), cur)} ${S.footerOpen ? '▾' : '▴'}</span></button>
+      <span>Total still due (${b.length} lines)</span><span>${fmt(r2(tc.out), cur)} ${S.footerOpen ? '▾' : '▴'}</span></button>
     ${S.footerOpen ? `<div class="grid"><span>Clinic charges</span><b>${fmt(tc.charged, cur)}</b><span>Insurance paid</span><b>${fmt(tc.ins, cur)}</b>
-      <span>Your share</span><b>${fmt(tc.share, cur)}</b><span>You paid</span><b>${fmt(tc.paid, cur)}</b></div>` : ''}</div>`;
+      <span>Your share</span><b>${fmt(tc.share, cur)}</b><span>You paid</span><b>${fmt(tc.paid, cur)}</b><span>Still due</span><b>${fmt(r2(tc.out), cur)}</b></div>` : ''}</div>`;
   return h;
 }
 function openRangeSheet() {
@@ -759,25 +725,31 @@ function openRangeSheet() {
   openSheet(`<h3>Date range</h3><div style="margin-top:12px">${o.map(([k, l]) => `<button class="opt ${S.range === k ? 'on' : ''}" onclick="S.range='${k}';closeSheet();render()"><span class="radio"></span>${l}</button>`).join('')}</div>`);
 }
 
-/* ---------- Detail sheets ---------- */
+/* ---------- Detail sheets (from the Statement tab popups) ---------- */
 function openItem(id) {
   const cl = clinic();
-  if (id.startsWith('cr-')) { const p = cl.payments.find(x => 'cr-' + x.id === id); return openSheet(creditSheet(p, cl)); }
   const it = cl.items.find(x => x.id === id);
   if (it) {
-    if (it.kind === 'pending') return openSheet(pendingSheet(it, cl));
     if (it.kind === 'tentative') return openSheet(tentativeSheet(it, cl));
+    if (it.kind === 'payment') return openSheet(paymentLineSheet(it, cl));
     return openSheet(sessionSheet(it, cl));
   }
   const p = cl.payments.find(x => x.id === id);
   if (p) openSheet(paymentSheet(p, cl));
 }
+const CLAIM_TONE = { paid: ['green', 'Processed by insurance'], submitted: ['blue', 'Sent to insurance'], reviewing: ['grey', 'Insurance reviewing'], rejected: ['red', 'Clinic is following up with insurance'], returnToTherapist: ['amber', 'Clinic is reviewing'] };
+const paymentsTable = (ps, cur) => `<table class="mini">${ps.map(a => `<tr><td>${fd(a.date)} · ${a.mode}${a.desc ? `<div class="muted xs">${a.desc}</div>` : ''}</td><td>${fmt(a.amt, cur)}</td></tr>`).join('')}</table>`;
 
 function sessionSheet(it, cl) {
-  const cur = cl.cur, due = r2(it.share - it.paid), isS = it.kind === 'session';
+  const cur = cl.cur, due = rowOut(it), isS = it.kind === 'session';
   const adj = isS ? r2(it.charged - it.ins - it.share) : 0;
-  let h = `<h3>${isS ? it.title : it.title}</h3><div class="muted small">${fdy(it.date)}${it.clinician ? ' · ' + it.clinician : ''} · ${cl.name}</div>
-    <div style="margin-top:8px">${due > 0.005 ? pill(fmt(due, cur) + ' still due', 'amber') : pill('✓ Paid', 'green')}</div>`;
+  const [lab, tone] = rowStatus(it);
+  let h = `<h3>${isS ? it.title + ' session' : it.title}</h3><div class="muted small">${fdy(it.date)} · ${it.sub || ''} · ${cl.name}</div>
+    <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${pill(lab, tone)}${!isS ? pill('Other charge', 'grey') : ''}</div>`;
+  if (isS && it.era) {
+    const [t, txt] = CLAIM_TONE[it.claimStatus] || ['grey', 'Insurance update'];
+    h += `<div class="muted xs" style="margin-top:6px">${pill(txt, t)} on ${fdy(it.era)}</div>`;
+  }
   h += `<div class="section-title">${isS ? 'How this was billed' : 'Charge'}</div><div class="card" style="padding:8px 14px">`;
   if (isS) {
     h += `<div class="kv"><span>Clinic charge</span><span>${fmt(it.charged, cur)}</span></div>
@@ -789,50 +761,42 @@ function sessionSheet(it, cl) {
   }
   h += `<div class="kv"><span>You paid</span><span class="neg">−${fmt(it.paid, cur)}</span></div>
         <div class="kv total big"><span>Still due</span><span style="color:${due > 0.005 ? 'var(--red)' : 'var(--green)'}">${fmt(due, cur)}</span></div></div>`;
-
-  if (isS && it.claims && S.settings.insurance) {
-    h += `<div class="acc open"><button onclick="toggleAcc(this)">Insurance details ${CHEV}</button><div class="in">
-      ${it.claims.map(c => `<div class="kv"><span>${c.role} · ${c.payer}</span>${pill(c.status, c.status === 'Paid' ? 'green' : 'amber')}</div>`).join('')}
-      ${it.why?.length ? `<div class="small" style="margin-top:8px;font-weight:600">Why you owe this</div>${it.why.map(w => `<div class="kv small"><span>• ${w.label} <span class="muted xs">(${w.code})</span></span><span>${fmt(w.amt, cur)}</span></div>`).join('')}` : ''}
-      <button class="btn ghost sm" style="padding-left:0" onclick="closeSheet(true);go('benefits')">See your plan benefits ›</button>
-    </div></div>`;
+  if (it.payments?.length) {
+    h += `<div class="acc open"><button onclick="toggleAcc(this)">Your payments on this visit (${it.payments.length}) ${CHEV}</button><div class="in">${paymentsTable(it.payments, cur)}</div></div>`;
   }
-  if (it.applied?.length) {
-    h += `<div class="acc"><button onclick="toggleAcc(this)">Payments applied (${it.applied.length}) ${CHEV}</button><div class="in"><table class="mini">
-      ${it.applied.map(a => `<tr><td>${fd(a.date)} · ${a.method}</td><td>${fmt(a.amt, cur)}</td></tr>`).join('')}</table></div></div>`;
+  if (it.prEdits?.length) {
+    h += `<div class="acc"><button onclick="toggleAcc(this)">Changes to your share (${it.prEdits.length}) ${CHEV}</button><div class="in"><table class="mini">
+      ${it.prEdits.map(c => `<tr><td>${fd(c.date)} · ${c.service}${c.reason ? `<div class="muted xs">${c.reason}</div>` : ''}</td><td>${fmt(c.from, cur)} → <b>${fmt(c.to, cur)}</b></td></tr>`).join('')}</table></div></div>`;
   }
-  if (it.prChanges?.length) {
-    h += `<div class="acc"><button onclick="toggleAcc(this)">Changes to your share (${it.prChanges.length}) ${CHEV}</button><div class="in"><table class="mini">
-      ${it.prChanges.map(c => `<tr><td>${fd(c.date)}</td><td>${fmt(c.from, cur)} → <b>${fmt(c.to, cur)}</b></td></tr>`).join('')}</table></div></div>`;
-  }
-  h += `<div style="display:grid;gap:8px;margin-top:16px">
+  if (isS && S.settings.insurance) h += `<button class="btn ghost sm" style="padding-left:0;margin-top:6px" onclick="closeSheet(true);go('benefits')">See your plan benefits ›</button>`;
+  h += `<div style="display:grid;gap:8px;margin-top:12px">
     ${due > 0.005 && cl.enrolled ? `<button class="btn" onclick="startPay('visit','${it.id}')">Pay ${fmt(due, cur)}</button>` : ''}
     <button class="btn secondary" onclick="askClinic('${(isS ? it.title + ' session' : it.title)} on ${fd(it.date)}')">Ask the clinic about this</button></div>`;
   return h;
 }
 
-function pendingSheet(it, cl) {
-  const steps = ['Visit done', 'Sent to insurance', 'Insurance reviewing', 'Your share posted'];
-  return `<h3>${it.title} session</h3><div class="muted small">${fdy(it.date)} · ${it.clinician} · ${cl.name}</div>
-    <div style="margin-top:8px">${pill('With insurance', 'grey')}</div>
-    <ol class="steps">${steps.map((s, i) => `<li class="${i < it.step ? 'done' : i === it.step ? 'now' : ''}"><span class="b">${i < it.step ? '✓' : i + 1}</span><div><b class="small">${s}</b>${i === it.step ? '<div class="muted xs">In progress</div>' : ''}</div></li>`).join('')}</ol>
-    <div class="info">ℹ️ <span>We’ll show your share once insurance responds. <b>Nothing is due for this visit yet.</b></span></div>
-    <button class="btn secondary" style="margin-top:16px" onclick="askClinic('${it.title} session on ${fd(it.date)}')">Ask the clinic about this</button>`;
-}
-
 function tentativeSheet(it, cl) {
-  const cur = cl.cur, due = r2(it.share - it.paid);
-  return `<h3>${it.title} session</h3><div class="muted small">${fdy(it.date)} · ${it.clinician} · ${cl.name}</div>
+  const cur = cl.cur, due = rowOut(it);
+  return `<h3>${it.title} session</h3><div class="muted small">${fdy(it.date)} · ${cl.name}</div>
     <div style="margin-top:8px">${pill('Not billed yet', 'amber')}</div>
-    <div class="info warn">⏳ <span>This visit hasn’t been billed to insurance yet. The amount may change.</span></div>
+    <div class="info warn">⏳ <span>This visit hasn’t been billed to insurance yet. It’s included in your outstanding amount, and the amount may change.</span></div>
     <div class="section-title">Charges</div><div class="card" style="padding:6px 14px"><table class="mini">
       ${it.charges.map(c => `<tr><td>${c.type} · ${fd(c.date)}</td><td>${fmt(c.amt, cur)}</td></tr>`).join('')}</table></div>
-    <div class="section-title">Payments applied</div><div class="card small muted">${it.applied.length ? it.applied.map(a => `${fd(a.date)} · ${a.method} · ${fmt(a.amt, cur)}`).join('<br>') : 'No payments applied yet.'}</div>
+    <div class="section-title">Payments applied</div><div class="card" style="padding:6px 14px">${it.payments.length ? paymentsTable(it.payments, cur) : '<div class="muted small" style="padding:6px 0">No payments applied yet.</div>'}</div>
     <div class="card" style="padding:8px 14px;margin-top:10px">
       <div class="kv"><span>Charged</span><span>${fmt(it.share, cur)}</span></div>
       <div class="kv"><span>Paid</span><span class="neg">−${fmt(it.paid, cur)}</span></div>
       <div class="kv total"><span>Still due</span><span>${fmt(due, cur)}</span></div></div>
+    ${it.chargeHistory?.length ? `<div class="acc"><button onclick="toggleAcc(this)">Charge history (${it.chargeHistory.length}) ${CHEV}</button><div class="in"><table class="mini">
+      ${it.chargeHistory.map(c => `<tr><td>${fd(c.date)} · ${c.action}</td><td>${c.prev == null ? '—' : fmt(c.prev, cur)} → <b>${fmt(c.next, cur)}</b></td></tr>`).join('')}</table></div></div>` : ''}
     ${due > 0.005 && cl.enrolled ? `<button class="btn" style="margin-top:16px" onclick="startPay('visit','${it.id}')">Pay ${fmt(due, cur)}</button>` : ''}`;
+}
+
+function paymentLineSheet(it, cl) {
+  return `<h3>Payment · ${fmt(it.amount, cl.cur)}</h3><div class="muted small">${fdy(it.date)} · ${it.sub || ''}</div>
+    <div style="margin-top:8px">${pill('Payment', 'blue')}</div>
+    <div class="info">ℹ️ <span>A payment recorded on your statement. See Payments for receipts and where it was applied.</span></div>
+    <button class="btn secondary" style="margin-top:14px" onclick="closeSheet(true);go('payments')">Open Payments</button>`;
 }
 
 function paymentSheet(p, cl) {
@@ -877,12 +841,6 @@ function allocationSheet(p, cl) {
       ${a.other ? `<div class="kv small"><span>Other payments</span><span>${fmt(a.other, cur)}</span></div>` : ''}
       <div class="kv small total"><span>Still due on this visit</span><span>${fmt(a.bal, cur)}</span></div></div>`).join('')}
     <button class="btn secondary" style="margin-top:14px" onclick="toast('Payment allocation report shared as PDF')">Share as PDF</button>`;
-}
-
-function creditSheet(p, cl) {
-  return `<h3>Credit on account</h3><div class="amt" style="font-size:28px;font-weight:600;color:var(--navy);margin:6px 0">${fmt(p.remaining, cl.cur)}</div>
-    <div class="info">ℹ️ <span>Received on ${fdy(p.date)} (${methodLabel(p)}) and not yet applied to a charge. The clinic will apply it to your next charges.</span></div>
-    <button class="btn secondary" style="margin-top:14px" onclick="openSheet(paymentSheet(clinic().payments.find(x=>x.id==='${p.id}'), clinic()))">View payment</button>`;
 }
 
 function askClinic(subject) {
@@ -955,7 +913,7 @@ SCREENS.documents = () => {
 };
 function openStatementSheet() {
   openSheet(`<h3>Create a statement</h3><div class="muted small">A PDF of all charges and payments in this period.</div>
-    <div class="field"><label>From</label><input type="date" class="input" id="st-from" value="2026-10-23"></div>
+    <div class="field"><label>From</label><input type="date" class="input" id="st-from" value="2026-08-23"></div>
     <div class="field"><label>To</label><input type="date" class="input" id="st-to" value="${TODAY}"></div>
     <button class="btn" style="margin-top:16px" onclick="makeStatement()">Create statement</button>`);
 }
@@ -1128,12 +1086,12 @@ SCREENS.benefits = () => {
 function startPay(source, ref) {
   closeSheet(true);
   const cl = clinic(), t = totals(cl);
-  let max = 0, label = 'Amount due', prefill = null;
+  let max = 0, label = 'Outstanding amount', prefill = null;
   if (source === 'balance') { max = Math.max(t.amountDue, 0); }
   else if (source === 'visit') { const it = cl.items.find(i => i.id === ref); max = it.share - it.paid; label = `${it.title} · ${fd(it.date)}`; }
   else if (source === 'invoice') { const inv = cl.invoices.find(i => i.num === ref); max = inv.amount - inv.paid; label = `Invoice ${inv.num}`; }
   else if (source === 'estimate') { const g = cl.estimates.find(e => e.id === ref); max = g.owed; label = `Estimate · ${g.name}`; }
-  else if (source === 'retry') { const p = cl.payments.find(x => x.id === ref); max = Math.max(t.amountDue, 0); prefill = p.amount; label = 'Amount due'; }
+  else if (source === 'retry') { const p = cl.payments.find(x => x.id === ref); max = Math.max(t.amountDue, 0); prefill = p.amount; label = 'Outstanding amount'; }
   max = r2(max);
   const def = child().cards.find(k => k.isDefault) || child().cards[0];
   S.pay = { source, ref, max, label, mode: prefill ? 'other' : max > 0 ? 'full' : 'other', amount: prefill ?? (max > 0 ? max : 0), note: '',
@@ -1249,8 +1207,8 @@ function applyPayment(cl, pay, firstId) {
   for (const i of b) {
     const due = r2(i.share - i.paid); if (due <= 0.005) continue;
     const x = r2(Math.min(due, left)); const before = i.paid;
-    i.paid = r2(i.paid + x); (i.applied ||= []).push({ date: TODAY, method: `${pay.method} •${pay.last4}`, amt: x });
-    pay.alloc.push({ dos: i.date, desc: `${i.title}${i.clinician ? ' · ' + i.clinician : ''}`, billed: i.charged || i.share, ins: i.ins || 0, share: i.share, thisPay: x, other: before, bal: r2(i.share - i.paid) });
+    i.paid = r2(i.paid + x); (i.payments ||= []).push({ date: TODAY, amt: x, mode: 'Card', desc: `${pay.method} •${pay.last4}` });
+    pay.alloc.push({ dos: i.date, desc: `${i.title}${i.sub ? ' · ' + i.sub : ''}`, billed: i.charged || i.share, ins: i.ins || 0, share: i.share, thisPay: x, other: before, bal: r2(i.share - i.paid) });
     left = r2(left - x); if (left <= 0.005) break;
   }
   pay.remaining = Math.max(0, left);
@@ -1295,18 +1253,20 @@ const emptyBlock = (em, t, s) => `<div class="empty"><div class="em">${em}</div>
    ============================================================ */
 const NOTES = {
   home: ['Billing Home', [
-    'Based on: the ledger header (<code>describeBalance</code>) and the four header numbers in <code>AccountLedger.tsx</code>, plus the parent <code>ClinicBalanceCard</code>.',
-    'Amount due = the server’s amountDue + dues on visits not billed yet (same formula as the clinic ledger), so parent and clinic always see the same number.',
-    'Badge states: Due (red) · Credit (green, “CR”) · Paid up. A clinic the child isn’t enrolled at shows “Please contact the clinic” and no Pay button.',
-    '“Things to know” is the parent version of “Needs attention”: failed payments, visits with insurance, overdue or new invoices, estimates owed.',
-    '“Balance over time” is the clinic’s balance-trend chart (red: your share to date, green dashed: paid to date). It starts collapsed.',
-    'Try: switch to Meera (credit state), or tap the Bayview chip (another currency, not enrolled).']],
-  activity: ['Activity (ledger)', [
-    'Based on: the ledger rows (claim, charge, session, payment, unapplied credit) and the Statement tab (All/Paid/Unpaid filter and sticky Total row).',
-    'Filters: All · Due · Payments · Pending · Paid. Search by visit, therapy or clinician. Date range defaults to the last 3 months.',
-    'Dot key: amber = due · green = paid · dashed = with insurance · half-filled = not billed yet · navy = credit · red = failed.',
-    'The running balance and change columns are left out on purpose (too accounting-heavy for parents).',
-    'The sticky footer shows the Statement tab totals for the rows in view; tap it to expand.']],
+    'Based on: the clinic <b>Statement</b> tab summary and Total row (<code>StatementTable.tsx</code>), and the parent <code>ClinicBalanceCard</code> / <code>StatementView</code>, which use the same helpers.',
+    'Outstanding amount = <code>accountOutstanding()</code> = the server’s amountDue + dues on visits not billed yet (<code>meeting_sessions</code>). It is the same function the clinic Statement and the parent web use.',
+    'Credit on account = the Statement’s “Unapplied Credit” (unapplied amounts on non-failed payments). It is shown <b>next to</b> the balance, not subtracted from it.',
+    'Six tiles = the Statement Total row (Amount Charged, Paid By Payer, Patient Responsibility, Patient Paid, Outstanding) + Unapplied Credit.',
+    'The disclaimer comes from the Statement tab: claims still processing or rejected are not included.',
+    'Badge: Due · Credit (outstanding below zero) · Paid up. A clinic the child isn’t enrolled at shows “Please contact the clinic”.',
+    'Try: switch to Meera (paid up with credit), or tap the Bayview chip (another currency, not enrolled).']],
+  activity: ['Activity (Statement)', [
+    'Based on: the clinic <b>Statement</b> tab lines = <code>statementRows()</code>: <code>sessions_due[]</code> (session, custom item, payment) + <code>meeting_sessions[]</code> as “Tentative”.',
+    'Filters: All · Unpaid · Paid (the Statement’s <code>fully_paid</code> filter) · Not billed yet. Search covers Item and Description, like the Statement search.',
+    'Row status: Due · Partially paid · Paid · Payment (from the parent web <code>rowStatus()</code>); tentative rows say “Not billed yet”.',
+    'Not shown: claims still with insurance (the Statement leaves them out), running balance, S No., Actions.',
+    'Footer = the Statement “Total” row (<code>statementTotals()</code>) over the lines in view.',
+    'Detail sheets come from the Statement popups: Patient Payments, Edit History (changes to your share), Tentative payment details, Charge history.']],
   payments: ['Payments', [
     'Based on: the Payments tab, <code>PaymentHistoryCard</code>, the receipt link (<code>paymentPDFLink</code>) and the payment allocation report.',
     'Status: Applied (green) · Partly applied (amber) · Not applied yet (navy, counts as credit) · Failed (red, with “Try again”).',
@@ -1324,7 +1284,7 @@ const NOTES = {
     'Based on: GFE summary (<code>pending_amount</code>), and payments applied to estimates (<code>gfeApplications</code>).',
     'Confirming funding stays on the public link page (often a plan manager does it). The app only shows the status.']],
   benefits: ['Insurance benefits', [
-    'Shown only when the clinic turns on <code>client_account.showInsuranceBenefits</code> (“Show Insurance Benefits to Parents”, off by default). Turn off “Show insurance details” in the left panel to see it hidden.',
+    'Shown only when the clinic turns on <code>client_account.showInsuranceBenefits</code> (“Show Insurance Benefits to Parents”, off by default). Turn off “Show insurance benefits” in the left panel to see it hidden.',
     'Coverage card: payer, plan, member ID (hidden until tapped), group number, coverage dates and card photos, from the profile <code>insurance[]</code>. A switcher covers Primary and Secondary.',
     'Benefits by therapy come from the eligibility results (<code>GfeCoverageBenefits.byServiceInformation</code>): deductible and out-of-pocket (total vs remaining), copay, evaluation copay, coinsurance %, visit limits, and shared limits.',
     '“What you usually pay per visit” comes from <code>patient_responsibilites</code> (copay, coinsurance % or fixed amount, per therapy).',
@@ -1352,7 +1312,7 @@ function renderNotes() {
   document.getElementById('notes').innerHTML = `<h3>Design notes</h3><h2>${t}</h2><ul>${list.map(x => `<li>${x}</li>`).join('')}</ul>
     <h3>Word list</h3><ul>
       <li>Patient responsibility → <b>Your share</b></li><li>Outstanding → <b>Still due</b></li><li>Unapplied credit → <b>Credit on account</b></li>
-      <li>Tentative → <b>Not billed yet</b></li><li>In-flight claim → <b>With insurance</b></li><li>GFE → <b>Estimate</b></li></ul>`;
+      <li>Tentative → <b>Not billed yet</b></li><li>Paid By Payer → <b>Insurance paid</b></li><li>GFE → <b>Estimate</b></li></ul>`;
 }
 
 /* ============================================================
@@ -1362,9 +1322,9 @@ const JUMPS = [
   ['Home', () => tab('home')], ['Activity', () => tab('activity')], ['Payments', () => { tab('home'); go('payments'); }],
   ['Documents', () => tab('documents')], ['Cards', () => tab('cards')], ['Estimates', () => { tab('home'); go('estimates'); }], ['Benefits', () => { tab('home'); go('benefits'); }],
   ['Pay flow', () => { tab('home'); startPay('balance'); }],
-  ['Session sheet', () => { tab('activity'); openItem('s1'); }], ['With insurance', () => { tab('activity'); openItem('c1'); }],
+  ['Session sheet', () => { tab('activity'); openItem('s1'); }], ['Other charge', () => { tab('activity'); openItem('m1'); }],
   ['Not billed yet', () => { tab('activity'); openItem('t1'); }], ['Refunded payment', () => { tab('activity'); openItem('p4'); }],
-  ['Failed payment', () => { tab('activity'); openItem('p3'); }], ['Credit (Meera)', () => { S.child = 'meera'; S.clinicIdx = 0; tab('home'); }],
+  ['Failed payment', () => { tab('activity'); openItem('p3'); }], ['Paid up + credit (Meera)', () => { S.child = 'meera'; S.clinicIdx = 0; tab('home'); }],
   ['Other clinic', () => { S.child = 'aarav'; S.clinicIdx = 1; tab('home'); }]
 ];
 document.getElementById('jump').innerHTML = JUMPS.map((j, i) => `<button onclick="JUMPS[${i}][1]()">${j[0]}</button>`).join('');
