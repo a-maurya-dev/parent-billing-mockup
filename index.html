@@ -97,7 +97,18 @@ input,textarea,select{font:inherit}
 .stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px}
 .stat .k{font-size:11.5px;color:var(--muted)} .stat .v{font-size:18px;font-weight:600;margin-top:2px}
 .stat .v.red{color:var(--red)} .stat .v.green{color:var(--green)}
-.shortcuts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.shortcuts{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:8px;margin-top:12px}
+.bar{height:8px;border-radius:8px;background:#EEF0F4;overflow:hidden;margin:6px 0 4px}
+.bar>i{display:block;height:100%;width:100%;border-radius:8px;background:var(--navy);transform-origin:left;transition:transform .3s ease-out}
+.bar.green>i{background:var(--green)} .bar.amber>i{background:#F59E0B} .bar.red>i{background:var(--red)}
+.meter{padding:10px 0;border-bottom:1px solid #F2F4F7}
+.meter:last-child{border-bottom:none}
+.meter .top{display:flex;justify-content:space-between;font-size:13px}
+.idcard{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.idcard div{border:1px dashed #98A2B3;border-radius:10px;height:64px;display:grid;place-items:center;font-size:11px;color:var(--muted);background:#FCFCFD}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mini-stat{background:#F9FAFB;border-radius:10px;padding:8px 10px}
+.mini-stat .k{font-size:11px;color:var(--muted)} .mini-stat .v{font-weight:600;font-size:14px}
 .shortcut{background:#fff;border:1px solid var(--border);border-radius:14px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:500}
 .shortcut svg{width:20px;height:20px;color:var(--navy)}
 
@@ -254,7 +265,7 @@ table.mini td:last-child{text-align:right}
         <option value="flat">Flat fee $3.00</option>
         <option value="off">Off</option>
       </select></div>
-    <label class="ctl"><span>Show insurance details</span><input type="checkbox" id="set-insurance" checked></label>
+    <label class="ctl"><span>Show insurance benefits</span><input type="checkbox" id="set-insurance" checked></label>
     <label class="ctl"><span>Parents can remove cards</span><input type="checkbox" id="set-delete" checked></label>
     <label class="ctl"><span>Client invoicing on</span><input type="checkbox" id="set-invoices" checked></label>
     <label class="ctl"><span>Autopay enabled</span><input type="checkbox" id="set-autopay" checked></label>
@@ -306,7 +317,8 @@ const ICONS = {
   card: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
   receipt: '<path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
   est: '<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h9"/>',
-  stmt: '<path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+  stmt: '<path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'
 };
 const icon = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -321,6 +333,36 @@ const DATA = {
       { id: 'k1', brand: 'Visa', last4: '4242', exp: '12/27', type: 'credit', hsa: false, isDefault: true },
       { id: 'k2', brand: 'Mastercard', last4: '5555', exp: '08/27', type: 'credit', hsa: true, isDefault: false }
     ],
+    /* Insurance benefits (profile insurance[] + GfeCoverageBenefits + authorizations + patient_responsibilites + billingExtraInformation) */
+    benefits: {
+      lastCheck: '2026-11-20',
+      coverages: [
+        { role: 'Primary', payer: 'Aetna', plan: 'Aetna Choice POS II', memberId: 'W123456789', group: '0844129', inNetwork: true,
+          start: '2026-01-01', end: '2026-12-31', cardImages: true,
+          services: [
+            { therapy: 'Occupational Therapy', deductible: { total: 1000, remaining: 180 }, oop: { total: 4000, remaining: 2650 }, copay: 25, evalCopay: 50, coins: 20,
+              visits: { total: 30, used: 22 }, shared: 'Deductible and out-of-pocket shared with Speech Therapy' },
+            { therapy: 'Speech Therapy', deductible: { total: 1000, remaining: 180 }, oop: { total: 4000, remaining: 2650 }, copay: 25, evalCopay: 50, coins: 20,
+              visits: { total: 30, used: 12 }, shared: 'Deductible and out-of-pocket shared with Occupational Therapy' },
+            { therapy: 'Physical Therapy', deductible: { total: 500, remaining: 500 }, oop: { total: 4000, remaining: 2650 }, copay: 30, coins: 0,
+              visits: { total: 20, used: 1 } }
+          ] },
+        { role: 'Secondary', payer: 'Medicaid', plan: 'State Medicaid (CHIP)', memberId: 'MCD99887766', group: '', inNetwork: true,
+          start: '2026-03-01', end: '2027-02-28', cardImages: false,
+          services: [{ therapy: 'All therapies', copay: 0, coins: 0, note: 'Usually pays what’s left after Aetna' }] }
+      ],
+      perVisit: [
+        { therapy: 'Occupational Therapy', type: 'copay', amount: 25 },
+        { therapy: 'Speech Therapy', type: 'coinsurance', amount: 20 },
+        { therapy: 'Physical Therapy', type: 'fixed', amount: 30 }
+      ],
+      auths: [
+        { number: 'AUTH-55821', therapy: 'Speech Therapy', from: '2026-06-15', to: '2026-12-15', original: 24, remaining: 3, unit: 'visits', status: 'approved' },
+        { number: 'AUTH-55990', therapy: 'Occupational Therapy', from: '2026-07-01', to: '2027-01-01', original: 36, remaining: 14, unit: 'visits', status: 'approved' },
+        { number: '', therapy: 'Physical Therapy', requested: '2026-11-05', status: 'pending', unit: 'visits' }
+      ],
+      caps: [{ info: 'Annual therapy benefit maximum', total: 5000, remaining: 1850, hard: true }]
+    },
     clinics: [
       {
         id: 'sunrise', name: 'Sunrise Therapy Center', cur: 'USD', enrolled: true, lastStatement: '2026-11-20',
@@ -387,6 +429,14 @@ const DATA = {
   meera: {
     name: 'Meera Sharma', short: 'Meera', initials: 'MS',
     cards: [{ id: 'k3', brand: 'Visa', last4: '1881', exp: '03/28', type: 'debit', hsa: false, isDefault: true }],
+    benefits: {
+      lastCheck: '2026-11-18',
+      coverages: [{ role: 'Primary', payer: 'BlueCross BlueShield', plan: 'Blue Advantage PPO', memberId: 'XYZ445566778', group: '77120', inNetwork: true,
+        start: '2026-01-01', end: '2026-12-31', cardImages: true,
+        services: [{ therapy: 'Occupational Therapy', deductible: { total: 750, remaining: 0 }, oop: { total: 3000, remaining: 1980 }, copay: 60, coins: 0, visits: { total: 40, used: 9 } }] }],
+      perVisit: [{ therapy: 'Occupational Therapy', type: 'copay', amount: 60 }],
+      auths: [], caps: []
+    },
     clinics: [{
       id: 'sunrise', name: 'Sunrise Therapy Center', cur: 'USD', enrolled: true, lastStatement: '2026-11-20',
       items: [
@@ -444,7 +494,7 @@ function totals(cl) {
    ============================================================ */
 const TABS = [['home', 'Home', 'home'], ['activity', 'Activity', 'list'], ['documents', 'Documents', 'doc'], ['cards', 'Cards', 'card']];
 const TITLES = { home: 'Billing', activity: 'Activity', payments: 'Payments', documents: 'Documents', cards: 'Payment methods', estimates: 'Estimates',
-  estimate: 'Estimate', 'pay-amount': 'Make a payment', 'pay-card': 'Payment method', 'pay-review': 'Review & pay', 'pay-result': '' };
+  estimate: 'Estimate', benefits: 'Insurance benefits', 'pay-amount': 'Make a payment', 'pay-card': 'Payment method', 'pay-review': 'Review & pay', 'pay-result': '' };
 function go(route, params = {}) { S.stack.push({ route: S.route, params: S.params }); S.route = route; S.params = params; render(); }
 function back() { const p = S.stack.pop(); if (!p) return; S.route = p.route; S.params = p.params; render(); }
 function tab(route) { S.stack = []; S.route = route; S.params = {}; closeSheet(true); render(); }
@@ -581,6 +631,7 @@ SCREENS.home = () => {
   h += `<div class="shortcuts">
     <button class="shortcut" onclick="go('payments')">${icon('receipt')}Payments</button>
     <button class="shortcut" onclick="go('estimates')">${icon('est')}Estimates</button>
+    ${S.settings.insurance ? `<button class="shortcut" onclick="go('benefits')">${icon('shield')}Benefits</button>` : ''}
     <button class="shortcut" onclick="openStatementSheet()">${icon('stmt')}Statement</button></div>`;
 
   // Things to know
@@ -631,6 +682,9 @@ function attention(cl) {
     cl.invoices.filter(i => i.status === 'outstanding' && daysAgo(i.issued) <= 14).forEach(i => out.push(li('📄', 'var(--primary-bg)', `New invoice ${i.num}`, `${fmt(i.amount - i.paid, cur)} · due ${fd(i.due)}`, `S.docsTab='invoices';tab('documents')`)));
   }
   cl.estimates.filter(g => g.owed > 0).forEach(g => out.push(li('🧾', 'var(--navy-bg)', `Estimate: ${fmt(g.owed, cur)} still owed`, g.name, `go('estimate',{id:'${g.id}'})`)));
+  if (S.settings.insurance && !S.scenario.empty) {
+    benefitAlerts(child().benefits).forEach(a => out.push(li('🛡️', a.tone === 'red' ? 'var(--red-bg)' : 'var(--amber-bg)', a.title, a.sub, `go('benefits')`)));
+  }
   cl.payments.filter(p => p.refundStatus === 'processing').forEach(p => out.push(li('↩️', 'var(--amber-bg)', 'Refund in progress', methodLabel(p), `openItem('${p.id}')`)));
   return out;
 }
@@ -740,6 +794,7 @@ function sessionSheet(it, cl) {
     h += `<div class="acc open"><button onclick="toggleAcc(this)">Insurance details ${CHEV}</button><div class="in">
       ${it.claims.map(c => `<div class="kv"><span>${c.role} · ${c.payer}</span>${pill(c.status, c.status === 'Paid' ? 'green' : 'amber')}</div>`).join('')}
       ${it.why?.length ? `<div class="small" style="margin-top:8px;font-weight:600">Why you owe this</div>${it.why.map(w => `<div class="kv small"><span>• ${w.label} <span class="muted xs">(${w.code})</span></span><span>${fmt(w.amt, cur)}</span></div>`).join('')}` : ''}
+      <button class="btn ghost sm" style="padding-left:0" onclick="closeSheet(true);go('benefits')">See your plan benefits ›</button>
     </div></div>`;
   }
   if (it.applied?.length) {
@@ -984,6 +1039,89 @@ SCREENS.estimate = () => {
       <button class="btn secondary" onclick="toast('Opening estimate PDF…')">View estimate (PDF)</button></div>`;
 };
 
+/* ---------- Insurance benefits ---------- */
+function benefitAlerts(b) {
+  const out = [];
+  if (!b) return out;
+  b.auths.filter(a => a.status === 'approved').forEach(a => {
+    const daysLeft = Math.round((dt(a.to) - dt(TODAY)) / 864e5);
+    if (a.remaining <= 3 || daysLeft <= 30)
+      out.push({ tone: a.remaining <= 3 ? 'red' : 'amber', title: `${a.therapy} authorization: ${a.remaining} ${a.unit} left`, sub: `Ends ${fdy(a.to)} · the clinic will request more` });
+  });
+  b.coverages.forEach(c => {
+    const daysLeft = Math.round((dt(c.end) - dt(TODAY)) / 864e5);
+    if (daysLeft <= 45 && daysLeft >= 0) out.push({ tone: 'amber', title: `${c.payer} coverage ends ${fd(c.end)}`, sub: 'Share your new insurance card with the clinic' });
+  });
+  return out;
+}
+const maskId = id => '•••• ' + id.slice(-4);
+const prLabel = p => p.type === 'coinsurance' ? `${p.amount}% of the allowed amount` : p.type === 'copay' ? `${fmt(p.amount)} copay` : `${fmt(p.amount)} per visit`;
+function meter(label, total, remaining, kind) {
+  const met = r2(total - remaining), pct = total > 0 ? Math.min(1, met / total) : 0;
+  const tone = kind === 'visits' ? (remaining <= 3 ? 'red' : remaining / total <= 0.25 ? 'amber' : '') : (pct >= 1 ? 'green' : '');
+  const txt = kind === 'visits' ? `${met} of ${total} used · <b>${remaining} left</b>` : pct >= 1 ? `<b style="color:var(--green)">Met ✓</b> · ${fmt(total)}` : `${fmt(met)} of ${fmt(total)} met · <b>${fmt(remaining)} left</b>`;
+  return `<div class="meter"><div class="top"><span>${label}</span><span class="small">${txt}</span></div>
+    <div class="bar ${tone}" role="progressbar" aria-valuenow="${Math.round(pct * 100)}" aria-valuemin="0" aria-valuemax="100" aria-label="${label}"><i style="transform:scaleX(${pct})"></i></div></div>`;
+}
+SCREENS.benefits = () => {
+  if (!S.settings.insurance) return emptyBlock('🛡️', 'Benefits aren’t shared yet', 'Your clinic hasn’t turned on insurance benefits in the app. Ask them for a summary.');
+  const b = child().benefits;
+  if (!b || !b.coverages.length) return emptyBlock('🛡️', 'No insurance on file', 'If your child has insurance, share the card with the clinic.');
+  const ci = Math.min(S.params.cov || 0, b.coverages.length - 1), c = b.coverages[ci];
+  let h = `<div class="muted xs" style="margin:0 2px 10px">From ${c.payer}’s latest eligibility check on ${fdy(b.lastCheck)}.</div>`;
+  if (b.coverages.length > 1) h += `<div class="seg" style="margin-bottom:12px">${b.coverages.map((x, i) => `<button class="${i === ci ? 'on' : ''}" onclick="S.params.cov=${i};render()">${x.role} · ${x.payer}</button>`).join('')}</div>`;
+
+  // Coverage card
+  h += `<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div><b style="font-size:16px">${c.payer}</b><div class="muted small">${c.plan}</div></div>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">${pill(c.role, 'navy')}${c.inNetwork ? pill('In network', 'green') : pill('Out of network', 'amber')}</div></div>
+    <div class="kv small" style="margin-top:8px"><span class="muted">Member ID</span><span id="mid">${maskId(c.memberId)} <a href="#" onclick="document.getElementById('mid').firstChild.textContent='${c.memberId} ';this.remove();return false">Show</a></span></div>
+    ${c.group ? `<div class="kv small"><span class="muted">Group number</span><span>${c.group}</span></div>` : ''}
+    <div class="kv small"><span class="muted">Coverage</span><span>${fdy(c.start)} – ${fdy(c.end)}</span></div>
+    ${c.cardImages ? `<div class="idcard"><div>Card · front</div><div>Card · back</div></div>` : `<button class="btn secondary sm" style="margin-top:8px" onclick="toast('Opening camera to add card photo…')">+ Add card photos</button>`}
+  </div>`;
+
+  // Per-therapy benefits
+  h += `<div class="section-title">Your benefits by therapy</div>`;
+  h += c.services.map(s => `<div class="card" style="margin-bottom:8px">
+    <b>${s.therapy}</b>${s.note ? `<div class="muted small">${s.note}</div>` : ''}
+    <div class="grid2" style="margin-top:10px">
+      <div class="mini-stat"><div class="k">Copay</div><div class="v">${fmt(s.copay)}</div>${s.evalCopay ? `<div class="muted xs">Evaluation: ${fmt(s.evalCopay)}</div>` : ''}</div>
+      <div class="mini-stat"><div class="k">Coinsurance</div><div class="v">${s.coins}%</div><div class="muted xs">after deductible</div></div></div>
+    ${s.deductible ? meter('Deductible', s.deductible.total, s.deductible.remaining) : ''}
+    ${s.oop ? meter('Out-of-pocket max', s.oop.total, s.oop.remaining) : ''}
+    ${s.visits ? meter('Visits allowed this year', s.visits.total, s.visits.total - s.visits.used, 'visits') : ''}
+    ${s.shared ? `<div class="muted xs" style="margin-top:6px">↔ ${s.shared}</div>` : ''}
+  </div>`).join('');
+
+  // What you pay per visit (clinic-set PR)
+  if (b.perVisit.length && ci === 0) {
+    h += `<div class="section-title">What you usually pay per visit</div><div class="list">${b.perVisit.map(p => `<div class="li"><span class="ic" style="background:var(--primary-bg)">💵</span>
+      <span class="body"><div class="t">${p.therapy}</div><div class="s">${prLabel(p)}</div></span></div>`).join('')}</div>
+      <div class="muted xs" style="margin:6px 2px 0">Set by the clinic from your plan. Your actual share is confirmed once insurance processes each visit.</div>`;
+  }
+
+  // Authorizations
+  if (b.auths.length && ci === 0) {
+    h += `<div class="section-title">Authorizations</div>`;
+    h += b.auths.map(a => a.status === 'pending'
+      ? `<div class="card" style="margin-bottom:8px;border-style:dashed"><div style="display:flex;justify-content:space-between"><b>${a.therapy}</b>${pill('Requested', 'amber')}</div>
+          <div class="muted small">Requested ${fdy(a.requested)} · waiting for insurance approval</div></div>`
+      : `<div class="card" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between"><b>${a.therapy}</b>${pill('Approved', 'green')}</div>
+          <div class="muted small">${a.number} · ${fdy(a.from)} – ${fdy(a.to)}</div>
+          ${meter(`Approved ${a.unit}`, a.original, a.remaining, 'visits')}</div>`).join('');
+  }
+
+  // Benefit maximums
+  if (b.caps.length && ci === 0) {
+    h += `<div class="section-title">Benefit maximums</div><div class="card">${b.caps.map(x => meter(x.info + (x.hard ? ' (hard limit)' : ''), x.total, x.remaining)).join('')}</div>`;
+  }
+
+  h += `<div class="info" style="margin-top:14px">ℹ️ <span>Benefits are estimates from your insurer. What you owe is confirmed after each claim is processed.</span></div>
+    <button class="btn secondary" style="margin-top:12px" onclick="askClinic('my insurance benefits')">Ask the clinic about my coverage</button>`;
+  return h;
+};
+
 /* ============================================================
    Pay flow
    ============================================================ */
@@ -1185,6 +1323,14 @@ const NOTES = {
   estimates: ['Estimates (GFE)', [
     'Based on: GFE summary (<code>pending_amount</code>), and payments applied to estimates (<code>gfeApplications</code>).',
     'Confirming funding stays on the public link page (often a plan manager does it). The app only shows the status.']],
+  benefits: ['Insurance benefits', [
+    'Shown only when the clinic turns on <code>client_account.showInsuranceBenefits</code> (“Show Insurance Benefits to Parents”, off by default). Turn off “Show insurance details” in the left panel to see it hidden.',
+    'Coverage card: payer, plan, member ID (hidden until tapped), group number, coverage dates and card photos, from the profile <code>insurance[]</code>. A switcher covers Primary and Secondary.',
+    'Benefits by therapy come from the eligibility results (<code>GfeCoverageBenefits.byServiceInformation</code>): deductible and out-of-pocket (total vs remaining), copay, evaluation copay, coinsurance %, visit limits, and shared limits.',
+    '“What you usually pay per visit” comes from <code>patient_responsibilites</code> (copay, coinsurance % or fixed amount, per therapy).',
+    'Authorizations come from <code>authorizations[]</code> (visits or units remaining, dates, approved or pending). Low or expiring authorizations show up in “Things to know”.',
+    'Benefit maximums come from <code>billingExtraInformation</code> (total vs remaining, hard limit).',
+    'Hidden: CPT codes, payer IDs, internal notes, auth history, pricing presets.']],
   estimate: ['Estimate detail', ['Services and codes, subtotal, taxes, total estimated cost, payments applied, amount owed. Pay opens the Pay flow for this estimate.']],
   'pay-amount': ['Pay · Amount', [
     'Ways in: Pay now, a single visit, an invoice, an estimate, or a retry. Payment links from email or text prefill the amount.',
@@ -1214,7 +1360,7 @@ function renderNotes() {
    ============================================================ */
 const JUMPS = [
   ['Home', () => tab('home')], ['Activity', () => tab('activity')], ['Payments', () => { tab('home'); go('payments'); }],
-  ['Documents', () => tab('documents')], ['Cards', () => tab('cards')], ['Estimates', () => { tab('home'); go('estimates'); }],
+  ['Documents', () => tab('documents')], ['Cards', () => tab('cards')], ['Estimates', () => { tab('home'); go('estimates'); }], ['Benefits', () => { tab('home'); go('benefits'); }],
   ['Pay flow', () => { tab('home'); startPay('balance'); }],
   ['Session sheet', () => { tab('activity'); openItem('s1'); }], ['With insurance', () => { tab('activity'); openItem('c1'); }],
   ['Not billed yet', () => { tab('activity'); openItem('t1'); }], ['Refunded payment', () => { tab('activity'); openItem('p4'); }],
