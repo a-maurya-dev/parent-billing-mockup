@@ -600,12 +600,11 @@ SCREENS.home = () => {
   if (cls.length > 1) {
     h += `<div class="chips" style="margin-bottom:10px">${cls.map((c, i) => {
       const tt = totals(c);
-      return `<button class="chip ${i === S.clinicIdx ? 'on' : ''}" onclick="S.clinicIdx=${i};render()">${c.name.split(' ')[0]} · ${tt.state === 'due' ? fmt(tt.amountDue, c.cur) : 'Paid up'}</button>`;
+      return `<button class="chip ${i === S.clinicIdx ? 'on' : ''}" onclick="S.clinicIdx=${i};render()">${c.name.split(' ')[0]} · ${tt.amountDue > 0 ? fmt(tt.amountDue, c.cur) : 'No dues'}</button>`;
     }).join('')}</div>`;
   }
   h += `<div class="clinicname">${cl.name}${cls.length > 1 ? `<span class="muted xs">· ${cl.cur}</span>` : ''}</div>`;
   h += balanceCard(cl, t);
-  if (cl.lastStatement) h += `<div class="muted xs" style="margin:8px 4px 0">Last statement sent ${daysAgo(cl.lastStatement)} days ago</div>`;
 
   h += `<div class="stats">
     <div class="stat"><div class="k">Clinic charges</div><div class="v">${fmt(t.charged, cur)}</div></div>
@@ -637,24 +636,20 @@ SCREENS.home = () => {
 function balanceCard(cl, t) {
   const cur = cl.cur;
   if (!cl.enrolled) {
-    return `<div class="balance"><span class="badge">${pill('Due', 'red')}</span><div class="lbl">Amount due</div><div class="amt">${fmt(t.amountDue, cur)}</div>
+    return `<div class="balance"><div class="lbl">Outstanding</div><div class="amt">${fmt(t.amountDue, cur)}</div>
       <div class="contact">Please contact the clinic to pay this balance.</div></div>`;
   }
-  const creditLine = t.credit > 0.005 ? `<div class="note">💙 ${fmt(t.credit, cur)} credit on account, received and not yet applied to a charge</div>` : '';
-  if (t.state === 'due') {
-    return `<div class="balance"><span class="badge">${pill('Due', 'red')}</span><div class="lbl">Outstanding amount</div><div class="amt">${fmt(t.amountDue, cur)}</div>
-      <div class="note">Across all charges on your account</div>${creditLine}
-      <button class="btn" onclick="startPay('balance')">Pay now</button></div>`;
+  // Same rules as the parent web ClinicBalanceCard: due when accountOutstanding > 0, otherwise "No dues" (+ Credit) and Pay More
+  if (t.amountDue > 0) {
+    return `<div class="balance"><div class="lbl">Outstanding</div><div class="amt">${fmt(t.amountDue, cur)}</div>
+      <div class="note">Across all charges on your account</div>
+      <button class="btn" onclick="startPay('balance')">Pay Now</button></div>`;
   }
-  if (t.state === 'credit') {
-    return `<div class="balance credit"><span class="badge">${pill('Credit', 'green')}</span><div class="lbl">Outstanding amount</div><div class="amt">${fmt(-t.amountDue, cur)} CR</div>
-      <div class="note">You’ve paid more than your share so far.</div>${creditLine}
-      <button class="btn" onclick="startPay('balance')">Make a payment</button></div>`;
-  }
-  return `<div class="balance settled"><span class="badge">${pill('Paid up', 'green')}</span><div class="lbl">Outstanding amount</div><div class="amt">${fmt(0, cur)}</div>
-    <div class="note">You’re all caught up.</div>${creditLine}<button class="btn" onclick="startPay('balance')">Make a payment</button></div>`;
+  return `<div class="balance settled"><div class="lbl">Balance</div><div class="amt">✓ No dues</div>
+    ${t.credit > 0.005 ? `<div class="note">Credit: ${fmt(t.credit, cur)}</div>` : '<div class="note">&nbsp;</div>'}
+    <button class="btn" onclick="startPay('balance')">Pay More</button></div>`;
 }
-const STATEMENT_NOTE = 'Shows all charges on your account. Claims that insurance is still processing are added once they’re processed.';
+const STATEMENT_NOTE = 'Your share is based on claims insurance has paid, plus other charges. Claims still being processed, or rejected, aren’t included yet.';
 
 function attention(cl) {
   const out = [], cur = cl.cur;
@@ -733,26 +728,20 @@ function openItem(id) {
   const p = cl.payments.find(x => x.id === id);
   if (p) openSheet(paymentSheet(p, cl));
 }
-const CLAIM_TONE = { paid: ['green', 'Processed by insurance'], submitted: ['blue', 'Sent to insurance'], reviewing: ['grey', 'Insurance reviewing'], rejected: ['red', 'Clinic is following up with insurance'], returnToTherapist: ['amber', 'Clinic is reviewing'] };
 const paymentsTable = (ps, cur) => `<table class="mini">${ps.map(a => `<tr><td>${fd(a.date)} · ${a.mode}${a.desc ? `<div class="muted xs">${a.desc}</div>` : ''}</td><td>${fmt(a.amt, cur)}</td></tr>`).join('')}</table>`;
 
 function sessionSheet(it, cl) {
   const cur = cl.cur, due = rowOut(it), isS = it.kind === 'session' || (it.kind === 'tentative');
   const insKnown = it.ins !== undefined;
-  const adj = isS && it.ins !== undefined ? r2(it.charged - it.ins - it.share) : 0;
   const [lab, tone] = rowStatus(it);
   let h = `<h3>${isS ? it.title + ' session' : it.title}</h3><div class="muted small">${fdy(it.date)} · ${it.sub || ''} · ${cl.name}</div>
     <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${pill(lab, tone)}${pill(TYPE_LABEL[it.kind], 'grey')}</div>`;
-  if (isS && it.era) {
-    const [t, txt] = CLAIM_TONE[it.claimStatus] || ['grey', 'Insurance update'];
-    h += `<div class="muted xs" style="margin-top:6px">${pill(txt, t)} on ${fdy(it.era)}</div>`;
-  }
+  if (isS && it.era) h += `<div class="muted xs" style="margin-top:6px">Insurance paid on ${fdy(it.era)}</div>`;
   h += `<div class="section-title">${isS ? 'How this was billed' : 'Charge'}</div><div class="card" style="padding:8px 14px">`;
   if (isS) {
     h += `<div class="kv"><span>Clinic charge</span><span>${fmt(it.charged, cur)}</span></div>
           ${(it.charges || []).length > 1 ? it.charges.map(c => `<div class="kv small muted"><span>· ${c.type}</span><span>${fmt(c.amt, cur)}</span></div>`).join('') : ''}
           <div class="kv"><span>Insurance paid</span>${insKnown ? `<span class="neg">−${fmt(it.ins, cur)}</span>` : '<span class="muted">—</span>'}</div>
-          ${adj > 0.005 ? `<div class="kv"><span>Insurance adjustment</span><span class="neg">−${fmt(adj, cur)}</span></div>` : ''}
           <div class="kv total"><span>Your share</span><span>${fmt(it.share, cur)}</span></div>`;
   } else {
     h += `<div class="kv"><span>${it.sub || 'Charge'}</span><span>${fmt(it.share, cur)}</span></div>`;
@@ -769,7 +758,6 @@ function sessionSheet(it, cl) {
   }
   if (isS && S.settings.insurance) h += `<button class="btn ghost sm" style="padding-left:0;margin-top:6px" onclick="closeSheet(true);go('benefits')">See your plan benefits ›</button>`;
   h += `<div style="display:grid;gap:8px;margin-top:12px">
-    ${due > 0.005 && cl.enrolled ? `<button class="btn" onclick="startPay('visit','${it.id}')">Pay ${fmt(due, cur)}</button>` : ''}
     <button class="btn secondary" onclick="askClinic('${(isS ? it.title + ' session' : it.title)} on ${fd(it.date)}')">Ask the clinic about this</button></div>`;
   return h;
 }
@@ -1070,7 +1058,6 @@ function startPay(source, ref) {
   const cl = clinic(), t = totals(cl);
   let max = 0, label = 'Outstanding amount', prefill = null;
   if (source === 'balance') { max = Math.max(t.amountDue, 0); }
-  else if (source === 'visit') { const it = cl.items.find(i => i.id === ref); max = it.share - it.paid; label = `${it.title} · ${fd(it.date)}`; }
   else if (source === 'invoice') { const inv = cl.invoices.find(i => i.num === ref); max = inv.amount - inv.paid; label = `Invoice ${inv.num}`; }
   else if (source === 'estimate') { const g = cl.estimates.find(e => e.id === ref); max = g.owed; label = `Estimate · ${g.name}`; }
   else if (source === 'retry') { const p = cl.payments.find(x => x.id === ref); max = Math.max(t.amountDue, 0); prefill = p.amount; label = 'Outstanding amount'; }
@@ -1175,17 +1162,16 @@ function completePay() {
     if (P.source === 'estimate') {
       const g = cl.estimates.find(e => e.id === P.ref); const x = Math.min(g.owed, P.amount);
       g.applied = r2(g.applied + x); g.owed = r2(g.owed - x); pay.gfe = g.name; pay.status = 'applied'; pay.remaining = r2(P.amount - x);
-    } else applyPayment(cl, pay, P.source === 'visit' ? P.ref : null);
+    } else applyPayment(cl, pay);
     cl.payments.unshift(pay);
     S.result = { ok: true, amount: r2(P.amount + f.fee), card: `${card.brand} •${card.last4}`, payId: id };
   }
   S.stack = []; S.route = 'pay-result'; S.params = {}; render();
 }
 /* Auto-apply to the target visit first, then oldest dues (mirrors server payment application) */
-function applyPayment(cl, pay, firstId) {
+function applyPayment(cl, pay) { // mock only: the server applies payments (oldest dues first here for the demo)
   let left = pay.amount;
   const b = billable(cl).slice().sort((a, b) => a.date.localeCompare(b.date));
-  if (firstId) b.sort((a, b) => (a.id === firstId ? -1 : b.id === firstId ? 1 : 0));
   for (const i of b) {
     const due = r2(i.share - i.paid); if (due <= 0.005) continue;
     const x = r2(Math.min(due, left)); const before = i.paid;
@@ -1220,7 +1206,7 @@ function openChildSwitcher() {
     const t = totals(c.clinics[0]);
     return `<button class="opt ${S.child === k ? 'on' : ''}" onclick="S.child='${k}';S.clinicIdx=0;closeSheet();tab(S.route==='activity'?'activity':'home')">
       <span class="avatar">${c.initials}</span><span style="flex:1"><b class="small">${c.name}</b><div class="muted xs">${c.clinics.length} clinic${c.clinics.length > 1 ? 's' : ''}</div></span>
-      ${t.state === 'due' ? pill(fmt(t.amountDue, c.clinics[0].cur) + ' due', 'red') : t.state === 'credit' ? pill('Credit', 'green') : pill('Paid up', 'green')}</button>`;
+      ${t.amountDue > 0 ? pill(fmt(t.amountDue, c.clinics[0].cur) + ' outstanding', 'red') : pill('No dues', 'green')}</button>`;
   }).join('')}</div>`);
 }
 function skeleton(kind) {
@@ -1241,7 +1227,7 @@ const NOTES = {
     'No separate wording for Tentative lines (<code>meeting_sessions</code>): they are charges like any other and simply count toward the outstanding amount.',
     'Six tiles = the Statement Total row (Amount Charged, Paid By Payer, Patient Responsibility, Patient Paid, Outstanding) + Unapplied Credit.',
     'The disclaimer comes from the Statement tab: claims still processing or rejected are not included.',
-    'Badge: Due · Credit (outstanding below zero) · Paid up. A clinic the child isn’t enrolled at shows “Please contact the clinic”.',
+    'Balance card = parent web <code>ClinicBalanceCard</code>: “Outstanding $X” with Pay Now, or “✓ No dues” with “Credit: $X” and Pay More. A clinic the child isn’t enrolled at shows “Please contact the clinic to pay this balance.”',
     'Try: switch to Meera (paid up with credit), or tap the Bayview chip (another currency, not enrolled).']],
   activity: ['Activity (Statement)', [
     'Based on: the clinic <b>Statement</b> tab lines = <code>statementRows()</code>: <code>sessions_due[]</code> (session, custom item, payment) + <code>meeting_sessions[]</code> as “Tentative”.',
@@ -1276,7 +1262,7 @@ const NOTES = {
     'Hidden: CPT codes, payer IDs, internal notes, auth history, pricing presets.']],
   estimate: ['Estimate detail', ['Services and codes, subtotal, taxes, total estimated cost, payments applied, amount owed. Pay opens the Pay flow for this estimate.']],
   'pay-amount': ['Pay · Amount', [
-    'Ways in: Pay now, a single visit, an invoice, an estimate, or a retry. Payment links from email or text prefill the amount.',
+    'Ways in: Pay Now / Pay More on the balance card, an invoice’s Pay link, an estimate’s payment link, Try again on a failed payment, and statement or invoice links from email or text (which prefill the amount). There is no per-line Pay, matching the Statement and parent web.',
     'Amount must be above 0, with at most 2 decimals. Paying more than is due is allowed and becomes credit.']],
   'pay-card': ['Pay · Card', [
     'Saved cards are listed for both Stripe and Payrix, with the default card pre-selected. (Stripe needs backend support: today only Payrix lists saved cards.)',
@@ -1288,7 +1274,7 @@ const NOTES = {
     'Try: turn on “Next payment fails” in the left panel.']],
   'pay-result': ['Pay · Result', [
     'New: a success screen with receipt and “Where it went”. Web has none today (receipts only show later in Payments).',
-    'The payment is applied to the chosen visit first, then the oldest dues; any leftover becomes credit.']]
+    'The clinic’s payment system applies the payment to charges; any leftover shows as Credit (unapplied). The mockup applies oldest dues first just for the demo.']]
 };
 function renderNotes() {
   const [t, list] = NOTES[S.route] || ['', []];
@@ -1307,7 +1293,7 @@ const JUMPS = [
   ['Pay flow', () => { tab('home'); startPay('balance'); }],
   ['Session sheet', () => { tab('activity'); openItem('s1'); }], ['Other charge', () => { tab('activity'); openItem('m1'); }],
   ['Visit charge (tentative)', () => { tab('activity'); openItem('t1'); }], ['Refunded payment', () => { tab('activity'); openItem('p4'); }],
-  ['Failed payment', () => { tab('activity'); openItem('p3'); }], ['Paid up + credit (Meera)', () => { S.child = 'meera'; S.clinicIdx = 0; tab('home'); }],
+  ['Failed payment', () => { tab('activity'); openItem('p3'); }], ['No dues + credit (Meera)', () => { S.child = 'meera'; S.clinicIdx = 0; tab('home'); }],
   ['Other clinic', () => { S.child = 'aarav'; S.clinicIdx = 1; tab('home'); }]
 ];
 document.getElementById('jump').innerHTML = JUMPS.map((j, i) => `<button onclick="JUMPS[${i}][1]()">${j[0]}</button>`).join('');
