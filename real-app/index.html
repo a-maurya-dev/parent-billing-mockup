@@ -1,0 +1,1717 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#F1F6FB" />
+<title>OceanFriends · Parent Billing — real app design (ParentHomeV2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  /* palette (TherapistHome/theme.ts, re-exported by ParentHomeV2/theme.ts) */
+  --p-navy:#104F86; --p-navy-soft:#EAF2FA;
+  --p-blue:#3D82F6; --p-blue-soft:#EFF5FE; --p-blue-muted:#E0EBFE;
+  --p-teal:#2AA9D6; --p-teal-dark:#176EAE; --p-teal-soft:#EAF6FC;
+  --p-orange:#F9A420; --p-orange-dark:#A75E00; --p-orange-soft:#FFF4DB;
+  --p-coral:#EF5732; --p-coral-dark:#B9361B; --p-coral-soft:#FFF0EB;
+  --p-red:#EC2129; --p-red-soft:#FDEBEC;
+  --p-green:#2E9E5B; --p-green-soft:#E6F3EB;
+  --canvas:#F1F6FB; --control:#F3F7FA; --track:#E6EDF4; --ink:#1B2D45; --muted-ink:#6D829C; --slate:#475467; --line:#DCE7F1;
+  --success:#8AB319;            /* lightThemeColors.palette.success: BillingWidget Pay Now */
+  --tab-active:#4185F3;         /* DemoNavigator: focused tab circle */
+  /* semantic aliases used by the screens */
+  --red:var(--p-red); --red-bg:var(--p-red-soft);
+  --green:var(--p-green); --green-bg:var(--p-green-soft);
+  --amber:var(--p-orange-dark); --amber-bg:var(--p-orange-soft);
+  --navy:var(--p-navy); --navy-bg:var(--p-navy-soft);
+  --primary:var(--p-teal-dark); --primary-bg:var(--p-blue-soft);
+  --bg:var(--canvas); --card:#fff; --text:var(--ink); --muted:var(--muted-ink); --border:var(--line);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Poppins,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:#E9ECF3;color:var(--text);font-size:14px}
+button{font:inherit;color:inherit;cursor:pointer}
+input,textarea,select{font:inherit}
+
+/* ---------- page layout ---------- */
+.layout{display:grid;grid-template-columns:280px 400px 1fr;gap:28px;padding:24px;min-height:100vh;align-items:start;max-width:1400px;margin:0 auto}
+@media (max-width:1100px){.layout{grid-template-columns:1fr;justify-items:center}.panel,.notes{width:100%;max-width:400px}}
+.panel,.notes{background:#fff;border-radius:16px;padding:18px;border:1px solid var(--border);position:sticky;top:24px}
+.panel h1{font-size:16px;margin:0 0 2px}
+.panel .sub{color:var(--muted);font-size:12px;margin-bottom:14px}
+.panel h3,.notes h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
+.jump{display:flex;flex-wrap:wrap;gap:6px}
+.jump button{border:1px solid var(--border);background:#fff;border-radius:999px;padding:5px 10px;font-size:12px}
+.jump button:hover{border-color:var(--primary);color:var(--primary)}
+.ctl{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;font-size:13px}
+.ctl select{border:1px solid var(--border);border-radius:8px;padding:4px 6px;font-size:12px}
+.notes h2{font-size:15px;margin:0 0 6px}
+.notes ul{margin:0;padding-left:18px;color:#344054;font-size:12.5px;line-height:1.6}
+.notes code{background:#F2F4F7;border-radius:4px;padding:1px 4px;font-size:11.5px}
+
+/* ---------- phone ---------- */
+.phone{width:390px;height:844px;background:#0B1220;border-radius:54px;padding:12px;box-shadow:0 30px 60px rgba(16,24,40,.25);position:relative}
+.screen{width:100%;height:100%;background:var(--bg);border-radius:44px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.statusbar{height:44px;flex:none;display:flex;justify-content:space-between;align-items:flex-end;padding:0 28px 6px;font-size:13px;font-weight:600}
+.island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:110px;height:30px;background:#0B1220;border-radius:20px;z-index:5}
+.topbar{flex:none;display:flex;align-items:center;gap:8px;padding:6px 16px 10px;min-height:48px}
+.topbar h2{font-size:18px;font-weight:600;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iconbtn{width:36px;height:36px;border-radius:12px;border:none;background:#fff;display:grid;place-items:center;flex:none;box-shadow:0 1px 2px rgba(16,24,40,.06)}
+.childbtn{display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:#fff;border-radius:999px;padding:4px 10px 4px 4px;font-size:13px;font-weight:500}
+.avatar{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:600}
+.view{flex:1;overflow-y:auto;padding:0 16px 24px;scrollbar-width:none}
+.view::-webkit-scrollbar{display:none}
+.view.enter{animation:viewIn .2s ease-out}
+@keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tabbar{flex:none;display:flex;justify-content:space-around;background:#fff;border-top:1px solid var(--border);padding:8px 8px 22px}
+.tabbar button{border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--muted);padding:4px 10px;border-radius:10px}
+.tabbar button.on{color:var(--navy);font-weight:600}
+.tabbar svg{width:22px;height:22px}
+
+/* ---------- building blocks ---------- */
+.card{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--border)}
+.section-title{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:20px 2px 8px;display:flex;justify-content:space-between;align-items:center}
+.section-title button{border:none;background:none;color:var(--primary);font-size:12px;font-weight:500;text-transform:none;letter-spacing:0}
+.muted{color:var(--muted)} .small{font-size:12px} .xs{font-size:11px}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:600;white-space:nowrap}
+.pill.red{color:var(--red);background:var(--red-bg)} .pill.green{color:var(--green);background:var(--green-bg)}
+.pill.amber{color:var(--amber);background:var(--amber-bg)} .pill.navy{color:var(--navy);background:var(--navy-bg)}
+.pill.grey{color:#475467;background:#F2F4F7} .pill.blue{color:var(--primary);background:var(--primary-bg)}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;border:none;border-radius:12px;padding:13px 16px;font-weight:600;font-size:15px;background:var(--navy);color:#fff;transition:opacity .15s,transform .15s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.secondary{background:#fff;color:var(--navy);border:1px solid var(--border)}
+.btn.ghost{background:transparent;color:var(--primary);padding:10px}
+.btn.danger{background:#fff;color:var(--red);border:1px solid #FECDCA}
+.btn.sm{padding:8px 12px;font-size:13px;width:auto;border-radius:10px}
+.btnrow{display:flex;gap:8px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none;margin:0 -16px;padding-left:16px;padding-right:16px}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--border);background:#fff;border-radius:999px;padding:6px 12px;font-size:12.5px;white-space:nowrap;font-weight:500}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.seg{display:flex;background:#E4E7EC;border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;border:none;background:none;border-radius:9px;padding:7px 6px;font-size:12.5px;font-weight:500;color:#475467}
+.seg button.on{background:#fff;color:var(--navy);font-weight:600;box-shadow:0 1px 2px rgba(16,24,40,.08)}
+
+/* balance card */
+.balance{background:linear-gradient(160deg,#163A71 0%,#1F4E94 100%);color:#fff;border-radius:20px;padding:18px;position:relative;overflow:hidden}
+.balance .lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.8;font-weight:600}
+.balance .amt{font-size:34px;font-weight:600;margin:4px 0 2px;letter-spacing:-.5px}
+.balance .note{font-size:12.5px;opacity:.85;margin-bottom:14px}
+.balance .badge{position:absolute;top:16px;right:16px}
+.balance .btn{background:#fff;color:var(--navy)}
+.balance.settled{background:linear-gradient(160deg,#0E7F5A 0%,#0E9F6E 100%)}
+.balance.credit{background:linear-gradient(160deg,#1F4E94 0%,#4185F3 100%)}
+.balance .contact{background:rgba(255,255,255,.14);border-radius:10px;padding:10px 12px;font-size:12.5px}
+.clinicname{font-weight:600;font-size:14px;margin:2px 2px 8px;display:flex;align-items:center;gap:6px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px}
+.stat .k{font-size:11.5px;color:var(--muted)} .stat .v{font-size:18px;font-weight:600;margin-top:2px}
+.stat .v.red{color:var(--red)} .stat .v.green{color:var(--green)}
+.shortcuts{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:8px;margin-top:12px}
+.bar{height:8px;border-radius:8px;background:#EEF0F4;overflow:hidden;margin:6px 0 4px}
+.bar>i{display:block;height:100%;width:100%;border-radius:8px;background:var(--navy);transform-origin:left;transition:transform .3s ease-out}
+.bar.green>i{background:var(--green)} .bar.amber>i{background:#F59E0B} .bar.red>i{background:var(--red)}
+.meter{padding:10px 0;border-bottom:1px solid #F2F4F7}
+.meter:last-child{border-bottom:none}
+.meter .top{display:flex;justify-content:space-between;font-size:13px}
+.idcard{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.idcard div{border:1px dashed #98A2B3;border-radius:10px;height:64px;display:grid;place-items:center;font-size:11px;color:var(--muted);background:#FCFCFD}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mini-stat{background:#F9FAFB;border-radius:10px;padding:8px 10px}
+.mini-stat .k{font-size:11px;color:var(--muted)} .mini-stat .v{font-weight:600;font-size:14px}
+.shortcut{background:#fff;border:1px solid var(--border);border-radius:14px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:500}
+.shortcut svg{width:20px;height:20px;color:var(--navy)}
+
+/* lists */
+.list{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.li{display:flex;align-items:center;gap:10px;padding:12px 14px;border:none;background:none;width:100%;text-align:left;border-bottom:1px solid #F2F4F7}
+.li:last-child{border-bottom:none}
+.li .ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;flex:none;font-size:15px}
+.li .body{flex:1;min-width:0}
+.li .t{font-weight:500;font-size:13.5px}
+.li .s{font-size:12px;color:var(--muted)}
+.chev{color:#98A2B3;flex:none}
+
+/* activity rows */
+.month{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:16px 2px 8px}
+.row{display:flex;gap:10px;width:100%;text-align:left;background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:8px;align-items:flex-start}
+.row.pending{border-style:dashed;background:#FCFCFD}
+.row.failed{background:#FFFBFA;border-color:#FECDCA}
+.dot{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:none}
+.dot.amber{background:#F59E0B} .dot.green{background:var(--green)} .dot.red{background:var(--red)} .dot.navy{background:var(--navy)}
+.dot.pending{border:2px dashed #98A2B3;background:transparent}
+.dot.half{background:linear-gradient(90deg,#F59E0B 50%,#FDE7C2 50%)}
+.row .body{flex:1;min-width:0}
+.row .t{font-weight:600;font-size:13.5px}
+.row .s{font-size:12px;color:var(--muted);margin-top:1px}
+.row .amt{font-weight:600;font-size:14px;text-align:right;white-space:nowrap}
+.row .amt.ok{color:var(--green)} .row .amt.muted{color:#98A2B3} .row .amt.navy{color:var(--navy)}
+.search{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:9px 12px;margin-bottom:10px}
+.search input{border:none;outline:none;flex:1;background:none}
+.rangebar{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);margin:8px 2px 0}
+.rangebar button{border:none;background:none;color:var(--primary);font-weight:500;font-size:12px}
+.footer-totals{position:sticky;bottom:-24px;margin:12px -16px -24px;background:#fff;border-top:1px solid var(--border);padding:10px 16px 14px}
+.footer-totals .main{display:flex;justify-content:space-between;align-items:center;font-weight:600;width:100%;border:none;background:none;padding:0}
+.footer-totals .grid{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:12.5px;margin-top:8px;color:#344054}
+
+/* money breakdown */
+.kv{display:flex;justify-content:space-between;padding:6px 0;font-size:13.5px}
+.kv.total{border-top:1px solid var(--border);margin-top:4px;padding-top:10px;font-weight:600}
+.kv .neg{color:var(--green)}
+.kv.big{font-size:16px}
+
+/* bottom sheet */
+.backdrop{position:absolute;inset:0;background:rgba(16,24,40,.45);opacity:0;pointer-events:none;transition:opacity .2s ease-out;z-index:20}
+.backdrop.open{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:88%;background:#fff;border-radius:24px 24px 0 0;transform:translateY(100%);transition:transform .22s cubic-bezier(.2,.8,.2,1);z-index:21;display:flex;flex-direction:column}
+.sheet.open{transform:none}
+.sheet.closing{transition-duration:.16s}
+.sheet .grab{width:40px;height:4px;background:#D0D5DD;border-radius:4px;margin:10px auto 4px;flex:none}
+.sheet .sc{overflow-y:auto;padding:8px 18px 28px;scrollbar-width:none}
+.sheet h3{font-size:18px;margin:4px 0 2px}
+.acc{border:1px solid var(--border);border-radius:12px;margin-top:10px;overflow:hidden}
+.acc>button{width:100%;display:flex;justify-content:space-between;align-items:center;border:none;background:#fff;padding:12px 14px;font-weight:600;font-size:13.5px}
+.acc>.in{padding:0 14px 12px;display:none}
+.acc.open>.in{display:block}
+.acc.open>button .chev{transform:rotate(90deg)}
+.chev{transition:transform .15s}
+
+/* steps */
+.steps{list-style:none;padding:0;margin:14px 0}
+.steps li{display:flex;gap:12px;align-items:flex-start;position:relative;padding-bottom:16px}
+.steps li:not(:last-child)::before{content:"";position:absolute;left:11px;top:24px;bottom:0;width:2px;background:var(--border)}
+.steps li.done:not(:last-child)::before{background:var(--green)}
+.steps .b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;flex:none;border:2px solid var(--border);background:#fff;color:#98A2B3}
+.steps li.done .b{background:var(--green);border-color:var(--green);color:#fff}
+.steps li.now .b{border-color:var(--amber);color:var(--amber)}
+
+/* forms */
+.field{margin-top:12px}
+.field label{display:block;font-size:12.5px;font-weight:500;margin-bottom:6px;color:#344054}
+.input{width:100%;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff;outline:none}
+.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(65,133,243,.15)}
+.hosted{border:1px dashed #98A2B3;border-radius:12px;padding:12px;color:#475467;background:#FCFCFD;font-size:13px;display:flex;justify-content:space-between}
+.hosted .tag{font-size:10px;color:#98A2B3;text-transform:uppercase;letter-spacing:.06em}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--border);border-radius:14px;padding:12px;background:#fff;margin-bottom:8px}
+.opt.on{border-color:var(--navy);background:#F5F8FD}
+.radio{width:20px;height:20px;border-radius:50%;border:2px solid #D0D5DD;flex:none;display:grid;place-items:center}
+.opt.on .radio{border-color:var(--navy)}
+.opt.on .radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--navy)}
+.opt.dashed{border-style:dashed}
+.radiorow{display:flex;gap:8px;flex-wrap:wrap}
+.radiorow button{border:1.5px solid var(--border);background:#fff;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:500}
+.radiorow button.on{border-color:var(--navy);background:#F5F8FD;color:var(--navy)}
+.stepper{display:flex;gap:6px;margin:0 0 14px}
+.stepper span{flex:1;height:4px;border-radius:4px;background:#D0D5DD}
+.stepper span.on{background:var(--navy)}
+.info{display:flex;gap:8px;background:var(--primary-bg);color:#1E4FA8;border-radius:12px;padding:10px 12px;font-size:12.5px;margin-top:10px;line-height:1.45}
+.info.warn{background:var(--amber-bg);color:var(--amber)}
+.info.err{background:var(--red-bg);color:var(--red)}
+.consent{font-size:11.5px;color:var(--muted);line-height:1.5;margin:12px 2px}
+
+/* cards (payment methods) */
+.ccard{border-radius:16px;padding:16px;color:#fff;background:linear-gradient(135deg,#1D2939,#344054);margin-bottom:10px}
+.ccard.visa{background:linear-gradient(135deg,#163A71,#4185F3)}
+.ccard.mc{background:linear-gradient(135deg,#7A2E0E,#E04F16)}
+.ccard .top{display:flex;justify-content:space-between;align-items:center;font-weight:600}
+.ccard .num{font-size:18px;letter-spacing:2px;margin:18px 0 6px}
+.ccard .bot{display:flex;justify-content:space-between;font-size:12px;opacity:.9}
+.ccard-actions{background:#fff;border:1px solid var(--border);border-radius:0 0 14px 14px;margin:-18px 0 12px;padding:22px 14px 10px}
+.switch{width:42px;height:24px;border-radius:999px;background:#D0D5DD;border:none;position:relative;flex:none;transition:background .15s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.switch.on{background:var(--green)} .switch.on::after{transform:translateX(18px)}
+
+/* result */
+.result{text-align:center;padding:40px 8px 0}
+.result .big{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;margin:0 auto 16px;font-size:40px}
+.result .big.ok{background:var(--green-bg);color:var(--green)}
+.result .big.bad{background:var(--red-bg);color:var(--red)}
+.result.pop .big{animation:pop .3s ease-out}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+
+/* chart */
+.chart svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;font-size:11.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+
+/* toast */
+.toast{position:absolute;left:16px;right:16px;bottom:96px;background:#101828;color:#fff;border-radius:12px;padding:12px 14px;font-size:13px;opacity:0;transform:translateY(8px);transition:opacity .18s,transform .18s;z-index:30;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+
+/* skeleton */
+.sk{background:linear-gradient(90deg,#E4E7EC 25%,#F2F4F7 50%,#E4E7EC 75%);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:12px}
+@keyframes sk{from{background-position:200% 0}to{background-position:-200% 0}}
+
+.empty{text-align:center;padding:40px 16px;color:var(--muted)}
+.empty .em{font-size:40px;margin-bottom:8px}
+.empty b{display:block;color:var(--text);font-size:15px;margin-bottom:4px}
+table.mini{width:100%;border-collapse:collapse;font-size:12.5px}
+table.mini td{padding:6px 0;border-bottom:1px solid #F2F4F7}
+table.mini td:last-child{text-align:right}
+.tl{border-left:2px solid var(--border);margin:8px 0 0 6px;padding-left:14px}
+.tl .ev{position:relative;padding-bottom:12px}
+.tl .ev::before{content:"";position:absolute;left:-20px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--c,#98A2B3)}
+
+/* ---------- phone mode: on a real phone the app fills the screen ---------- */
+@media (max-width:520px){
+  body{background:var(--bg)}
+  .layout{display:block;padding:0;max-width:none}
+  .panel,.notes{display:none}
+  .phone{width:100vw;height:100vh;height:100dvh;padding:0;border-radius:0;background:none;box-shadow:none}
+  .screen{border-radius:0}
+  .island,.statusbar{display:none}
+  .topbar{padding-top:12px}
+}
+
+/* ---------- hub (single billing page) ---------- */
+.stats.three{grid-template-columns:repeat(3,1fr);gap:6px}
+.stats.three .stat{padding:9px 10px;border-radius:12px}
+.stats.three .k{font-size:10.5px;line-height:1.25}
+.stats.three .v{font-size:14.5px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px;min-height:96px;position:relative}
+.tile:active{transform:scale(.98)}
+.tile .ti{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--navy-bg);color:var(--navy)}
+.tile .ti svg{width:18px;height:18px}
+.tile .tt{font-weight:600;font-size:13.5px}
+.tile .ts{font-size:11.5px;color:var(--muted);line-height:1.35}
+.tile .ts.red{color:var(--red)} .tile .ts.green{color:var(--green)} .tile .ts.amber{color:var(--amber)}
+.tile .arrow{position:absolute;top:12px;right:10px}
+/* grouped, compact page tiles */
+.group{margin-top:12px}
+.group:first-of-type{margin-top:0}
+.group-h{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#344054;margin:0 2px 6px}
+.group-h svg{width:14px;height:14px;color:var(--navy)}
+.tiles.sm{grid-template-columns:repeat(3,1fr);gap:6px}
+.tiles.sm .tile{min-height:0;padding:9px 8px 8px;gap:3px;border-radius:12px}
+.tiles.sm .tile .ti{width:26px;height:26px;border-radius:8px;margin-bottom:2px}
+.tiles.sm .tile .ti svg{width:15px;height:15px}
+.tiles.sm .tile .tt{font-size:12px;line-height:1.25}
+.tiles.sm .tile .ts{font-size:10.5px;line-height:1.3}
+.tiles.sm .tile .arrow{display:none}
+.balance .btnrow .btn{padding:10px 12px;font-size:14px;border-radius:11px}
+.balance .btnrow .btn.secondary{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.balance .credit-line{font-size:12.5px;background:rgba(255,255,255,.14);border-radius:10px;padding:7px 10px;margin-bottom:12px;display:flex;justify-content:space-between}
+.stmt-sum{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.preview .li .r{font-weight:600;font-size:13px;text-align:right;white-space:nowrap}
+.preview .foot{display:block;width:100%;border:none;border-top:1px solid #F2F4F7;background:#fff;color:var(--primary);font-weight:500;font-size:12.5px;padding:10px 14px;text-align:center}
+.preview .pad{padding:4px 14px 8px}
+
+
+/* =====================================================================
+   REAL APP DESIGN: ParentHomeV2 (origin/OFApp2026, app/screens/ParentHomeV2)
+   layout: horizontalPadding 16 · sectionGap 16 · cardRadius 18      (ParentHomeV2/theme.ts)
+   type:   section title 16 · primary 14 · secondary/badge 12, Poppins (parentHomeV2Typography)
+   WidgetCard: white, 1px #DCE7F1, radius 18, padding 12, gap 12; header = 32px orange.soft icon box (r10)
+               with orange.dark icon + 16px semibold orange.dark title; link = teal.dark 14 semibold
+   WidgetButton: control bg #F3F7FA, 1px border, r12, min-h 44, navy 14 semibold; primary = teal.dark
+   BillingWidget: amount coral (due) / green (caught up) 16 semibold; Pay Now success green r10, 12px white;
+               rows split by 1px #DCE7F1; receipt "View" = 1px blue outline r8, 12px blue
+   ParentQuickAction: 48px white box, r8, 1px teal.dark @ 9% border, 24px teal.dark lucide icon, 12px ink label
+   Status badges (ParentAppointmentRow): r999, 2/8 padding, 12px · green / orange / red on their soft tints
+   Header: on canvas, title navy 16 semibold, profile switcher (navy 12 + 20px orange.soft chevron box r8),
+           36px white square buttons r10 with blue icons
+   Tab bar (DemoNavigator): white, icons only, focused tab = filled #4185F3 circle with white glyph
+   ===================================================================== */
+body{font-family:Poppins,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+.screen{background:var(--canvas)}
+.statusbar{background:var(--canvas)}
+.topbar{background:var(--canvas);padding:8px 16px 12px;gap:8px;min-height:56px}
+.topbar .hcopy{flex:1;min-width:0}
+.topbar h2{color:var(--p-navy);font-size:16px;font-weight:600;line-height:22px;flex:none}
+.topbar .iconbtn{width:36px;height:36px;border-radius:10px;background:#fff;box-shadow:none;color:var(--p-blue)}
+.switcher{display:flex;align-items:center;gap:4px;border:none;background:none;padding:0;margin-top:2px;max-width:100%}
+.switcher .nm{color:var(--p-navy);font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.switcher .chev{width:20px;height:20px;border-radius:8px;background:var(--p-orange-soft);display:grid;place-items:center;color:var(--p-orange-dark)}
+.view{padding:4px 16px 32px}
+.stack{display:flex;flex-direction:column;gap:16px}
+
+/* WidgetCard */
+.wcard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:12px}
+.whead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.wtitle{display:flex;align-items:center;gap:8px;min-width:0}
+.wicon{width:32px;height:32px;border-radius:10px;background:var(--p-orange-soft);display:grid;place-items:center;color:var(--p-orange-dark);flex:none}
+.wtitle b{color:var(--p-orange-dark);font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wlink{border:none;background:none;color:var(--p-teal-dark);font-size:14px;font-weight:600;min-height:32px;padding:0}
+.wcount{font-size:12px;color:var(--p-navy);background:var(--p-blue-soft);border-radius:999px;padding:0 8px;font-weight:600}
+.wbadge{background:var(--p-blue-soft);color:var(--p-blue);border-radius:999px;padding:4px 12px;font-size:12px;font-weight:600}
+.wrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);width:100%;background:none;border-left:none;border-right:none;border-top:none;text-align:left}
+.wrow:first-child{padding-top:0} .wrow:last-child{border-bottom:none;padding-bottom:0}
+.wrow .t{color:var(--ink);font-size:14px;font-weight:600}
+.wrow .t.n{font-weight:400}
+.wrow .m{color:var(--muted-ink);font-size:12px;margin-top:2px}
+.wrow .v{color:var(--muted-ink);font-size:14px;font-weight:600;white-space:nowrap}
+.wrow .right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
+.wbtns{display:flex;gap:8px}
+.wbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--control);color:var(--p-navy);font-size:14px;font-weight:600}
+.wbtn.primary{background:var(--p-teal-dark);border-color:var(--p-teal-dark);color:#fff}
+.amount{font-size:16px;font-weight:600;color:var(--p-green)} .amount.due{color:var(--p-coral)}
+.paynow{background:var(--success);color:#fff;border:none;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:600;white-space:nowrap}
+.paynow.lg{font-size:14px;min-height:44px;padding:0 16px;flex:1}
+.outline-sm{border:1px solid var(--p-blue);color:var(--p-blue);background:#fff;border-radius:8px;padding:3px 8px;font-size:12px;font-weight:600;white-space:nowrap}
+.muted12{color:var(--muted-ink);font-size:12px;margin-top:3px}
+
+/* status badges (ParentAppointmentRow) */
+.pill{border-radius:999px;padding:2px 8px;font-size:12px;font-weight:500;line-height:14px}
+.pill.green{background:var(--p-green-soft);color:var(--p-green)}
+.pill.amber{background:var(--p-orange-soft);color:var(--p-orange-dark)}
+.pill.red{background:var(--p-red-soft);color:var(--p-red)}
+.pill.navy,.pill.blue{background:var(--p-blue-soft);color:var(--p-blue)}
+.pill.grey{background:var(--control);color:var(--slate)}
+
+/* Quick actions (QuickActionsWidget section: header on canvas, 48px tiles) */
+.qsec{display:flex;flex-direction:column;gap:8px}
+.qrow{display:flex;gap:12px;padding-top:4px}
+.qa{width:72px;display:flex;flex-direction:column;align-items:center;gap:4px;border:none;background:none;padding:0;position:relative}
+.qa .box{width:48px;height:48px;border-radius:8px;background:#fff;border:1px solid rgba(23,110,174,.094);display:grid;place-items:center;color:var(--p-teal-dark);position:relative}
+.qa .lbl{color:var(--ink);font-size:12px;line-height:14px;min-height:28px;text-align:center;width:100%}
+.qa .dotc{position:absolute;top:-6px;right:-8px;min-width:20px;height:20px;border-radius:10px;background:var(--p-red);color:#fff;font-size:12px;font-weight:500;line-height:20px;text-align:center;padding:0 3px}
+
+/* Reminder cards (RemindersWidget) */
+.rcard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;align-items:center;gap:8px;width:100%;text-align:left}
+.rcard .ri{flex:none;padding:8px;border-radius:999px;background:var(--p-blue-soft);color:var(--p-blue);display:grid;place-items:center}
+.rcard .ri.red{background:var(--p-red-soft);color:var(--p-red)} .rcard .ri.amber{background:var(--p-orange-soft);color:var(--p-orange-dark)}
+.rcard .rt{flex:1;min-width:0} .rcard .rt b{display:block;color:var(--ink);font-size:14px;font-weight:500}
+.rcard .rt span{color:var(--muted-ink);font-size:12px}
+.rbtn{flex:none;min-width:80px;min-height:44px;padding:0 12px;border-radius:10px;border:none;background:var(--p-teal-dark);color:#fff;font-size:14px;font-weight:500}
+
+/* chips = RADIUS.chip (occasional actions) */
+.chips{gap:8px;margin:0 -16px;padding:2px 16px 4px}
+.chip{border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--p-navy);font-size:12px;font-weight:600;padding:6px 12px}
+.chip.on{background:var(--p-teal-dark);border-color:var(--p-teal-dark);color:#fff}
+.month{text-transform:none;letter-spacing:0;font-size:12px;color:var(--muted-ink);font-weight:600;margin:4px 2px -8px}
+
+/* generic pieces on the other screens, re-skinned to the same tokens */
+.card,.list{border-radius:18px;border-color:var(--line)}
+.li{border-bottom-color:var(--line)} .li .t{color:var(--ink);font-size:14px} .li .s{color:var(--muted-ink)}
+.li .ic{border-radius:999px;background:var(--p-blue-soft)!important}
+.section-title{text-transform:none;letter-spacing:0;font-size:16px;font-weight:600;color:var(--p-orange-dark);margin:16px 2px 8px}
+.section-title button{color:var(--p-teal-dark);font-size:14px;font-weight:600}
+.btn{background:var(--p-teal-dark);border-radius:10px;min-height:44px;font-size:14px;font-weight:600;padding:10px 16px}
+.btn.secondary{background:var(--control);color:var(--p-navy);border:1px solid var(--line);border-radius:12px}
+.btn.ghost{background:transparent;color:var(--p-teal-dark)}
+.btn.danger{background:var(--p-red-soft);color:var(--p-red);border:1px solid var(--p-red-soft)}
+.btn.sm{min-height:34px;font-size:12px;padding:6px 10px}
+.btn.pay{background:var(--success)}
+.seg{background:var(--track);border-radius:12px}
+.seg button{border-radius:10px;color:var(--slate);font-size:12px}
+.seg button.on{color:var(--p-navy)}
+.info{background:var(--p-teal-soft);color:var(--p-teal-dark);border-radius:12px}
+.info.warn{background:var(--p-orange-soft);color:var(--p-orange-dark)} .info.err{background:var(--p-red-soft);color:var(--p-red)}
+.search{border-radius:10px;border-color:var(--line);background:#fff}
+.rangebar button{color:var(--p-teal-dark);font-weight:600}
+.kv{font-size:14px;color:var(--ink)} .kv .neg{color:var(--p-green)}
+.opt{border-radius:12px;border-color:var(--line)} .opt.on{border-color:var(--p-teal-dark);background:var(--p-teal-soft)}
+.opt.on .radio{border-color:var(--p-teal-dark)} .opt.on .radio::after{background:var(--p-teal-dark)}
+.radiorow button{border-radius:10px;border-color:var(--line)} .radiorow button.on{border-color:var(--p-teal-dark);background:var(--p-teal-soft);color:var(--p-teal-dark)}
+.stepper span{background:var(--track)} .stepper span.on{background:var(--p-teal-dark)}
+.switch.on{background:var(--p-teal-dark)}
+.input{border-radius:10px;border-color:var(--line);background:var(--control)}
+.hosted{border-radius:10px}
+.sheet{border-radius:18px 18px 0 0}
+.backdrop{background:rgba(27,45,69,.45)}
+.ccard{border-radius:18px} .ccard.visa{background:linear-gradient(135deg,#104F86,#176EAE)} .ccard.mc{background:linear-gradient(135deg,#B9361B,#EF5732)}
+.ccard-actions{border-radius:0 0 18px 18px;border-color:var(--line)}
+.bar>i{background:var(--p-teal-dark)} .bar{background:var(--track)} .bar.green>i{background:var(--p-green)} .bar.amber>i{background:var(--p-orange)} .bar.red>i{background:var(--p-red)}
+.result .big.ok{background:var(--p-green-soft);color:var(--p-green)} .result .big.bad{background:var(--p-red-soft);color:var(--p-red)}
+.footer-totals{background:#fff;border-top:1px solid var(--line)}
+.footer-totals .main{color:var(--ink);font-size:14px}
+.empty b{color:var(--ink)}
+.toast{background:var(--ink);border-radius:12px}
+.info svg{flex:none;margin-top:1px}
+/* quick actions row (QuickActionsWidget): horizontal scroll + 36x4 track with a 16x4 teal thumb */
+.qscroll{display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:8px 16px 2px;scrollbar-width:none}
+.qscroll .qa{width:64px;flex:none}
+.qwrap{position:relative}
+.qscroll{cursor:grab}
+.qarrow{position:absolute;top:22px;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--p-teal-dark);display:grid;place-items:center;box-shadow:0 2px 8px rgba(16,79,134,.15);opacity:0;pointer-events:none;transition:opacity .15s;padding:0}
+.qarrow .chev{color:var(--p-teal-dark)}
+.qarrow.show{opacity:1;pointer-events:auto}
+.qarrow.l{left:-8px} .qarrow.r{right:-8px}
+.qscroll::-webkit-scrollbar{display:none}
+.qgroup{flex:none;display:flex;flex-direction:column;gap:6px}
+.qgroup+.qgroup{border-left:1px solid var(--line);padding-left:14px}
+.qgl{display:flex;align-items:center;gap:4px;color:var(--p-orange-dark);font-size:12px;font-weight:600}
+.qtiles{display:flex;gap:6px}
+.qtiles .qa{width:64px}
+.qa .dotc{top:-6px;right:-8px}
+.qind{align-self:center;width:36px;height:4px;border-radius:3px;background:var(--track);overflow:hidden}
+.qind i{display:block;width:16px;height:4px;border-radius:3px;background:var(--p-teal);transition:transform .1s}
+/* clinic rows (ClinicBalanceCard, one per clinic) */
+.crow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.crow:first-child{padding-top:0} .crow:last-child{border-bottom:none;padding-bottom:0}
+.crow .cn{color:var(--ink);font-size:14px;font-weight:600}
+.crow .amount{font-size:16px;margin-top:1px}
+.crow .contact{color:var(--slate);font-size:12px;max-width:130px;text-align:right}
+.ctag{color:var(--p-navy);font-weight:500}
+.code{font-size:10px;font-weight:600;color:var(--slate);background:var(--control);border:1px solid var(--line);border-radius:999px;padding:0 5px;vertical-align:1px;margin-left:2px}
+.crow .cn .code{margin-left:6px}
+.wbtn{white-space:nowrap}
+.wbtns .paynow.lg+.wbtn{flex:0 0 auto;padding:0 14px}
+
+/* Tab bar (DemoNavigator): icons only, focused = filled circle */
+.tabbar{background:#fff;border-top:1px solid var(--line);padding:8px 22px 24px;justify-content:space-between}
+.tabbar button{padding:0;width:44px;height:36px;display:grid;place-items:center;color:#303030}
+.tabbar button svg{width:26px;height:26px}
+.tabbar button.on .cir{width:34px;height:34px;border-radius:50%;background:var(--tab-active);color:#fff;display:grid;place-items:center;font-weight:600;font-size:19px}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ===== Control panel ===== -->
+  <aside class="panel">
+    <h1>Parent Billing — real app design</h1>
+    <div class="sub"><b>Built from the real parent app code</b>: <code>app/screens/ParentHomeV2</code> on <code>OFApp2026</code> (WidgetCard, WidgetButton, BillingWidget, ParentQuickAction, RemindersWidget, status badges, header, tab bar) and its colour system <code>TherapistHome/theme.ts</code>. Same screens and data as <code>parent-billing-hub.html</code>. One Billing page with a component for every billing area. Tap a component to open its full page; Back returns to the hub. Content is the same as <code>parent-billing-mobile.html</code> (clinic web Statement tab, Payments, Invoice and insurance data). Mock data only.</div>
+
+    <h3>Jump to screen</h3>
+    <div class="jump" id="jump"></div>
+
+    <h3>Clinic billing settings</h3>
+    <div class="ctl"><span>Convenience fee</span>
+      <select id="set-fee">
+        <option value="stripe">Pass-through (Stripe)</option>
+        <option value="flat">Flat fee $3.00</option>
+        <option value="off">Off</option>
+      </select></div>
+    <label class="ctl"><span>Show insurance benefits</span><input type="checkbox" id="set-insurance" checked></label>
+    <label class="ctl"><span>Parents can remove cards</span><input type="checkbox" id="set-delete" checked></label>
+    <label class="ctl"><span>Client invoicing on</span><input type="checkbox" id="set-invoices" checked></label>
+
+    <h3>Scenarios</h3>
+    <label class="ctl"><span>Show loading state</span><input type="checkbox" id="sc-loading"></label>
+    <label class="ctl"><span>Empty account</span><input type="checkbox" id="sc-empty"></label>
+    <label class="ctl"><span>Next payment fails</span><input type="checkbox" id="sc-fail"></label>
+    <div style="margin-top:12px"><button class="btn secondary sm" onclick="location.reload()">Reset demo</button></div>
+  </aside>
+
+  <!-- ===== Phone ===== -->
+  <div class="phone">
+    <div class="screen" id="screen">
+      <div class="island"></div>
+      <div class="statusbar"><span>9:41</span><span>●●● 5G ▮</span></div>
+      <header class="topbar" id="topbar"></header>
+      <main class="view" id="view"></main>
+      <nav class="tabbar" id="tabbar"></nav>
+      <div class="backdrop" id="backdrop" onclick="closeSheet()"></div>
+      <div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="grab"></div><div class="sc" id="sheet-sc"></div></div>
+      <div class="toast" id="toast" role="status"></div>
+    </div>
+  </div>
+
+  <!-- ===== Design notes ===== -->
+  <aside class="notes" id="notes"></aside>
+</div>
+
+<script>
+/* ============================================================
+   Helpers
+   ============================================================ */
+const TODAY = '2026-11-23';
+const r2 = n => Math.round(n * 100) / 100;
+/* Money exactly as the app formats it (app/utils/currency.ts + formatCurrency.ts on OFApp2026):
+   a centre's symbol comes from its globalization currency; only 3-letter codes with 2 decimals are allowed, anything else
+   (or useLocalCurrency off) falls back to USD "$"; the symbol is the code's narrow symbol (GBP £, EUR €, INR ₹, CAD/AUD $);
+   formatCurrency = symbol + amount with 2 decimals, e.g. "£1,234.00". */
+const SYM_CACHE = {};
+function symFor(code = 'USD') {
+  code = String(code || 'USD').toUpperCase();
+  if (code in SYM_CACHE) return SYM_CACHE[code];
+  let out = '$';
+  try {
+    if (/^[A-Z]{3}$/.test(code) && code !== 'USD' && new Intl.NumberFormat('en-US', { style: 'currency', currency: code }).resolvedOptions().maximumFractionDigits === 2)
+      out = new Intl.NumberFormat('en-US', { style: 'currency', currency: code, currencyDisplay: 'narrowSymbol' }).formatToParts(0).find(x => x.type === 'currency')?.value || code;
+  } catch { out = '$'; }
+  return (SYM_CACHE[code] = out);
+}
+const fmt = (n, c = 'USD') => `${n < 0 ? '-' : ''}${symFor(c)}${Math.abs(+n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const dt = s => new Date(s.slice(0, 10) + 'T12:00:00');
+const fd = (s, o = { month: 'short', day: 'numeric' }) => dt(s).toLocaleDateString('en-US', o);
+const fdy = s => fd(s, { month: 'short', day: 'numeric', year: 'numeric' });
+const daysAgo = s => Math.round((dt(TODAY) - dt(s)) / 864e5);
+const sum = (a, f) => a.reduce((t, x) => t + (f(x) || 0), 0);
+const pill = (t, tone) => `<span class="pill ${tone}">${t}</span>`;
+const CHEV = `<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>`;
+const BACK = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>`;
+const ICONS = {
+  /* lucide-react-native (used by ParentHomeV2 quick actions), stroke 2 */
+  home: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  chat: '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+  calendar: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+  user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  dollar: '<line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+  wallet: '<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+  receipt: '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/>',
+  card: '<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
+  doc: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+  folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+  stmt: '<path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/>',
+  est: '<rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/>',
+  shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+  superbill: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>',
+  alloc: '<path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3"/><path d="m15 9 6-6"/>',
+  bell: '<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>',
+  help: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+  alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+  down: '<path d="m6 9 6 6 6-6"/>',
+  list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  grid: '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>'
+};
+const icon = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ============================================================
+   Mock data (shapes mirror getSingleAccountmongo / getPayment / getInvoices)
+   ============================================================ */
+const DATA = {
+  aarav: {
+    name: 'Aarav Sharma', short: 'Aarav', initials: 'AS',
+    cards: [
+      { id: 'k1', brand: 'Visa', last4: '4242', exp: '12/27', type: 'credit', hsa: false, isDefault: true },
+      { id: 'k2', brand: 'Mastercard', last4: '5555', exp: '08/27', type: 'credit', hsa: true, isDefault: false }
+    ],
+    /* Insurance benefits (profile insurance[] + GfeCoverageBenefits + authorizations + patient_responsibilites + billingExtraInformation) */
+    benefits: {
+      lastCheck: '2026-11-20',
+      coverages: [
+        { role: 'Primary', payer: 'Aetna', plan: 'Aetna Choice POS II', memberId: 'W123456789', group: '0844129', inNetwork: true,
+          start: '2026-01-01', end: '2026-12-31', cardImages: true,
+          services: [
+            { therapy: 'Occupational Therapy', deductible: { total: 1000, remaining: 180 }, oop: { total: 4000, remaining: 2650 }, copay: 25, evalCopay: 50, coins: 20,
+              visits: { total: 30, used: 22 }, shared: 'Deductible and out-of-pocket shared with Speech Therapy' },
+            { therapy: 'Speech Therapy', deductible: { total: 1000, remaining: 180 }, oop: { total: 4000, remaining: 2650 }, copay: 25, evalCopay: 50, coins: 20,
+              visits: { total: 30, used: 12 }, shared: 'Deductible and out-of-pocket shared with Occupational Therapy' },
+            { therapy: 'Physical Therapy', deductible: { total: 500, remaining: 500 }, oop: { total: 4000, remaining: 2650 }, copay: 30, coins: 0,
+              visits: { total: 20, used: 1 } }
+          ] },
+        { role: 'Secondary', payer: 'Medicaid', plan: 'State Medicaid (CHIP)', memberId: 'MCD99887766', group: '', inNetwork: true,
+          start: '2026-03-01', end: '2027-02-28', cardImages: false,
+          services: [{ therapy: 'All therapies', copay: 0, coins: 0, note: 'Usually pays what’s left after Aetna' }] }
+      ],
+      perVisit: [
+        { therapy: 'Occupational Therapy', type: 'copay', amount: 25 },
+        { therapy: 'Speech Therapy', type: 'coinsurance', amount: 20 },
+        { therapy: 'Physical Therapy', type: 'fixed', amount: 30 }
+      ],
+      auths: [
+        { number: 'AUTH-55821', therapy: 'Speech Therapy', from: '2026-06-15', to: '2026-12-15', original: 24, remaining: 3, unit: 'visits', status: 'approved' },
+        { number: 'AUTH-55990', therapy: 'Occupational Therapy', from: '2026-07-01', to: '2027-01-01', original: 36, remaining: 14, unit: 'visits', status: 'approved' },
+        { number: '', therapy: 'Physical Therapy', requested: '2026-11-05', status: 'pending', unit: 'visits' }
+      ],
+      caps: [{ info: 'Annual therapy benefit maximum', total: 5000, remaining: 1850, hard: true }]
+    },
+    clinics: [
+      {
+        id: 'sunrise', name: 'Sunrise Therapy Center', cur: 'USD', enrolled: true, lastStatement: '2026-11-20',
+        /* Statement lines = sessions_due[] (session / custom item / payment) + meeting_sessions[] as Tentative (statementRows()) */
+        items: [
+          { id: 's1', kind: 'session', date: '2026-11-14', title: 'Occupational Therapy', sub: 'Therapeutic activities · Dr. Rao', charged: 180, ins: 120, share: 45, paid: 0,
+            claimStatus: 'paid', era: '2026-11-18',
+            prEdits: [{ date: '2026-11-16', service: 'Therapeutic activities', from: 60, to: 45, reason: 'Secondary insurance adjustment' }], payments: [] },
+          { id: 't1', kind: 'tentative', date: '2026-11-10', title: 'Physical Therapy', sub: 'Session charge · Mr. Khan', charged: 30, share: 30, paid: 0,
+            charges: [{ type: 'Visit charge', amt: 30, date: '2026-11-10' }], payments: [],
+            chargeHistory: [{ date: '2026-11-10', action: 'Added', prev: null, next: 30 }] },
+          { id: 's2', kind: 'session', date: '2026-11-07', title: 'Occupational Therapy', sub: 'Therapeutic activities · Dr. Rao', charged: 180, ins: 110, share: 70, paid: 70,
+            claimStatus: 'paid', era: '2026-11-08', payments: [{ date: '2026-11-09', amt: 70, mode: 'Card', desc: 'Mastercard •5555' }] },
+          { id: 'm1', kind: 'custom', date: '2026-11-03', title: 'Assessment fee', sub: 'Annual developmental assessment', charged: 150, share: 150, paid: 0, payments: [] },
+          { id: 's3', kind: 'session', date: '2026-10-28', title: 'Speech Therapy', sub: 'Speech treatment · Ms. Lee', charged: 160, ins: 120, share: 40, paid: 20,
+            claimStatus: 'paid', era: '2026-11-02', payments: [{ date: '2026-10-30', amt: 20, mode: 'Cash', desc: 'Paid at front desk' }] },
+          { id: 's4', kind: 'session', date: '2026-10-21', title: 'Speech Therapy', sub: 'Speech treatment · Ms. Lee', charged: 160, ins: 100, share: 60, paid: 60,
+            claimStatus: 'paid', era: '2026-10-25', payments: [{ date: '2026-10-22', amt: 60, mode: 'Card', desc: 'October sessions' }] },
+          { id: 's5', kind: 'session', date: '2026-10-14', title: 'Occupational Therapy', sub: 'Therapeutic activities · Dr. Rao', charged: 180, ins: 80, share: 100, paid: 100,
+            claimStatus: 'paid', era: '2026-10-20', payments: [{ date: '2026-11-18', amt: 100, mode: 'Card', desc: 'November sessions' }] }
+        ],
+        payments: [
+          { id: 'p1', date: '2026-11-18', amount: 100, method: 'Visa', last4: '4242', desc: 'November sessions', status: 'applied', remaining: 0, receipt: true,
+            alloc: [{ dos: '2026-10-14', desc: 'Occupational Therapy · Dr. Rao', billed: 180, ins: 80, share: 100, thisPay: 100, other: 0, bal: 0 }] },
+          { id: 'p2', date: '2026-11-09', amount: 70, method: 'Mastercard', last4: '5555', desc: '', status: 'applied', remaining: 0, receipt: true,
+            alloc: [{ dos: '2026-11-07', desc: 'Occupational Therapy · Dr. Rao', billed: 180, ins: 110, share: 70, thisPay: 70, other: 0, bal: 0 }] },
+          { id: 'p5', date: '2026-10-30', amount: 20, method: 'Cash', desc: 'Paid at front desk', status: 'applied', remaining: 0, receipt: false,
+            alloc: [{ dos: '2026-10-28', desc: 'Speech Therapy · Ms. Lee', billed: 160, ins: 120, share: 40, thisPay: 20, other: 0, bal: 20 }] },
+          { id: 'p3', date: '2026-10-30', amount: 60, method: 'Visa', last4: '4242', status: 'failed', failure: 'Card declined — insufficient funds', remaining: 0 },
+          { id: 'p4', date: '2026-10-22', amount: 60, method: 'Visa', last4: '4242', desc: 'October sessions', status: 'applied', remaining: 0, receipt: true, feeCharged: true,
+            history: [
+              { type: 'Original', amount: 80, date: '2026-10-22' },
+              { type: 'Refunded', amount: 60, diff: -20, date: '2026-10-24', processed: '2026-10-26' }
+            ],
+            alloc: [{ dos: '2026-10-21', desc: 'Speech Therapy · Ms. Lee', billed: 160, ins: 100, share: 60, thisPay: 60, other: 0, bal: 0 }] }
+        ],
+        invoices: [
+          { num: 'INV-1049', status: 'outstanding', start: '2026-11-01', end: '2026-11-15', issued: '2026-11-16', due: '2026-12-01', amount: 195, paid: 0,
+            earlier: [{ num: 'INV-1046', amount: 150, issued: '2026-11-08' }] },
+          { num: 'INV-1031', status: 'overdue', start: '2026-10-01', end: '2026-10-31', issued: '2026-11-01', due: '2026-11-15', amount: 20, paid: 0, earlier: [] },
+          { num: 'INV-1018', status: 'paid', start: '2026-09-01', end: '2026-09-30', issued: '2026-10-01', due: '2026-10-15', amount: 160, paid: 160, earlier: [] },
+          { num: 'INV-0997', status: 'nodue', start: '2026-08-01', end: '2026-08-31', issued: '2026-09-01', due: '2026-09-15', amount: 0, paid: 0, earlier: [] }
+        ],
+        statements: [{ title: 'Statement · Aug 1 – Oct 31, 2026', created: '2026-11-20' }],
+        superbills: [{ title: 'Superbill · Jul – Sep 2026', created: '2026-10-05' }],
+        estimates: [
+          { id: 'g1', name: 'Speech Therapy Plan', date: '2026-09-28',
+            services: [{ name: 'Speech evaluation', code: '92523', amt: 300 }, { name: 'Speech therapy × 12 visits', code: '92507', amt: 1500 }],
+            taxes: [{ label: 'Sales tax', rate: '0%', amt: 0 }], total: 1800, applied: 1500, owed: 300,
+            funding: 'Confirmed by J. Patel (plan manager) on Oct 1, 2026' }
+        ]
+      },
+      {
+        id: 'bayview', name: 'Bayview Kids Clinic', cur: 'CAD', enrolled: false, lastStatement: '2026-09-30',
+        items: [{ id: 'b1', kind: 'custom', date: '2026-09-12', title: 'Evaluation fee', sub: 'Initial evaluation', charged: 40, share: 40, paid: 0, payments: [] }],
+        payments: [], invoices: [], statements: [], superbills: [], estimates: []
+      }
+    ]
+  },
+  meera: {
+    name: 'Meera Sharma', short: 'Meera', initials: 'MS',
+    cards: [{ id: 'k3', brand: 'Visa', last4: '1881', exp: '03/28', type: 'debit', hsa: false, isDefault: true }],
+    benefits: {
+      lastCheck: '2026-11-18',
+      coverages: [{ role: 'Primary', payer: 'BlueCross BlueShield', plan: 'Blue Advantage PPO', memberId: 'XYZ445566778', group: '77120', inNetwork: true,
+        start: '2026-01-01', end: '2026-12-31', cardImages: true,
+        services: [{ therapy: 'Occupational Therapy', deductible: { total: 750, remaining: 0 }, oop: { total: 3000, remaining: 1980 }, copay: 60, coins: 0, visits: { total: 40, used: 9 } }] }],
+      perVisit: [{ therapy: 'Occupational Therapy', type: 'copay', amount: 60 }],
+      auths: [], caps: []
+    },
+    clinics: [{
+      id: 'sunrise', name: 'Sunrise Therapy Center', cur: 'USD', enrolled: true, lastStatement: '2026-11-20',
+      items: [
+        { id: 'ms1', kind: 'session', date: '2026-11-11', title: 'Occupational Therapy', sub: 'Therapeutic activities · Dr. Rao', charged: 180, ins: 120, share: 60, paid: 60,
+          claimStatus: 'paid', era: '2026-11-14', payments: [{ date: '2026-11-02', amt: 60, mode: 'Card', desc: 'Visa •1881' }] },
+        { id: 'ms2', kind: 'session', date: '2026-10-28', title: 'Occupational Therapy', sub: 'Therapeutic activities · Dr. Rao', charged: 180, ins: 120, share: 60, paid: 60,
+          claimStatus: 'paid', era: '2026-10-31', payments: [{ date: '2026-11-02', amt: 60, mode: 'Card', desc: 'Visa •1881' }] }
+      ],
+      payments: [
+        { id: 'q2', date: '2026-11-15', amount: 25, method: 'Visa', last4: '1881', desc: 'Advance payment', status: 'unapplied', remaining: 25, receipt: true, alloc: [] },
+        { id: 'q1', date: '2026-11-02', amount: 120, method: 'Visa', last4: '1881', desc: '', status: 'applied', remaining: 0, receipt: true,
+          alloc: [{ dos: '2026-10-28', desc: 'Occupational Therapy · Dr. Rao', billed: 180, ins: 120, share: 60, thisPay: 60, other: 0, bal: 0 },
+                  { dos: '2026-11-11', desc: 'Occupational Therapy · Dr. Rao', billed: 180, ins: 120, share: 60, thisPay: 60, other: 0, bal: 0 }] }
+      ],
+      invoices: [{ num: 'INV-1050', status: 'overpaid', start: '2026-11-01', end: '2026-11-15', issued: '2026-11-16', due: '2026-12-01', amount: 0, paid: 25, earlier: [] }],
+      statements: [], superbills: [], estimates: []
+    }]
+  }
+};
+/* Multi-centre demo child: four centres in four currencies. Primary (first) = Thames (GBP), so the Transactions tab
+   glyph is "£". Sunrise (USD) has nothing due; Maple Grove (CAD) shows "$" like USD does in the app; Little Steps (EUR)
+   is a centre the child is no longer linked to, so it shows its balance but can't be paid in the app. */
+DATA.kabir = {
+  name: 'Kabir Mehta', short: 'Kabir', initials: 'KM',
+  cards: [{ id: 'k9', brand: 'Visa', last4: '7310', exp: '05/28', type: 'credit', hsa: false, isDefault: true }],
+  benefits: { lastCheck: '2026-11-19', coverages: [], perVisit: [], auths: [], caps: [] },
+  clinics: [
+    { id: 'thames', name: 'Thames Kids Therapy', cur: 'GBP', enrolled: true, lastStatement: '2026-11-10',
+      items: [
+        { id: 'kb1', kind: 'tentative', date: '2026-11-19', title: 'Physiotherapy', sub: 'Session charge · Ms. Clarke', charged: 15.5, share: 15.5, paid: 0,
+          charges: [{ type: 'Visit charge', amt: 15.5, date: '2026-11-19' }], payments: [], chargeHistory: [] },
+        { id: 'kb2', kind: 'session', date: '2026-11-08', title: 'Physiotherapy', sub: 'Gross motor · Ms. Clarke', charged: 95, ins: 25, share: 70, paid: 0,
+          claimStatus: 'paid', era: '2026-11-11', payments: [] }
+      ],
+      payments: [
+        { id: 'kq1', date: '2026-11-02', amount: 10, method: 'Visa', last4: '7310', desc: 'Advance payment', status: 'unapplied', remaining: 10, receipt: true, alloc: [] },
+        { id: 'kq2', date: '2026-10-25', amount: 30, method: 'Visa', last4: '7310', status: 'failed', failure: 'Card declined — expired card', remaining: 0 }
+      ],
+      invoices: [], statements: [], superbills: [{ title: 'Superbill · Oct 2026', created: '2026-11-02' }], estimates: [] },
+    { id: 'sunrise-k', name: 'Sunrise Therapy Center', cur: 'USD', enrolled: true, lastStatement: '2026-11-20',
+      items: [
+        { id: 'kb3', kind: 'session', date: '2026-11-12', title: 'Speech Therapy', sub: 'Speech treatment · Ms. Lee', charged: 160, ins: 120, share: 40, paid: 40,
+          claimStatus: 'paid', era: '2026-11-15', payments: [{ date: '2026-11-13', amt: 40, mode: 'Card', desc: 'Visa •7310' }] }
+      ],
+      payments: [
+        { id: 'kq3', date: '2026-11-13', amount: 40, method: 'Visa', last4: '7310', desc: '', status: 'applied', remaining: 0, receipt: true,
+          alloc: [{ dos: '2026-11-12', desc: 'Speech Therapy · Ms. Lee', billed: 160, ins: 120, share: 40, thisPay: 40, other: 0, bal: 0 }] }
+      ],
+      invoices: [], statements: [], superbills: [], estimates: [] },
+    { id: 'maple', name: 'Maple Grove Pediatrics', cur: 'CAD', enrolled: true, lastStatement: '2026-11-18',
+      items: [
+        { id: 'kb4', kind: 'session', date: '2026-11-17', title: 'Occupational Therapy', sub: 'Sensory integration · Dr. Tremblay', charged: 190, ins: 110, share: 80, paid: 0,
+          claimStatus: 'paid', era: '2026-11-20', payments: [] },
+        { id: 'kb5', kind: 'custom', date: '2026-11-05', title: 'Equipment fee', sub: 'Weighted vest', charged: 40, share: 40, paid: 0, payments: [] },
+        { id: 'kb6', kind: 'session', date: '2026-10-29', title: 'Occupational Therapy', sub: 'Sensory integration · Dr. Tremblay', charged: 190, ins: 100, share: 90, paid: 90,
+          claimStatus: 'paid', era: '2026-11-01', payments: [{ date: '2026-10-30', amt: 90, mode: 'Card', desc: 'Visa •7310' }] }
+      ],
+      payments: [
+        { id: 'kq4', date: '2026-10-30', amount: 90, method: 'Visa', last4: '7310', desc: 'October visit', status: 'applied', remaining: 0, receipt: true,
+          alloc: [{ dos: '2026-10-29', desc: 'Occupational Therapy · Dr. Tremblay', billed: 190, ins: 100, share: 90, thisPay: 90, other: 0, bal: 0 }] }
+      ],
+      invoices: [{ num: 'MG-2210', status: 'outstanding', start: '2026-11-01', end: '2026-11-15', issued: '2026-11-16', due: '2026-12-01', amount: 120, paid: 0, earlier: [] }],
+      statements: [], superbills: [], estimates: [] },
+    { id: 'dublin', name: 'Little Steps Clinic', cur: 'EUR', enrolled: false, lastStatement: '2026-09-30',
+      items: [{ id: 'kb7', kind: 'custom', date: '2026-09-02', title: 'Assessment report', sub: 'Final assessment', charged: 40, share: 40, paid: 0, payments: [] }],
+      payments: [], invoices: [], statements: [], superbills: [], estimates: [] }
+  ]
+};
+const EMPTY_CLINIC = { id: 'empty', name: 'Sunrise Therapy Center', cur: 'USD', enrolled: true, lastStatement: null, items: [], payments: [], invoices: [], statements: [], superbills: [], estimates: [] };
+
+/* ============================================================
+   State
+   ============================================================ */
+const S = {
+  child: 'aarav', clinicIdx: 0, route: 'home', params: {}, stack: [],
+  filter: 'all', search: '', range: '90', payFilter: 'all', docsTab: 'invoices', footerOpen: false, trendOpen: false,
+  settings: { fee: 'stripe', flat: 3, blocked: ['debit', 'prepaid'], insurance: true, allowDelete: true, invoices: true, autopay: true, autopayMax: 200, checkIn: true,
+              consent: '' },
+  scenario: { loading: false, empty: false, failPay: false },
+  pay: null, result: null
+};
+const child = () => DATA[S.child];
+/* The app shows every clinic together (StatementScreen: one ClinicBalanceCard per clinic, one statement list with the
+   clinic name on each line when there is more than one). clinic() is only the clinic of the thing being opened or paid. */
+const multi = () => clinics().length > 1;
+const each = fn => clinics().flatMap((c, i) => fn(c, i));
+function locate(id) {                       // point clinic() at the clinic that owns an item / payment
+  if (S.scenario.empty) return;
+  const i = child().clinics.findIndex(c => c.items.some(x => x.id === id) || c.payments.some(x => x.id === id));
+  if (i >= 0) S.clinicIdx = i;
+}
+function payClinic(i, src = 'balance', ref) { S.clinicIdx = i; startPay(src, ref); }
+function openAlloc(id) { locate(id); openSheet(allocationSheet(clinic().payments.find(x => x.id === id), clinic())); }
+/* The app prints CAD and USD both as "$". When two of this child's centres share a symbol, the currency code is added
+   next to the amount so the parent can tell them apart (design addition; the app shows the centre name only). */
+const ambiguous = cur => { const sy = symFor(cur); return new Set(clinics().map(c => c.cur).filter(c => symFor(c) === sy)).size > 1; };
+const fmtc = (n, cur) => fmt(n, cur) + (ambiguous(cur) ? ` <span class="code">${cur}</span>` : '');
+/* Money in several currencies is never added up: one amount per currency, joined. */
+function moneyJoin(parts) {
+  const by = {};
+  parts.forEach(([n, cur]) => { by[cur] = r2((by[cur] || 0) + (n || 0)); });
+  const ks = Object.keys(by);
+  return ks.length ? ks.map(k => fmtc(by[k], k)).join(' · ') : fmt(0);
+}
+const clinic = () => S.scenario.empty ? EMPTY_CLINIC : child().clinics[S.clinicIdx] || child().clinics[0];
+const clinics = () => S.scenario.empty ? [EMPTY_CLINIC] : child().clinics;
+const billable = cl => cl.items.filter(i => ['session', 'custom', 'tentative'].includes(i.kind));
+const rowOut = i => r2((i.share || 0) - (i.paid || 0));            // rowOutstanding(): to_pay − patient_payment
+const TYPE_LABEL = { session: 'Session', tentative: 'Session', custom: 'Other charge', payment: 'Payment' }; // Statement “Type” column
+const fullyPaid = i => i.kind !== 'payment' && rowOut(i) <= 0.005;   // sessions_due[].fully_paid
+/* Row status, same as the parent web ParentStatementTable rowStatus() */
+function rowStatus(i) {
+  if (i.kind === 'payment') return ['Payment', 'blue'];
+  if (rowOut(i) <= 0.005) return ['Paid', 'green'];
+  if (i.paid > 0.005) return ['Partially paid', 'amber'];
+  return ['Due', 'red'];
+}
+
+/* Numbers mirror the clinic Statement tab:
+   Outstanding Amount = accountOutstanding() = server amountDue (billed lines) + not-billed-yet visit dues
+   Unapplied Credit   = sum of paymentRemaining() over non-failed payments (shown separately, not subtracted)
+   Totals row         = statementTotals(): Amount Charged, Paid By Payer, Patient Responsibility, Patient Paid, Outstanding */
+function totals(cl) {
+  const b = billable(cl);
+  const charged = r2(sum(b, i => i.charged)), ins = r2(sum(b, i => i.ins)), owed = r2(sum(b, i => i.share)), paid = r2(sum(b, i => i.paid));
+  const serverAmountDue = r2(sum(b.filter(i => i.kind !== 'tentative'), rowOut));
+  const unbilled = r2(sum(b.filter(i => i.kind === 'tentative'), rowOut));
+  const amountDue = r2(serverAmountDue + unbilled);
+  const still = amountDue;
+  const credit = r2(sum(cl.payments.filter(p => p.status !== 'failed'), p => p.remaining));
+  const received = r2(sum(cl.payments.filter(p => p.status !== 'failed'), p => p.amount));
+  const state = amountDue > 0.01 ? 'due' : amountDue < -0.01 ? 'credit' : 'settled';
+  return { charged, ins, owed, paid, still, credit, amountDue, unbilled, received, state };
+}
+
+/* ============================================================
+   Navigation
+   ============================================================ */
+/* Single-page hub: no tab bar. 'home' (the hub) is the only root; every other page is pushed on top of it. */
+const TABS = [];
+const TITLES = { home: 'Billing', activity: 'Statement', payments: 'Payment history', documents: 'Documents', cards: 'Saved cards', estimates: 'Estimates',
+  estimate: 'Estimate', benefits: 'Insurance benefits', 'pay-amount': 'Make a payment', 'pay-card': 'Payment method', 'pay-review': 'Review & pay', 'pay-result': '' };
+function go(route, params = {}) { S.stack.push({ route: S.route, params: S.params }); S.route = route; S.params = params; render(); }
+function back() { const p = S.stack.pop(); if (!p) return; S.route = p.route; S.params = p.params; render(); }
+/* open(route): reset to the hub, then push the page (so Back always lands on the hub). */
+function tab(route) { S.stack = []; S.route = 'home'; S.params = {}; closeSheet(true); if (route === 'home') render(); else go(route); }
+
+function render() {
+  const v = document.getElementById('view');
+  const c = child();
+  // Header = ParentHomeV2 header: on canvas, navy 16px title, profile switcher under it, 36px white icon buttons
+  let tb = '';
+  if (S.stack.length) tb += `<button class="iconbtn" aria-label="Back" onclick="back()">${BACK}</button>`;
+  tb += `<div class="hcopy"><h2>${TITLES[S.route] ?? ''}</h2>`;
+  if (S.route === 'home' || S.route === 'activity' || S.route === 'payments')
+    tb += `<button class="switcher" onclick="openChildSwitcher()" aria-label="Switch child"><span class="nm">${c.name}</span><span class="chev">${icon('down', 14)}</span></button>`;
+  tb += `</div>`;
+  if (S.route === 'home') tb += `<button class="iconbtn" aria-label="Help" onclick="toast('Billing guide')">${icon('help', 18)}</button><button class="iconbtn" aria-label="Notifications" onclick="toast('Notifications')">${icon('bell', 20)}</button>`;
+  document.getElementById('topbar').innerHTML = tb;
+  v.innerHTML = (SCREENS[S.route] || (() => ''))();
+  v.scrollTop = 0;
+  v.classList.remove('enter'); void v.offsetWidth; v.classList.add('enter');
+  // Tab bar only on the root (the Billing hub is the "Transactions" tab: focused = filled #4185F3 circle with the currency glyph)
+  const tbar = document.getElementById('tabbar');
+  const root = S.route === 'home';
+  tbar.style.display = root ? 'flex' : 'none';
+  const sym = symFor(clinics()[0]?.cur);   // DemoNavigator: the tab shows the primary centre's currency symbol
+  tbar.innerHTML = [['home', 'Home'], ['chat', 'Chat'], ['calendar', 'Schedule'], ['tx', 'Transactions'], ['user', 'Profile']].map(([k, l]) =>
+    k === 'tx' ? `<button class="on" aria-label="${l}" aria-current="true"><span class="cir">${sym}</span></button>`
+               : `<button aria-label="${l}" onclick="toast('${l} tab')">${icon(k, 26)}</button>`).join('');
+  renderNotes();
+  const q = document.getElementById('qscroll'); if (q) qaScroll(q);
+}
+
+/* ============================================================
+   Sheet + toast
+   ============================================================ */
+function openSheet(html) {
+  document.getElementById('sheet-sc').innerHTML = html;
+  document.getElementById('sheet-sc').scrollTop = 0;
+  const sh = document.getElementById('sheet');
+  sh.classList.remove('closing');
+  document.getElementById('backdrop').classList.add('open');
+  requestAnimationFrame(() => sh.classList.add('open'));
+}
+function closeSheet(instant) {
+  const sh = document.getElementById('sheet');
+  if (!sh.classList.contains('open')) return;
+  if (!instant) sh.classList.add('closing');
+  sh.classList.remove('open');
+  document.getElementById('backdrop').classList.remove('open');
+}
+let toastT;
+function toast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400);
+}
+function toggleAcc(el) { el.parentElement.classList.toggle('open'); }
+
+/* ============================================================
+   Shared fragments
+   ============================================================ */
+/* Payment status in a parent's words. Applied / partly applied / unapplied are all "Received"; any unused part shows as credit. */
+function payStatus(p, cur = clinic().cur) {
+  if (p.status === 'failed') return pill('Didn’t go through', 'red');
+  return pill('Received', 'green') + (p.remaining > 0.005 ? ' ' + pill(fmt(p.remaining, cur) + ' kept as credit', 'navy') : '');
+}
+const refundOf = p => (p.history || []).filter(h => h.type === 'Refunded').reduce((t, h) => t - (h.diff || 0), 0);
+const methodLabel = p => p.last4 ? `${p.method} •${p.last4}` : p.method;
+
+function activityRows(cl) {
+  return cl.items.slice().sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function rowHTML(it, cur, cl) {
+  const [lab, tone] = rowStatus(it);
+  const out = rowOut(it);
+  const title = it.kind === 'session' || it.kind === 'tentative' ? `${it.title} session` : it.title;
+  const meta = `${fd(it.date)}${it.sub ? ' · ' + it.sub.split(' · ').slice(-1)[0] : ''} · Your share ${fmt(it.share, cur)}${cl && multi() ? `<br><span class="ctag">${cl.name}</span>${ambiguous(cl.cur) ? ` <span class="code">${cl.cur}</span>` : ''}` : ''}`;
+  return `<button class="wrow" onclick="openItem('${it.id}')">
+    <span style="min-width:0"><div class="t n">${title}</div><div class="m">${meta}</div></span>
+    <span class="right"><span class="v" style="color:${out > 0.005 ? 'var(--ink)' : 'var(--p-green)'}">${out > 0.005 ? fmt(out, cur) : fmt(it.share, cur)}</span>${pill(lab, tone)}</span></button>`;
+}
+
+/* ============================================================
+   Screens
+   ============================================================ */
+const SCREENS = {};
+
+SCREENS.home = () => {
+  if (S.scenario.loading) return skeleton('home');
+  let h = '<div class="stack">';
+  h += quickActions();              // 1. billing pages: ParentQuickAction icon tiles, always visible at the top
+  h += balanceCard();               // 2. outstanding amount: one ClinicBalanceCard row per clinic, each with its own Pay
+  h += hubStatement();              // 3. Statement widget (all clinics)
+  h += thingsToKnow();              // 4. RemindersWidget-style cards (all clinics)
+  return h + '</div>';
+};
+
+/* ---------- top-right menu: the billing pages, grouped by feature ---------- */
+function menuBadges() {
+  const cs = clinics(), st = S.settings;
+  const failed = sum(cs, c => c.payments.filter(p => p.status === 'failed').length);
+  const overdue = st.invoices ? sum(cs, c => c.invoices.filter(i => i.status === 'overdue').length) : 0;
+  const lowAuth = st.insurance && !S.scenario.empty ? (child().benefits?.auths || []).filter(a => a.status === 'approved' && a.remaining <= 3).length : 0;
+  return { failed, overdue, lowAuth, total: failed + overdue + lowAuth };
+}
+/* Billing pages as the app's QuickActionsWidget: a horizontally scrolling row of ParentQuickAction tiles
+   (48px white box, teal lucide icon, 12px label) with the small teal scroll indicator under it.
+   One plain row, no headers; tiles are ordered by feature (payments, documents, insurance).
+   A red corner badge (the tab bar's iconCornerBadge) marks pages that need attention. */
+function quickActions() {
+  const b = menuBadges(), st = S.settings;
+  const qa = (ic, label, on, n) => `<button class="qa" onclick="${on}"><span class="box">${icon(ic, 24)}${n ? `<span class="dotc">${n}</span>` : ''}</span><span class="lbl">${label}</span></button>`;
+  const docs = t => `S.docsTab='${t}';go('documents')`;
+  const groups = [
+    ['wallet', 'Payments', [qa('receipt', 'Payment history', `go('payments')`, b.failed), qa('card', 'Saved cards', `go('cards')`)]],
+    ['folder', 'Documents', [st.invoices && qa('doc', 'Invoices', docs('invoices'), b.overdue), qa('stmt', 'Statement PDF', `openStatementSheet()`), qa('est', 'Estimates', docs('estimates'))]],
+    ['shield', 'Insurance', [st.insurance && qa('shield', 'Coverage', `go('benefits')`, b.lowAuth), qa('superbill', 'Get Superbill', `openSuperbillSheet()`)]]
+  ];
+  return `<section class="qsec"><div class="qwrap">
+    <div class="qscroll" id="qscroll" onscroll="qaScroll(this)" onwheel="qaWheel(event,this)" onpointerdown="qaDrag(event,this)">${groups.flatMap(([, , tiles]) => tiles.filter(Boolean)).join('')}</div>
+    <button class="qarrow l" id="qa-l" aria-label="Scroll left" onclick="qaStep(-1)">${CHEV.replace('class="chev"', 'class="chev" style="transform:rotate(180deg)"')}</button>
+    <button class="qarrow r" id="qa-r" aria-label="Scroll right" onclick="qaStep(1)">${CHEV}</button></div>
+    <div class="qind"><i id="qthumb"></i></div></section>`;
+}
+/* Touch scrolls natively; on desktop the wheel/trackpad scrolls the row sideways, it can be dragged, and edge arrows jump. */
+function qaScroll(el) {
+  const max = el.scrollWidth - el.clientWidth, th = document.getElementById('qthumb');
+  if (th) th.style.transform = `translateX(${max > 0 ? (el.scrollLeft / max) * 20 : 0}px)`;
+  const l = document.getElementById('qa-l'), r = document.getElementById('qa-r');
+  if (l) l.classList.toggle('show', el.scrollLeft > 4);
+  if (r) r.classList.toggle('show', el.scrollLeft < max - 4);
+}
+function qaWheel(e, el) {
+  if (el.scrollWidth <= el.clientWidth) return;
+  const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  const max = el.scrollWidth - el.clientWidth;
+  if ((d > 0 && el.scrollLeft >= max - 1) || (d < 0 && el.scrollLeft <= 0)) return;   // at the end: let the page scroll
+  e.preventDefault(); el.scrollLeft += d;
+}
+function qaStep(dir) { const el = document.getElementById('qscroll'); if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: reduced ? 'auto' : 'smooth' }); }
+function qaDrag(e, el) {
+  if (e.pointerType !== 'mouse') return;
+  const x0 = e.clientX, s0 = el.scrollLeft; let moved = false;
+  const move = ev => { const dx = ev.clientX - x0; if (Math.abs(dx) > 4) moved = true; el.scrollLeft = s0 - dx; };
+  const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up);
+    if (moved) {   // swallow only the click that ends this drag, never a later tap
+      const block = ev => { ev.stopPropagation(); ev.preventDefault(); };
+      el.addEventListener('click', block, true);
+      setTimeout(() => el.removeEventListener('click', block, true), 60);
+    } };
+  window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
+}
+
+/* One row per clinic = ClinicBalanceCard: clinic name, "$X due" (coral) or "No dues" (green), Pay Now / Pay More.
+   Only clinics the child is linked to can be paid; credit shows on the primary (first) clinic. */
+function clinicRows() {
+  return each((cl, i) => {
+    const t = totals(cl), due = t.amountDue > 0.005;
+    const right = !cl.enrolled ? `<span class="contact">Contact the clinic to pay</span>`
+      : `<button class="paynow" onclick="payClinic(${i})">${due ? 'Pay Now' : 'Pay More'}</button>`;
+    return `<div class="crow"><div style="min-width:0"><div class="cn">${cl.name}${multi() ? `<span class="code">${cl.cur}</span>` : ''}</div>
+        <div class="amount ${due ? 'due' : ''}">${due ? fmt(t.amountDue, cl.cur) + ' due' : 'No dues'}</div>
+        ${i === 0 && t.credit > 0.005 ? `<div class="muted12" style="margin-top:0">Credit on account ${fmt(t.credit, cl.cur)}</div>` : ''}</div>${right}</div>`;
+  }).join('');
+}
+
+/* Statement widget: every clinic's lines in one list (clinic name on each line when there is more than one). */
+function allRows() { return each((cl, i) => cl.items.map(it => ({ it, cl, i }))).sort((a, b) => b.it.date.localeCompare(a.it.date)); }
+function hubStatement() {
+  const cs = clinics(), rows = allRows().slice(0, 3);
+  const body = rows.length ? rows.map(r => rowHTML(r.it, r.cl.cur, r.cl)).join('') : `<div class="muted12">No charges yet. Visits appear here once insurance has processed them.</div>`;
+  const T = cs.map(c => [c, totals(c)]);
+  const anyDue = T.some(([, t]) => t.still > 0.005);
+  return `<div class="wcard"><div class="whead"><div class="wtitle"><span class="wicon">${icon('stmt', 17)}</span><b>Statement</b></div>
+      <button class="wlink" onclick="tab('activity')">View All</button></div>
+    ${multi() ? `<div class="muted12" style="margin-top:-4px">Each centre bills in its own currency, so amounts aren’t added together. See each centre’s balance above.</div>` : `<div>
+      <div class="wrow"><span class="t n">Your share</span><span class="v">${moneyJoin(T.map(([c, t]) => [t.owed, c.cur]))}</span></div>
+      <div class="wrow"><span class="t n">You paid</span><span class="v" style="color:var(--p-green)">${moneyJoin(T.map(([c, t]) => [t.paid, c.cur]))}</span></div>
+      <div class="wrow"><span class="t">Outstanding</span><span class="v" style="color:${anyDue ? 'var(--p-coral)' : 'var(--p-green)'}">${moneyJoin(T.map(([c, t]) => [t.still, c.cur]))}</span></div>
+    </div>`}
+    <div class="muted12" style="margin-top:-4px">${STATEMENT_NOTE}</div>
+    <div>${body}</div>
+    <div class="wbtns"><button class="wbtn" onclick="openStatementSheet()">${icon('doc', 16)} Download PDF</button></div></div>`;
+}
+
+/* Outstanding amount = the BillingWidget card holding one ClinicBalanceCard row per clinic,
+   then the last payment (any clinic) with the outlined "View" receipt, and "View statement". */
+function balanceCard() {
+  const last = each((cl) => cl.payments.filter(p => p.status !== 'failed').map(p => ({ p, cl }))).sort((a, b) => b.p.date.localeCompare(a.p.date))[0];
+  let h = `<div class="wcard"><div class="whead"><div class="wtitle"><span class="wicon">${icon('dollar', 17)}</span><b>Outstanding amount</b></div>
+      ${multi() ? `<span class="wbadge">${clinics().length} centres</span>` : ''}</div>
+    <div>${clinicRows()}</div>`;
+  if (last) h += `<div class="wrow" style="border-top:1px solid var(--line);padding-top:10px;border-bottom:none;padding-bottom:0"><div><div class="t">Last payment</div>
+      <div class="m">${fd(last.p.date)} · ${methodLabel(last.p)}${multi() ? ` · <span class="ctag">${last.cl.name}</span>` : ''}</div></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="v">${fmtc(last.p.amount, last.cl.cur)}</span>${last.p.receipt ? `<button class="outline-sm" onclick="toast('Opening receipt PDF…')">View</button>` : ''}</div></div>`;
+  h += `<div class="wbtns"><button class="wbtn" onclick="tab('activity')">View statement</button></div></div>`;
+  return h;
+}
+
+/* Things to know = RemindersWidget: section header with a count badge, then one card per item with a teal action. */
+function thingsToKnow() {
+  const items = each(cl => attention(cl));
+  return `<section class="qsec"><div class="whead"><div class="wtitle"><span class="wicon">${icon('bell', 17)}</span><b>Things to know</b>${items.length ? `<span class="wcount">${items.length}</span>` : ''}</div></div>
+    ${items.length ? items.join('') : `<div class="rcard"><span class="ri">${icon('info', 18)}</span><span class="rt"><b>Nothing needs your attention</b><span>We’ll let you know when something changes.</span></span></div>`}</section>`;
+}
+const STATEMENT_NOTE = 'Your share is based on claims insurance has paid, plus other charges. Claims still being processed, or rejected, aren’t included yet.';
+
+function attention(cl) {
+  const out = [], cur = cl.cur;
+  const tag = multi() ? `<span class="ctag">${cl.name}</span> · ` : '';
+  const card = (ic, tone, t, s, btn, on, noTag) => `<div class="rcard"><span class="ri ${tone}">${icon(ic, 18)}</span><span class="rt"><b>${t}</b><span>${noTag ? '' : tag}${s}</span></span><button class="rbtn" onclick="${on}">${btn}</button></div>`;
+  const failed = cl.payments.filter(p => p.status === 'failed');
+  if (failed.length) out.push(card('alert', 'red', `${failed.length} payment${failed.length > 1 ? 's' : ''} didn’t go through`, failed[0].failure, 'Retry', `go('payments',{filter:'failed'})`));
+  if (S.settings.invoices) {
+    cl.invoices.filter(i => i.status === 'overdue').forEach(i => out.push(card('doc', 'red', `Invoice ${i.num} is overdue`, `${fmt(i.amount - i.paid, cur)} · was due ${fd(i.due)}`, 'View', `S.docsTab='invoices';go('documents')`)));
+    cl.invoices.filter(i => i.status === 'outstanding' && daysAgo(i.issued) <= 14).forEach(i => out.push(card('doc', '', `New invoice ${i.num}`, `${fmt(i.amount - i.paid, cur)} · due ${fd(i.due)}`, 'View', `S.docsTab='invoices';go('documents')`)));
+  }
+  if (S.settings.insurance && !S.scenario.empty && cl === clinics()[0]) {
+    benefitAlerts(child().benefits).forEach(a => out.push(card('shield', a.tone === 'red' ? 'red' : 'amber', a.title, a.sub, 'View', `go('benefits')`, true)));
+  }
+  cl.payments.filter(p => p.refundStatus === 'processing').forEach(p => out.push(card('receipt', 'amber', 'Refund in progress', methodLabel(p), 'View', `openItem('${p.id}')`)));
+  return out;
+}
+
+/* ---------- Activity (= clinic Statement tab) ---------- */
+SCREENS.activity = () => {
+  if (S.scenario.loading) return skeleton('list');
+  const F = [['all', 'All'], ['unpaid', 'Unpaid'], ['paid', 'Paid']];
+  // Header = the clinic Statement tab header: Outstanding Amount + Unapplied Credit, then the actions (Pay, Print).
+  // Header = the app's Statement screen: one ClinicBalanceCard per clinic, then Download PDF
+  let h = `<div class="wcard" style="margin-bottom:12px"><div>${clinicRows()}</div>
+    <div class="wbtns"><button class="wbtn" onclick="openStatementSheet()">${icon('doc', 16)} Download PDF</button></div></div>`;
+  h += `<div class="search" style="margin-top:4px">${icon('list', 16)}<input placeholder="Search item, therapy, description…" value="${S.search}" oninput="S.search=this.value;refreshActivity()" aria-label="Search statement"></div>`;
+  h += `<div class="chips">${F.map(([k, l]) => `<button class="chip ${S.filter === k ? 'on' : ''}" onclick="S.filter='${k}';render()">${l}</button>`).join('')}</div>`;
+  const rl = { '30': 'Last 30 days', '90': 'Last 3 months', 'year': 'This year', 'all': 'All time' }[S.range];
+  h += `<div class="rangebar"><span>${rl}</span><button onclick="openRangeSheet()">Change</button></div>`;
+  h += `<div class="info" style="margin-top:8px">${icon('info', 16)}<span>${STATEMENT_NOTE}</span></div>`;
+  h += `<div id="act-list">${activityList()}</div>`;
+  return h;
+};
+function refreshActivity() { document.getElementById('act-list').innerHTML = activityList(); }
+function activityList() {
+  const q = S.search.trim().toLowerCase();
+  let rows = allRows();
+  const minDate = S.range === 'all' ? '0000' : S.range === 'year' ? '2026-01-01' : (() => { const d = dt(TODAY); d.setDate(d.getDate() - +S.range); return d.toISOString().slice(0, 10); })();
+  rows = rows.filter(x => x.it.date >= minDate);
+  rows = rows.filter(({ it: r }) => {
+    switch (S.filter) {
+      case 'unpaid': return r.kind !== 'payment' && !fullyPaid(r);   // Statement "Unpaid" (fully_paid false)
+      case 'paid': return fullyPaid(r);                               // Statement "Paid"
+      default: return true;
+    }
+  });
+  if (q) rows = rows.filter(({ it: r, cl }) => [r.title, r.sub, r.desc, cl.name].filter(Boolean).join(' ').toLowerCase().includes(q));
+  if (!each(c => c.items).length) return emptyBlock('🧾', 'No charges yet', 'Visits appear here once insurance has processed them, along with any other charges.');
+  if (!rows.length) return `<div class="empty"><div class="em">🔎</div><b>Nothing matches these filters</b><button class="btn secondary sm" style="margin:10px auto 0" onclick="S.filter='all';S.search='';S.range='all';render()">Clear filters</button></div>`;
+  // One WidgetCard per month, rows split by the 1px divider (DocumentPreviewRow)
+  let h = '<div class="stack" style="margin-top:12px">', m = '', open = false;
+  rows.forEach(({ it: r, cl }) => {
+    const mm = fd(r.date, { month: 'long', year: 'numeric' });
+    if (mm !== m) { if (open) h += '</div></div>'; h += `<div class="month">${mm}</div><div class="wcard"><div>`; m = mm; open = true; }
+    h += rowHTML(r, cl.cur, cl);
+  });
+  if (open) h += '</div></div>';
+  h += '</div>';
+  // Statement "Total" row: statementTotals() over the lines in view
+  const b = rows.filter(x => x.it.kind !== 'payment');
+  const mj = f => moneyJoin(b.map(x => [f(x.it), x.cl.cur]));
+  // Multi-centre: no totals bar. The app never adds amounts across currencies; each centre's balance is at the top.
+  if (multi()) return h + `<div class="muted12" style="text-align:center;margin-top:12px">${b.length} lines · each centre’s balance is at the top</div>`;
+  h += `<div class="footer-totals"><button class="main" onclick="S.footerOpen=!S.footerOpen;refreshActivity()" aria-expanded="${S.footerOpen}">
+      <span style="white-space:nowrap">Outstanding <span class="muted12">· ${b.length} lines</span></span><span style="text-align:right">${mj(rowOut)} ${S.footerOpen ? '▾' : '▴'}</span></button>
+    ${S.footerOpen ? `<div class="grid"><span>Amount charged</span><b>${mj(i => i.charged)}</b><span>Insurance paid</span><b>${mj(i => i.ins)}</b>
+      <span>Your share</span><b>${mj(i => i.share)}</b><span>You paid</span><b>${mj(i => i.paid)}</b><span>Outstanding</span><b>${mj(rowOut)}</b></div>` : ''}</div>`;
+  return h;
+}
+function openRangeSheet() {
+  const o = [['30', 'Last 30 days'], ['90', 'Last 3 months'], ['year', 'This year'], ['all', 'All time']];
+  openSheet(`<h3>Date range</h3><div style="margin-top:12px">${o.map(([k, l]) => `<button class="opt ${S.range === k ? 'on' : ''}" onclick="S.range='${k}';closeSheet();render()"><span class="radio"></span>${l}</button>`).join('')}</div>`);
+}
+
+/* ---------- Detail sheets (from the Statement tab popups) ---------- */
+function openItem(id) {
+  locate(id);
+  const cl = clinic();
+  const it = cl.items.find(x => x.id === id);
+  if (it) {
+    if (it.kind === 'payment') return openSheet(paymentLineSheet(it, cl));
+    return openSheet(sessionSheet(it, cl));
+  }
+  const p = cl.payments.find(x => x.id === id);
+  if (p) openSheet(paymentSheet(p, cl));
+}
+const paymentsTable = (ps, cur) => `<table class="mini">${ps.map(a => `<tr><td>${fd(a.date)} · ${a.mode}${a.desc ? `<div class="muted xs">${a.desc}</div>` : ''}</td><td>${fmt(a.amt, cur)}</td></tr>`).join('')}</table>`;
+
+function sessionSheet(it, cl) {
+  const cur = cl.cur, due = rowOut(it), isS = it.kind === 'session' || (it.kind === 'tentative');
+  const insKnown = it.ins !== undefined;
+  const [lab, tone] = rowStatus(it);
+  let h = `<h3>${isS ? it.title + ' session' : it.title}</h3><div class="muted small">${fdy(it.date)} · ${it.sub || ''} · ${cl.name}</div>
+    <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${pill(lab, tone)}${pill(TYPE_LABEL[it.kind], 'grey')}</div>`;
+  if (isS && it.era) h += `<div class="muted xs" style="margin-top:6px">Insurance paid on ${fdy(it.era)}</div>`;
+  h += `<div class="section-title">${isS ? 'How this was billed' : 'Charge'}</div><div class="card" style="padding:8px 14px">`;
+  if (isS) {
+    h += `<div class="kv"><span>Clinic charge</span><span>${fmt(it.charged, cur)}</span></div>
+          ${(it.charges || []).length > 1 ? it.charges.map(c => `<div class="kv small muted"><span>· ${c.type}</span><span>${fmt(c.amt, cur)}</span></div>`).join('') : ''}
+          <div class="kv"><span>Insurance paid</span>${insKnown ? `<span class="neg">−${fmt(it.ins, cur)}</span>` : '<span class="muted">—</span>'}</div>
+          <div class="kv total"><span>Your share</span><span>${fmt(it.share, cur)}</span></div>`;
+  } else {
+    h += `<div class="kv"><span>${it.sub || 'Charge'}</span><span>${fmt(it.share, cur)}</span></div>`;
+  }
+  h += `<div class="kv"><span>You paid</span><span class="neg">−${fmt(it.paid, cur)}</span></div>
+        <div class="kv total big"><span>Outstanding</span><span style="color:${due > 0.005 ? 'var(--red)' : 'var(--green)'}">${fmt(due, cur)}</span></div></div>`;
+  if (it.payments?.length) {
+    h += `<div class="acc open"><button onclick="toggleAcc(this)">Your payments on this visit (${it.payments.length}) ${CHEV}</button><div class="in">${paymentsTable(it.payments, cur)}</div></div>`;
+  }
+  if (isS && S.settings.insurance) h += `<button class="btn ghost sm" style="padding-left:0;margin-top:6px" onclick="closeSheet(true);go('benefits')">See your plan benefits ›</button>`;
+  h += `<div style="display:grid;gap:8px;margin-top:12px">
+    <button class="btn secondary" onclick="askClinic('${(isS ? it.title + ' session' : it.title)} on ${fd(it.date)}')">Ask the clinic about this</button></div>`;
+  return h;
+}
+
+function paymentLineSheet(it, cl) {
+  return `<h3>Payment · ${fmt(it.amount, cl.cur)}</h3><div class="muted small">${fdy(it.date)} · ${it.sub || ''}</div>
+    <div style="margin-top:8px">${pill('Payment', 'blue')}</div>
+    <div class="info">ℹ️ <span>A payment recorded on your statement. Open it in Payment history for the receipt and what it paid for.</span></div>
+    <button class="btn secondary" style="margin-top:14px" onclick="closeSheet(true);go('payments')">Open payment history</button>`;
+}
+
+function paymentSheet(p, cl) {
+  const cur = cl.cur, rf = refundOf(p);
+  let h = `<h3>${p.status === 'failed' ? 'Payment failed' : 'Payment'} · ${fmt(p.amount, cur)}</h3>
+    <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${payStatus(p)}${rf ? pill('Refunded ' + fmt(rf, cur), 'red') : ''}</div>
+    <div class="card" style="padding:8px 14px;margin-top:12px">
+      <div class="kv"><span class="muted">Date</span><span>${fdy(p.date)}</span></div>
+      <div class="kv"><span class="muted">Paid with</span><span>${methodLabel(p)}</span></div>
+      ${p.desc ? `<div class="kv"><span class="muted">Note</span><span>${p.desc}</span></div>` : ''}
+      <div class="kv"><span class="muted">Clinic</span><span>${cl.name}</span></div>
+      ${p.gfe ? `<div class="kv"><span class="muted">Applied to estimate</span><span>${p.gfe}</span></div>` : ''}
+      ${p.status !== 'failed' && p.remaining > 0.005 ? `<div class="kv"><span class="muted">Kept as credit</span><span style="color:var(--navy)">${fmt(p.remaining, cur)}</span></div>` : ''}
+    </div>`;
+  if (p.status === 'failed') {
+    h += `<div class="info err">⚠️ <span>${p.failure}</span></div>
+      ${cl.enrolled ? `<button class="btn" style="margin-top:16px" onclick="startPay('retry','${p.id}')">Try again</button>` : ''}`;
+    return h;
+  }
+  h += `<div class="btnrow" style="margin-top:12px">
+    ${p.receipt ? `<button class="btn secondary" onclick="toast('Opening receipt PDF…')">${icon('receipt', 18)} Receipt</button>` : ''}
+    ${p.alloc?.length ? `<button class="btn secondary" onclick="openAlloc('${p.id}')">${icon('alloc', 18)} What it paid for</button>` : ''}</div>`;
+  if (p.history?.length) {
+    const col = { Original: '#389e0d', Edited: '#096dd9', Refunded: '#cf1322' };
+    h += `<div class="section-title">Refund timeline</div><div class="tl">${p.history.map(e => `<div class="ev" style="--c:${col[e.type]}">
+      <b class="small">${e.type}</b> · <span class="small">${fmt(e.amount, cur)}${e.diff ? ` (${e.diff > 0 ? '+' : '−'}${fmt(Math.abs(e.diff), cur)})` : ''}</span>
+      <div class="muted xs">${fdy(e.date)}${e.processed ? ` · Refunded to card on ${fd(e.processed)}` : ''}</div></div>`).join('')}</div>
+      ${p.feeCharged ? `<div class="info">ℹ️ <span>Convenience fees aren’t refunded.</span></div>` : ''}`;
+  }
+  return h;
+}
+
+/* "What it paid for": the clinic's payment allocation report for ONE payment, in a parent's words.
+   Each line = a charge on the statement, how much of this payment went to it, and what is left to pay on it. */
+function allocationSheet(p, cl) {
+  const cur = cl.cur, used = r2(sum(p.alloc, a => a.thisPay));
+  return `<h3>What this payment paid for</h3><div class="muted small">${fmt(p.amount, cur)} on ${fdy(p.date)} · ${methodLabel(p)}</div>
+    <div class="wcard" style="margin-top:12px;gap:0">${p.alloc.map(a => `<div class="li" style="align-items:flex-start;padding:10px 0">
+      <span class="body"><div class="t">${a.desc.split(' · ')[0]} session</div>
+        <div class="s">Visit on ${fdy(a.dos)}${a.desc.includes(' · ') ? ' · ' + a.desc.split(' · ').slice(1).join(' · ') : ''}</div>
+        <div class="s" style="margin-top:2px">Your share ${fmt(a.share, cur)} · ${a.bal > 0.005 ? `<b style="color:var(--red)">${fmt(a.bal, cur)} left to pay</b>` : '<b style="color:var(--green)">Paid in full</b>'}</div></span>
+      <span class="r" style="font-weight:600;color:var(--green);white-space:nowrap">${fmt(a.thisPay, cur)}</span></div>`).join('')}
+      ${p.remaining > 0.005 ? `<div class="li"><span class="body"><div class="t">Kept as credit</div><div class="s">Used on your next charges</div></span><span class="r" style="font-weight:600;color:var(--navy)">${fmt(p.remaining, cur)}</span></div>` : ''}
+    </div>
+    <div class="kv total" style="margin-top:6px"><span>Total</span><span>${fmt(r2(used + (p.remaining || 0)), cur)}</span></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button class="btn secondary" onclick="toast('Opening receipt PDF…')">${icon('receipt', 18)} Receipt</button>
+      <button class="btn secondary" onclick="toast('Shared as PDF')">Share as PDF</button></div>`;
+}
+
+function askClinic(subject) {
+  openSheet(`<h3>Ask ${clinic().name}</h3><div class="field"><label>Subject</label><input class="input" value="Question about ${subject}"></div>
+    <div class="field"><label>Message</label><textarea class="input" rows="4" placeholder="Type your question…"></textarea></div>
+    <button class="btn" style="margin-top:14px" onclick="closeSheet();toast('Message sent to ${clinic().name}')">Send</button>`);
+}
+
+/* ---------- Payments ---------- */
+SCREENS.payments = () => {
+  if (S.params.filter) { S.payFilter = S.params.filter; S.params.filter = null; }
+  const cs = clinics();
+  const F = [['all', 'All'], ['received', 'Received'], ['failed', 'Didn’t go through'], ['refunded', 'Refunded']];
+  let ps = each((c, i) => c.payments.map(p => ({ ...p, _cl: c, _i: i }))).sort((a, b) => b.date.localeCompare(a.date));
+  if (S.payFilter === 'refunded') ps = ps.filter(p => refundOf(p) > 0);
+  else if (S.payFilter === 'received') ps = ps.filter(p => p.status !== 'failed');
+  else if (S.payFilter !== 'all') ps = ps.filter(p => p.status === S.payFilter);
+  const t0 = totals(cs[0]);
+  let h = multi()
+    ? `<div class="wcard" style="margin-bottom:12px"><div class="muted12" style="margin-top:0">Payments received, per centre</div><div>
+        ${cs.map((c, i) => `<div class="wrow"><span class="t n">${c.name}<span class="code">${c.cur}</span></span><span class="v" style="color:var(--ink)">${fmt(totals(c).received, c.cur)}</span></div>`).join('')}
+        ${t0.credit > 0.005 ? `<div class="wrow"><span class="t n">Credit on account · ${cs[0].name}</span><span class="v" style="color:var(--p-blue)">${fmt(t0.credit, cs[0].cur)}</span></div>` : ''}</div></div>`
+    : `<div class="wcard" style="margin-bottom:12px"><div>
+    <div class="wrow"><span class="t n">Payments received</span><span class="v" style="color:var(--ink)">${fmt(t0.received, cs[0].cur)}</span></div>
+    <div class="wrow"><span class="t n">Credit on account</span><span class="v" style="color:var(--p-blue)">${fmt(t0.credit, cs[0].cur)}</span></div></div></div>`;
+  h += `<div class="chips">${F.map(([k, l]) => `<button class="chip ${S.payFilter === k ? 'on' : ''}" onclick="S.payFilter='${k}';render()">${l}</button>`).join('')}</div><div style="height:8px"></div>`;
+  if (!each(c => c.payments).length) return h + emptyBlock('💳', 'No payments yet', 'Payments you make will show up here with receipts.');
+  if (!ps.length) return h + `<div class="empty"><b>No payments match this filter</b></div>`;
+  h += ps.map(p => {
+    const rf = refundOf(p), cl = p._cl, cur = cl.cur;
+    return `<div class="wcard" style="margin-bottom:12px;gap:8px">
+      <div class="whead"><span class="amount" style="color:var(--ink)">${fmtc(p.amount, cur)}</span>
+        <span style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${rf ? pill('Refunded ' + fmt(rf, cur), 'red') : ''}${payStatus(p, cur)}</span></div>
+      <div class="muted12" style="margin-top:-6px">${fdy(p.date)} · ${methodLabel(p)}${p.desc ? ` · “${p.desc}”` : ''}${multi() ? `<br><span class="ctag">${cl.name}</span>` : ''}</div>
+      ${p.status === 'failed' ? `<div class="muted12" style="color:var(--p-red);margin-top:0">${p.failure}</div>` : ''}
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        ${p.status === 'failed' ? (cl.enrolled ? `<button class="paynow" onclick="payClinic(${p._i},'retry','${p.id}')">Try again</button>` : '') :
+          `${p.receipt ? `<button class="outline-sm" onclick="toast('Opening receipt PDF…')">View receipt</button>` : ''}
+           ${p.alloc?.length ? `<button class="outline-sm" onclick="openAlloc('${p.id}')">What it paid for</button>` : ''}`}
+        <button class="wlink" style="margin-left:auto;font-size:12px" onclick="openItem('${p.id}')">Details</button></div></div>`;
+  }).join('');
+  return h;
+};
+
+/* ---------- Documents ---------- */
+SCREENS.documents = () => {
+  const tabs = [S.settings.invoices && ['invoices', 'Invoices'], ['estimates', 'Estimates']].filter(Boolean);
+  if (!tabs.find(t => t[0] === S.docsTab)) S.docsTab = tabs[0][0];
+  let h = `<div class="seg" role="tablist" style="font-size:12px">${tabs.map(([k, l]) => `<button role="tab" class="${S.docsTab === k ? 'on' : ''}" onclick="S.docsTab='${k}';render()">${l}</button>`).join('')}</div><div style="height:12px"></div>`;
+  // Every clinic's documents, one block per clinic with its name when there is more than one
+  // Only centres that have something on this tab; one empty message when none do
+  const has = cl => S.docsTab === 'invoices' ? cl.invoices.length : cl.estimates.length;
+  const withDocs = each((cl, i) => has(cl) ? [[cl, i]] : []);
+  if (!withDocs.length) return h + (S.docsTab === 'invoices'
+    ? `<div class="wcard"><div class="muted12" style="margin-top:0">No invoice yet. When a clinic sends one, the latest appears here.</div></div>`
+    : emptyBlock('📝', 'No estimates', 'Good Faith Estimates from your clinic will appear here.'));
+  return h + withDocs.map(([cl, i], n) => (multi() ? `<div class="month" style="margin:${n ? 16 : 0}px 2px 8px">${cl.name}</div>` : '') + docsFor(cl, i)).join('');
+};
+function docsFor(cl, ci) {
+  const cur = cl.cur;
+  let h = '';
+  if (S.docsTab === 'invoices') {
+    const tone = { paid: ['Paid', 'green'], outstanding: ['Due', 'amber'], overdue: ['Overdue', 'red'], overpaid: ['Overpaid', 'navy'], nodue: ['Nothing due', 'grey'] };
+    const inv = cl.invoices.slice().sort((a, b) => b.issued.localeCompare(a.issued))[0];
+    if (!inv) return h + `<div class="wcard"><div class="muted12" style="margin-top:0">No invoice yet. When the clinic sends one, the latest appears here.</div></div>`;
+    const [lab, tn] = tone[inv.status];
+    h += `<div class="wcard"><div class="whead"><div><div class="t" style="font-size:14px;font-weight:600;color:var(--ink)">Latest invoice · ${inv.num}</div>
+        <div class="muted12">${fd(inv.start)} – ${fdy(inv.end)} · Due ${fd(inv.due)}</div></div>${pill(lab, tn)}</div>
+      <div class="wrow" style="padding:0;border:none"><span class="t n">Amount</span><span class="v" style="color:var(--ink)">${fmtc(inv.amount, cur)}</span></div>
+      <div class="wbtns"><button class="wbtn" onclick="toast('Opening ${inv.num} PDF…')">${icon('doc', 16)} View invoice</button></div></div>`;
+  } else if (S.docsTab === 'estimates') {
+    h += cl.estimates.length ? `<div class="list">${cl.estimates.map(g => `<button class="li" onclick="S.clinicIdx=${ci};go('estimate',{id:'${g.id}'})"><span class="ic" style="background:var(--navy-bg)">📝</span><span class="body"><div class="t">${g.name}</div><div class="s">${fdy(g.date)} · Estimated ${fmt(g.total, cur)}</div></span>${CHEV}</button>`).join('')}</div>`
+      : emptyBlock('📝', 'No estimates', 'Good Faith Estimates from your clinic will appear here.');
+  }
+  return h;
+};
+/* Statement PDF, made on demand for a date range (StatementScreen's Statement button / parent web StatementPdf).
+   Default range = the Statement screen's: start of the month 3 months ago to the end of this month. */
+const rangeDefault = () => { const d = dt(TODAY); const a = new Date(d.getFullYear(), d.getMonth() - 3, 1), b = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+  const iso = x => `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; return [iso(a), iso(b)]; };
+function pdfSheet(kind) {
+  const [a, b] = rangeDefault(), isS = kind === 'statement';
+  openSheet(`<h3>${isS ? 'Download statement' : 'Get a superbill'}</h3>
+    <div class="muted small">${isS ? `A PDF of every charge and payment in these dates${multi() ? ', for every centre' : ''}.` : 'A PDF of your visits with the codes your insurer needs, so you can claim the cost back yourself.'}</div>
+    <div class="field"><label>From</label><input type="date" class="input" id="pdf-from" value="${a}"></div>
+    <div class="field"><label>To</label><input type="date" class="input" id="pdf-to" value="${b}"></div>
+    <button class="btn" style="margin-top:16px" onclick="makePdf('${kind}')">${isS ? 'Download PDF' : 'Create superbill'}</button>`);
+}
+const openStatementSheet = () => pdfSheet('statement');
+const openSuperbillSheet = () => pdfSheet('superbill');
+function makePdf(kind) {
+  const f = document.getElementById('pdf-from').value, t = document.getElementById('pdf-to').value;
+  closeSheet(); toast(`${kind === 'statement' ? 'Statement' : 'Superbill'} for ${fd(f)} – ${fdy(t)} ready, opening PDF…`);
+}
+
+/* ---------- Cards ---------- */
+SCREENS.cards = () => {
+  const c = child(), st = S.settings;
+  let h = c.cards.map(k => `<div class="ccard ${k.brand === 'Visa' ? 'visa' : 'mc'}">
+      <div class="top"><span>${k.brand.toUpperCase()}</span>${k.isDefault ? pill('★ Default', 'blue') : ''}</div>
+      <div class="num">•••• •••• •••• ${k.last4}</div>
+      <div class="bot"><span>Exp ${k.exp} · ${k.type}</span><span>${k.hsa ? 'HSA / FSA' : ''}</span></div></div>
+    <div class="ccard-actions">
+      <div class="kv"><span>HSA / FSA card</span><button class="switch ${k.hsa ? 'on' : ''}" role="switch" aria-checked="${k.hsa}" aria-label="HSA or FSA card" onclick="toggleHsa('${k.id}')"></button></div>
+      <div class="btnrow" style="margin-top:6px">
+        ${k.isDefault ? '' : `<button class="btn secondary sm" onclick="confirmDefault('${k.id}')">Set as default</button>`}
+        ${st.allowDelete ? `<button class="btn danger sm" onclick="confirmRemove('${k.id}')">Remove</button>` : ''}</div></div>`).join('');
+  if (!c.cards.length) h += emptyBlock('💳', 'No saved cards', 'Add a card to pay faster next time.');
+  h += `<button class="btn" onclick="openAddCard()">+ Add a card</button>`;
+  return h;
+};
+function toggleHsa(id) { const k = child().cards.find(x => x.id === id); k.hsa = !k.hsa; render(); toast(k.hsa ? 'Marked as HSA / FSA card' : 'Marked as regular card'); }
+function confirmDefault(id) {
+  const k = child().cards.find(x => x.id === id);
+  openSheet(`<h3>Make ${k.brand} •${k.last4} your default?</h3><div class="muted small" style="margin:6px 0 14px">It will be pre-selected when you pay.</div>
+    <button class="btn" onclick="child().cards.forEach(c=>c.isDefault=c.id==='${id}');closeSheet();render();toast('Default card updated')">Set as default</button>
+    <button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+}
+function confirmRemove(id) {
+  const k = child().cards.find(x => x.id === id);
+  openSheet(`<h3>Remove ${k.brand} •${k.last4}?</h3><div class="muted small" style="margin:6px 0 14px">You can add it again later.</div>
+    <button class="btn danger" onclick="DATA[S.child].cards=child().cards.filter(c=>c.id!=='${id}');if(!child().cards.some(c=>c.isDefault)&&child().cards[0])child().cards[0].isDefault=true;closeSheet();render();toast('Card removed')">Remove card</button>
+    <button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+}
+function openAddCard() {
+  openSheet(`<h3>Add a card</h3><div class="muted small">Saved securely by the clinic’s payment processor. You won’t be charged now.</div>
+    <div class="field"><label>Name on card</label><input class="input" value="Priya Sharma"></div>
+    <div class="field"><label>Email for receipts</label><input class="input" value="priya@example.com"></div>
+    <div class="field"><label>Card details</label><div class="hosted"><span>4242 4242 4242 4242 · 12/29 · 123</span><span class="tag">secure field</span></div></div>
+    <div class="field"><label>Is this an HSA or FSA card?</label><div class="radiorow" id="ac-hsa"><button onclick="pickIn(this)">Yes</button><button class="on" onclick="pickIn(this)">No</button></div></div>
+    <button class="btn" style="margin-top:16px" onclick="addCard()">Save card</button>`);
+}
+function pickIn(b) { b.parentElement.querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on'); }
+function addCard() {
+  const hsa = document.querySelector('#ac-hsa .on')?.textContent === 'Yes';
+  const c = child(); c.cards.push({ id: 'k' + Date.now(), brand: 'Visa', last4: '4242', exp: '12/29', type: 'credit', hsa, isDefault: !c.cards.length });
+  closeSheet(); render(); toast('Card added');
+}
+
+/* ---------- Estimates ---------- */
+SCREENS.estimates = () => {
+  const cl = clinic(), cur = cl.cur;
+  if (!cl.estimates.length) return emptyBlock('🧾', 'No estimates', 'Good Faith Estimates from your clinic will appear here.');
+  return cl.estimates.map(g => `<button class="row" onclick="go('estimate',{id:'${g.id}'})" style="flex-direction:column;gap:6px">
+    <div style="display:flex;justify-content:space-between;width:100%"><b>${g.name}</b>${g.owed > 0 ? pill(fmt(g.owed, cur) + ' owed', 'amber') : pill('Paid', 'green')}</div>
+    <div class="muted small">${fdy(g.date)} · ${g.services.map(s => s.name).join(', ')}</div>
+    <div class="small">Estimated total ${fmt(g.total, cur)} · ${fmt(g.applied, cur)} applied</div></button>`).join('');
+};
+SCREENS.estimate = () => {
+  const cl = clinic(), cur = cl.cur, g = cl.estimates.find(e => e.id === S.params.id);
+  if (!g) return '';
+  const sub = sum(g.services, s => s.amt);
+  return `<div class="card"><b style="font-size:16px">${g.name}</b><div class="muted small">${fdy(g.date)} · ${cl.name}</div>
+      <div style="margin-top:8px">${pill(g.funding ? 'Funding confirmed' : 'Awaiting funding', g.funding ? 'green' : 'amber')}</div>
+      ${g.funding ? `<div class="muted xs" style="margin-top:4px">${g.funding}</div>` : ''}</div>
+    <div class="section-title">Services</div><div class="card" style="padding:8px 14px">
+      ${g.services.map(s => `<div class="kv"><span>${s.name} <span class="muted xs">${s.code}</span></span><span>${fmt(s.amt, cur)}</span></div>`).join('')}
+      <div class="kv total"><span>Subtotal</span><span>${fmt(sub, cur)}</span></div>
+      ${g.taxes.map(t => `<div class="kv small"><span>${t.label} (${t.rate})</span><span>${fmt(t.amt, cur)}</span></div>`).join('')}
+      <div class="kv total big"><span>Total estimated cost</span><span>${fmt(g.total, cur)}</span></div></div>
+    <div class="info">ℹ️ <span>An estimate isn’t a bill. You pay for services as charges on your statement.</span></div>
+    <div style="display:grid;gap:8px;margin-top:14px">
+      <button class="btn secondary" onclick="toast('Opening estimate PDF…')">View estimate (PDF)</button>
+      <button class="btn ghost" onclick="tab('activity')">View statement ›</button></div>`;
+};
+
+/* ---------- Insurance benefits ---------- */
+function benefitAlerts(b) {
+  const out = [];
+  if (!b) return out;
+  b.auths.filter(a => a.status === 'approved').forEach(a => {
+    const daysLeft = Math.round((dt(a.to) - dt(TODAY)) / 864e5);
+    if (a.remaining <= 3 || daysLeft <= 30)
+      out.push({ tone: a.remaining <= 3 ? 'red' : 'amber', title: `${a.therapy} authorization: ${a.remaining} ${a.unit} left`, sub: `Ends ${fdy(a.to)} · the clinic will request more` });
+  });
+  b.coverages.forEach(c => {
+    const daysLeft = Math.round((dt(c.end) - dt(TODAY)) / 864e5);
+    if (daysLeft <= 45 && daysLeft >= 0) out.push({ tone: 'amber', title: `${c.payer} coverage ends ${fd(c.end)}`, sub: 'Share your new insurance card with the clinic' });
+  });
+  return out;
+}
+const maskId = id => '•••• ' + id.slice(-4);
+const prLabel = p => p.type === 'coinsurance' ? `${p.amount}% of the allowed amount` : p.type === 'copay' ? `${fmt(p.amount)} copay` : `${fmt(p.amount)} per visit`;
+function meter(label, total, remaining, kind) {
+  const met = r2(total - remaining), pct = total > 0 ? Math.min(1, met / total) : 0;
+  const tone = kind === 'visits' ? (remaining <= 3 ? 'red' : remaining / total <= 0.25 ? 'amber' : '') : (pct >= 1 ? 'green' : '');
+  const txt = kind === 'visits' ? `${met} of ${total} used · <b>${remaining} left</b>` : pct >= 1 ? `<b style="color:var(--green)">Met ✓</b> · ${fmt(total)}` : `${fmt(met)} of ${fmt(total)} met · <b>${fmt(remaining)} left</b>`;
+  return `<div class="meter"><div class="top"><span>${label}</span><span class="small">${txt}</span></div>
+    <div class="bar ${tone}" role="progressbar" aria-valuenow="${Math.round(pct * 100)}" aria-valuemin="0" aria-valuemax="100" aria-label="${label}"><i style="transform:scaleX(${pct})"></i></div></div>`;
+}
+SCREENS.benefits = () => {
+  if (!S.settings.insurance) return emptyBlock('🛡️', 'Benefits aren’t shared yet', 'Your clinic hasn’t turned on insurance benefits in the app. Ask them for a summary.');
+  const b = child().benefits;
+  if (!b || !b.coverages.length) return emptyBlock('🛡️', 'No insurance on file', 'If your child has insurance, share the card with the clinic.');
+  const ci = Math.min(S.params.cov || 0, b.coverages.length - 1), c = b.coverages[ci];
+  let h = `<div class="muted xs" style="margin:0 2px 10px">From ${c.payer}’s latest eligibility check on ${fdy(b.lastCheck)}.</div>`;
+  if (b.coverages.length > 1) h += `<div class="seg" style="margin-bottom:12px">${b.coverages.map((x, i) => `<button class="${i === ci ? 'on' : ''}" onclick="S.params.cov=${i};render()">${x.role} · ${x.payer}</button>`).join('')}</div>`;
+
+  // Coverage card
+  h += `<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div><b style="font-size:16px">${c.payer}</b><div class="muted small">${c.plan}</div></div>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">${pill(c.role, 'navy')}${c.inNetwork ? pill('In network', 'green') : pill('Out of network', 'amber')}</div></div>
+    <div class="kv small" style="margin-top:8px"><span class="muted">Member ID</span><span id="mid">${maskId(c.memberId)} <a href="#" onclick="document.getElementById('mid').firstChild.textContent='${c.memberId} ';this.remove();return false">Show</a></span></div>
+    ${c.group ? `<div class="kv small"><span class="muted">Group number</span><span>${c.group}</span></div>` : ''}
+    <div class="kv small"><span class="muted">Coverage</span><span>${fdy(c.start)} – ${fdy(c.end)}</span></div>
+    ${c.cardImages ? `<div class="idcard"><div>Card · front</div><div>Card · back</div></div>` : `<button class="btn secondary sm" style="margin-top:8px" onclick="toast('Opening camera to add card photo…')">+ Add card photos</button>`}
+  </div>`;
+
+  // Per-therapy benefits
+  h += `<div class="section-title">Your benefits by therapy</div>`;
+  h += c.services.map(s => `<div class="card" style="margin-bottom:8px">
+    <b>${s.therapy}</b>${s.note ? `<div class="muted small">${s.note}</div>` : ''}
+    <div class="grid2" style="margin-top:10px">
+      <div class="mini-stat"><div class="k">Copay</div><div class="v">${fmt(s.copay)}</div>${s.evalCopay ? `<div class="muted xs">Evaluation: ${fmt(s.evalCopay)}</div>` : ''}</div>
+      <div class="mini-stat"><div class="k">Coinsurance</div><div class="v">${s.coins}%</div><div class="muted xs">after deductible</div></div></div>
+    ${s.deductible ? meter('Deductible', s.deductible.total, s.deductible.remaining) : ''}
+    ${s.oop ? meter('Out-of-pocket max', s.oop.total, s.oop.remaining) : ''}
+    ${s.visits ? meter('Visits allowed this year', s.visits.total, s.visits.total - s.visits.used, 'visits') : ''}
+    ${s.shared ? `<div class="muted xs" style="margin-top:6px">↔ ${s.shared}</div>` : ''}
+  </div>`).join('');
+
+  // What you pay per visit (clinic-set PR)
+  if (b.perVisit.length && ci === 0) {
+    h += `<div class="section-title">What you usually pay per visit</div><div class="list">${b.perVisit.map(p => `<div class="li"><span class="ic" style="background:var(--primary-bg)">💵</span>
+      <span class="body"><div class="t">${p.therapy}</div><div class="s">${prLabel(p)}</div></span></div>`).join('')}</div>
+      <div class="muted xs" style="margin:6px 2px 0">Set by the clinic from your plan. Your actual share is confirmed once insurance processes each visit.</div>`;
+  }
+
+  // Authorizations
+  if (b.auths.length && ci === 0) {
+    h += `<div class="section-title">Authorizations</div>`;
+    h += b.auths.map(a => a.status === 'pending'
+      ? `<div class="card" style="margin-bottom:8px;border-style:dashed"><div style="display:flex;justify-content:space-between"><b>${a.therapy}</b>${pill('Requested', 'amber')}</div>
+          <div class="muted small">Requested ${fdy(a.requested)} · waiting for insurance approval</div></div>`
+      : `<div class="card" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between"><b>${a.therapy}</b>${pill('Approved', 'green')}</div>
+          <div class="muted small">${a.number} · ${fdy(a.from)} – ${fdy(a.to)}</div>
+          ${meter(`Approved ${a.unit}`, a.original, a.remaining, 'visits')}</div>`).join('');
+  }
+
+  // Benefit maximums
+  if (b.caps.length && ci === 0) {
+    h += `<div class="section-title">Benefit maximums</div><div class="card">${b.caps.map(x => meter(x.info + (x.hard ? ' (hard limit)' : ''), x.total, x.remaining)).join('')}</div>`;
+  }
+
+  h += `<div class="info" style="margin-top:14px">ℹ️ <span>Benefits are estimates from your insurer. What you owe is confirmed after each claim is processed.</span></div>
+    <button class="btn secondary" style="margin-top:12px" onclick="askClinic('my insurance benefits')">Ask the clinic about my coverage</button>`;
+  return h;
+};
+
+/* ============================================================
+   Pay flow
+   ============================================================ */
+function startPay(source, ref) {
+  closeSheet(true);
+  const cl = clinic(), t = totals(cl);
+  let max = 0, label = 'Outstanding amount', prefill = null;
+  if (source === 'balance') { max = Math.max(t.amountDue, 0); }
+  else if (source === 'invoice') { const inv = cl.invoices.find(i => i.num === ref); max = inv.amount - inv.paid; label = `Invoice ${inv.num}`; }
+  else if (source === 'retry') { const p = cl.payments.find(x => x.id === ref); max = Math.max(t.amountDue, 0); prefill = p.amount; label = 'Outstanding amount'; }
+  max = r2(max);
+  const def = child().cards.find(k => k.isDefault) || child().cards[0];
+  S.pay = { source, ref, max, label, mode: prefill ? 'other' : max > 0 ? 'full' : 'other', amount: prefill ?? (max > 0 ? max : 0), note: '',
+            cardId: def ? def.id : 'new', newCard: { hsa: null, type: null, save: true }, busy: false };
+  go('pay-amount');
+}
+const stepper = n => `<div class="stepper">${[0, 1, 2].map(i => `<span class="${i <= n ? 'on' : ''}"></span>`).join('')}</div>`;
+
+SCREENS['pay-amount'] = () => {
+  const cl = clinic(), cur = cl.cur, P = S.pay;
+  return `${stepper(0)}<div class="muted small">Pay ${cl.name}</div>
+    <div class="card" style="margin-top:8px;display:flex;justify-content:space-between;align-items:center"><span class="small">${P.label}</span><b style="font-size:18px">${fmt(P.max, cur)}</b></div>
+    <div style="margin-top:12px">
+      ${P.max > 0 ? `<button class="opt ${P.mode === 'full' ? 'on' : ''}" onclick="S.pay.mode='full';S.pay.amount=S.pay.max;render()"><span class="radio"></span><span style="flex:1">Pay in full</span><b>${fmt(P.max, cur)}</b></button>` : ''}
+      <button class="opt ${P.mode === 'other' ? 'on' : ''}" onclick="S.pay.mode='other';render();document.getElementById('amt').focus()"><span class="radio"></span><span style="flex:1">Other amount</span></button>
+    </div>
+    ${P.mode === 'other' ? `<div class="field"><label for="amt">Amount (${cur})</label><input id="amt" class="input" inputmode="decimal" placeholder="0.00" value="${P.amount || ''}" oninput="onAmt(this)"></div>
+      <div class="muted xs" id="amt-hint" style="margin-top:6px">${P.amount > P.max && P.max > 0 ? 'Anything over the amount due becomes credit on your account.' : ''}</div>` : ''}
+    <div class="field"><label>Note (optional)</label><input class="input" placeholder="e.g. November sessions" value="${P.note}" oninput="S.pay.note=this.value"></div>
+    <button class="btn" id="amt-next" style="margin-top:20px" ${P.amount > 0 ? '' : 'disabled'} onclick="go('pay-card')">Continue</button>`;
+};
+function onAmt(el) {
+  let v = el.value.replace(/[^0-9.]/g, ''); const parts = v.split('.');
+  if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join('');
+  if (parts[1]?.length > 2) v = parts[0] + '.' + parts[1].slice(0, 2);
+  el.value = v; S.pay.amount = r2(parseFloat(v) || 0);
+  document.getElementById('amt-next').disabled = !(S.pay.amount > 0);
+  document.getElementById('amt-hint').textContent = S.pay.amount > S.pay.max && S.pay.max > 0 ? 'Anything over the amount due becomes credit on your account.' : '';
+}
+function selectedCard() {
+  const P = S.pay;
+  if (P.cardId === 'new') return { brand: 'Visa', last4: '4242', hsa: P.newCard.hsa === true, type: P.newCard.type || 'credit', isNew: true };
+  return child().cards.find(k => k.id === P.cardId);
+}
+function feeFor(amount, card) {
+  const st = S.settings;
+  if (st.fee === 'off') return { applies: false, fee: 0, exempt: false };
+  const exempt = card.hsa || st.blocked.includes(card.type);
+  if (exempt) return { applies: true, fee: 0, exempt: true };
+  const fee = st.fee === 'stripe' ? (amount + 0.30) / 0.971 - amount : st.flat;
+  return { applies: true, fee: r2(fee), exempt: false };
+}
+SCREENS['pay-card'] = () => {
+  const P = S.pay, cards = child().cards, feeOn = S.settings.fee !== 'off';
+  const need = P.cardId === 'new' && feeOn && (P.newCard.hsa === null || P.newCard.type === null);
+  let h = `${stepper(1)}`;
+  h += cards.map(k => `<button class="opt ${P.cardId === k.id ? 'on' : ''}" onclick="S.pay.cardId='${k.id}';render()"><span class="radio"></span>
+      <span style="flex:1"><b class="small">${k.brand} •••• ${k.last4}</b><div class="muted xs">Exp ${k.exp} · ${k.type}</div></span>
+      <span style="display:flex;gap:4px;flex-direction:column;align-items:flex-end">${k.isDefault ? pill('Default', 'blue') : ''}${k.hsa ? pill('HSA/FSA', 'green') : ''}</span></button>`).join('');
+  h += `<button class="opt dashed ${P.cardId === 'new' ? 'on' : ''}" onclick="S.pay.cardId='new';render()"><span class="radio"></span><span style="flex:1;font-weight:500">+ Use a new card</span></button>`;
+  if (P.cardId === 'new') {
+    h += `<div class="card" style="margin-top:4px">
+      <div class="field" style="margin-top:0"><label>Card number</label><div class="hosted"><span>4242 4242 4242 4242</span><span class="tag">secure field</span></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="field"><label>Expiry</label><div class="hosted"><span>12 / 29</span></div></div>
+        <div class="field"><label>CVC</label><div class="hosted"><span>•••</span></div></div></div>
+      ${feeOn ? `<div class="field"><label>Is this an HSA or FSA card?</label><div class="radiorow">
+          <button class="${P.newCard.hsa === true ? 'on' : ''}" onclick="S.pay.newCard.hsa=true;render()">Yes</button>
+          <button class="${P.newCard.hsa === false ? 'on' : ''}" onclick="S.pay.newCard.hsa=false;render()">No</button></div></div>
+        <div class="field"><label>Card type</label><div class="radiorow">
+          ${['credit', 'debit', 'prepaid'].map(t => `<button class="${P.newCard.type === t ? 'on' : ''}" onclick="S.pay.newCard.type='${t}';render()">${t[0].toUpperCase() + t.slice(1)}</button>`).join('')}</div></div>` : ''}
+      <div class="kv" style="margin-top:8px"><span class="small">Save this card for next time</span><button class="switch ${P.newCard.save ? 'on' : ''}" role="switch" aria-checked="${P.newCard.save}" onclick="S.pay.newCard.save=!S.pay.newCard.save;render()"></button></div>
+    </div>`;
+  }
+  if (feeOn) h += `<div class="info">ℹ️ <span>A convenience fee applies to card payments. <b>HSA/FSA, debit and prepaid cards are exempt.</b></span></div>`;
+  h += `<button class="btn" style="margin-top:18px" ${need ? 'disabled' : ''} onclick="go('pay-review')">Continue</button>`;
+  if (need) h += `<div class="muted xs" style="text-align:center;margin-top:6px">Answer the HSA/FSA and card type questions to continue.</div>`;
+  return h;
+};
+SCREENS['pay-review'] = () => {
+  const cl = clinic(), cur = cl.cur, P = S.pay, card = selectedCard(), f = feeFor(P.amount, card);
+  const total = r2(P.amount + f.fee);
+  const consent = S.settings.consent || `By providing your card information, you allow ${cl.name} to charge your card for future payments in accordance with their terms.`;
+  return `${stepper(2)}<div class="card" style="padding:8px 14px">
+      <div class="kv"><span class="muted">Paying</span><span>${cl.name}</span></div>
+      <div class="kv"><span class="muted">For</span><span>${P.label}</span></div>
+      ${P.note ? `<div class="kv"><span class="muted">Note</span><span>${P.note}</span></div>` : ''}
+      <div class="kv"><span class="muted">Card</span><span>${card.brand} •${card.last4}${card.hsa ? ' · HSA/FSA' : ''}</span></div></div>
+    <div class="card" style="padding:8px 14px;margin-top:10px">
+      <div class="kv"><span>Payment</span><span>${fmt(P.amount, cur)}</span></div>
+      ${f.applies ? `<div class="kv"><span>Convenience fee</span><span>${f.exempt ? pill('Exempt', 'green') : fmt(f.fee, cur)}</span></div>` : ''}
+      <div class="kv total big"><span>Total</span><span>${fmt(total, cur)}</span></div></div>
+    <div class="consent">${consent}</div>
+    <button class="btn pay" id="paybtn" ${P.busy ? 'disabled' : ''} onclick="submitPay()">${P.busy ? 'Processing…' : 'Pay ' + fmt(total, cur)}</button>`;
+};
+function submitPay() {
+  S.pay.busy = true; render();
+  setTimeout(completePay, reduced ? 200 : 1100);
+}
+function completePay() {
+  const cl = clinic(), ch = child(), P = S.pay, card = selectedCard(), f = feeFor(P.amount, card);
+  const id = 'p' + Date.now();
+  if (S.scenario.failPay) {
+    cl.payments.unshift({ id, date: TODAY, amount: P.amount, method: card.brand, last4: card.last4, status: 'failed', failure: 'Card declined — do not honor', remaining: 0 });
+    S.scenario.failPay = false; document.getElementById('sc-fail').checked = false;
+    S.result = { ok: false, amount: P.amount, msg: 'Your card was declined (do not honor). No money was taken.' };
+  } else {
+    if (card.isNew && P.newCard.save) ch.cards.push({ id: 'k' + Date.now(), brand: card.brand, last4: card.last4, exp: '12/29', type: card.type, hsa: card.hsa, isDefault: !ch.cards.length });
+    const pay = { id, date: TODAY, amount: P.amount, method: card.brand, last4: card.last4, desc: P.note, receipt: true, feeCharged: f.fee > 0, alloc: [] };
+    applyPayment(cl, pay);
+    cl.payments.unshift(pay);
+    S.result = { ok: true, amount: r2(P.amount + f.fee), card: `${card.brand} •${card.last4}`, payId: id };
+  }
+  S.stack = []; S.route = 'pay-result'; S.params = {}; render();
+}
+/* Auto-apply to the target visit first, then oldest dues (mirrors server payment application) */
+function applyPayment(cl, pay) { // mock only: the server applies payments (oldest dues first here for the demo)
+  let left = pay.amount;
+  const b = billable(cl).slice().sort((a, b) => a.date.localeCompare(b.date));
+  for (const i of b) {
+    const due = r2(i.share - i.paid); if (due <= 0.005) continue;
+    const x = r2(Math.min(due, left)); const before = i.paid;
+    i.paid = r2(i.paid + x); (i.payments ||= []).push({ date: TODAY, amt: x, mode: 'Card', desc: `${pay.method} •${pay.last4}` });
+    pay.alloc.push({ dos: i.date, desc: `${i.title}${i.sub ? ' · ' + i.sub : ''}`, billed: i.charged || i.share, ins: i.ins || 0, share: i.share, thisPay: x, other: before, bal: r2(i.share - i.paid) });
+    left = r2(left - x); if (left <= 0.005) break;
+  }
+  pay.remaining = Math.max(0, left);
+  pay.status = left <= 0.005 ? 'applied' : left < pay.amount ? 'partial' : 'unapplied';
+}
+SCREENS['pay-result'] = () => {
+  const R = S.result, cur = clinic().cur;
+  if (R.ok) return `<div class="result pop"><div class="big ok">✓</div><h2 style="margin:0">Payment successful</h2>
+      <div class="muted" style="margin-top:6px">${fmt(R.amount, cur)} · ${R.card} · ${fdy(TODAY)}</div>
+      <div class="muted small" style="margin-top:4px">${clinic().name}</div></div>
+    <div style="display:grid;gap:8px;margin-top:32px">
+      <button class="btn secondary" onclick="toast('Opening receipt PDF…')">${icon('receipt', 18)} View receipt</button>
+      <button class="btn secondary" onclick="openAlloc('${R.payId}')">${icon('alloc', 18)} What it paid for</button>
+      <button class="btn" onclick="tab('home')">Done</button></div>`;
+  return `<div class="result pop"><div class="big bad">✕</div><h2 style="margin:0">Payment didn’t go through</h2>
+      <div class="muted" style="margin-top:6px">${R.msg}</div></div>
+    <div style="display:grid;gap:8px;margin-top:32px">
+      <button class="btn" onclick="S.pay.busy=false;S.stack=[{route:'home',params:{}},{route:'pay-amount',params:{}}];S.route='pay-card';render()">Try another card</button>
+      <button class="btn secondary" onclick="tab('home')">Cancel</button></div>`;
+};
+
+/* ============================================================
+   Misc: child switcher, skeletons, empty
+   ============================================================ */
+function openChildSwitcher() {
+  openSheet(`<h3>Whose billing?</h3><div style="margin-top:12px">${Object.entries(DATA).map(([k, c]) => {
+    const t = totals(c.clinics[0]);
+    return `<button class="opt ${S.child === k ? 'on' : ''}" onclick="S.child='${k}';S.clinicIdx=0;closeSheet();tab(S.route==='activity'?'activity':'home')">
+      <span class="avatar">${c.initials}</span><span style="flex:1"><b class="small">${c.name}</b><div class="muted xs">${c.clinics.length} centre${c.clinics.length > 1 ? 's' : ''} · ${[...new Set(c.clinics.map(x => x.cur))].join(', ')}</div></span>
+      ${c.clinics.some(x => totals(x).amountDue > 0.005) ? pill(c.clinics.filter(x => totals(x).amountDue > 0.005).length + ' with dues', 'red') : pill('No dues', 'green')}</button>`;
+  }).join('')}</div>`);
+}
+function skeleton(kind) {
+  const b = (h, mt = 10) => `<div class="sk" style="height:${h}px;margin-top:${mt}px"></div>`;
+  if (kind === 'home') return b(16, 0) + b(170) + `<div class="stats">${b(64, 0)}${b(64, 0)}${b(64, 0)}${b(64, 0)}</div>` + b(60, 20) + b(60) + b(60);
+  return b(42, 0) + b(30) + [1, 2, 3, 4, 5].map(() => b(72)).join('');
+}
+const emptyBlock = (em, t, s) => `<div class="empty"><div class="em">${em}</div><b>${t}</b><div class="small">${s}</div></div>`;
+
+/* ============================================================
+   Design notes panel
+   ============================================================ */
+const NOTES = {
+  home: ['Billing hub · real app design', [
+    '<b>Source: the live parent Home</b> (<code>origin/OFApp2026: app/screens/ParentHomeV2</code>). Colours come from <code>TherapistHome/theme.ts</code>, which ParentHomeV2/theme.ts re-exports: canvas <code>#F1F6FB</code>, ink <code>#1B2D45</code>, muted <code>#6D829C</code>, border <code>#DCE7F1</code>, navy <code>#104F86</code>, teal.dark <code>#176EAE</code> (primary action / links), orange.dark <code>#A75E00</code> on orange.soft <code>#FFF4DB</code> (every widget header), coral <code>#EF5732</code> (amount due), green <code>#2E9E5B</code>, red <code>#EC2129</code>, blue <code>#3D82F6</code>. Layout: padding 16, section gap 16, card radius 18; type 16 / 14 / 12, Poppins.',
+    '<b>Components used as they are in the app:</b> <code>WidgetCard</code> (white, 1px border, r18, p12; 32px orange icon box + orange 16px title + teal “View All”) · <code>BillingWidget</code> (“$X due” coral + green <code>#8AB319</code> Pay Now r10; divider rows; “Last payment” with outlined blue “View” receipt) · <code>WidgetButton</code> (control <code>#F3F7FA</code>, r12, min-h 44, navy label) · <code>ParentQuickAction</code> (48px white box r8, teal lucide icon, 12px label) for the billing pages · <code>RemindersWidget</code> cards for Things to know · status badges from <code>ParentAppointmentRow</code> (pill, green / orange / red soft) · the ParentHomeV2 header (navy title, profile switcher with the orange chevron box, 36px white icon buttons) · the DemoNavigator tab bar (icons only; billing = “Transactions”, focused = filled <code>#4185F3</code> circle with the currency glyph).',
+    '<b>Every clinic at once, like the app</b> (StatementScreen on OFApp2026): no clinic switcher. The top card has one <code>ClinicBalanceCard</code> row per clinic (“$X due” / “No dues”, its own Pay Now / Pay More; only clinics the child is linked to can be paid; credit on the primary clinic). Statement lines, payments, documents and Things to know list every clinic together, each line tagged with its clinic and shown in that clinic’s currency. Totals across currencies are shown per currency (“$245.00 · CA$40.00”), never added up.',
+    '<b>Billing pages are always visible at the top</b>, as the app’s <code>QuickActionsWidget</code>: one horizontally scrolling row of <code>ParentQuickAction</code> icon tiles with the small teal scroll indicator. One single row with no headers, ordered by feature: Payment history, Saved cards, Invoices, Statements, Estimates, Coverage, Superbills. Red corner badges mark pages that need attention. Then the normal flow: Outstanding amount → Statement → Things to know.',
+    '<b>Multi-centre and currencies, as the app does it</b> (<code>app/utils/currency.ts</code>, <code>formatCurrency.ts</code>, <code>clinicBalances.ts</code>, <code>multiCenterCenterInfo.ts</code>, StatementScreen): multi-centre = the child is linked to more than one centre. Each centre keeps its own currency from <code>globalization.currency</code>; only 3-letter codes with 2 decimals are used, anything else (or local currency switched off) falls back to USD <b>$</b>. The symbol is the narrow one (GBP <b>£</b>, EUR <b>€</b>, INR <b>₹</b>, CAD/AUD <b>$</b>) and amounts read symbol + 2 decimals (“£85.50”). Every linked centre gets a balance row even at “No dues”; a centre the child is no longer linked to still shows its balance but can’t be paid; credit sits on the primary centre; the Transactions tab glyph is the primary centre’s symbol (Kabir: £). For multi-centre children the app hides the summary totals, so the Statement widget does too: nothing is ever added across currencies.',
+    '<b>Design addition:</b> CAD and USD both print as “$” in the app. When two of a child’s centres share a symbol, a small currency-code chip (USD / CAD) sits next to the centre name and the amount. Try Kabir Mehta (4 centres: £ primary, $ USD, $ CAD, € not linked) from the child switcher or the left panel.',
+    '<b>Checked against parent web and the mobile app</b>: removed what parents don’t get today (the autopay note, the clinic’s “Changes to your share” edit log, saved statement and superbill lists, the full invoice history). Kept on purpose, as design additions: “What it paid for” (needs the allocation data exposed to parents), “Try again” on failed payments and the Things to know list.',
+    'The page is the parent app’s <b>Transactions</b> tab. The Parent Home BillingWidget already links here (“View All”), so the top card is that same widget, expanded.',
+    '<b>Modelled on the clinic Client Account drawer</b> (Statement · Payments · Invoices · Claims), <b>using the Statement tab, not the Ledger.</b>',
+    '<b>Outstanding amount comes from the statement.</b> The top card is the Statement tab header: <i>Outstanding amount</i> (<code>accountOutstanding()</code>) with <i>Credit on account</i> (unapplied credit) beside it, never subtracted. Pay now and View statement sit on it.',
+    'The <b>Statement</b> section follows the Billing pages: the totals row (<code>statementTotals()</code>) and the latest lines, so the parent sees what the outstanding amount is made of. No separate statement tile at the bottom. Download PDF = the clinic Print → Create statement.',
+    '<b>No “Payments” heading on the pay area.</b> “Payments” means money already paid, so that page is <b>Payment history</b>. Paying lives on the Outstanding card and the Statement page.',
+    '<b>All charges are charges.</b> Not-yet-billed visits (meeting_sessions / tentative) are plain statement lines in the same totals. No “estimate”, “tentative” or “includes $X for visits not billed yet” wording anywhere.',
+    '<b>Billing pages, grouped by feature</b>, as small 3-up tiles: <i>Payments</i> (Payment history, Saved cards) · <i>Documents</i> (Invoices, Statements, Estimates) · <i>Insurance</i> (Coverage, Superbills). Statuses are in a parent’s words (“1 didn’t go through”, “1 overdue”).',
+    '<b>Designed as a parent:</b> the main page answers “how much do I owe?”, “what is it for?” and “where are my documents?”. Anything about one payment (receipt, what it paid for) lives on that payment, not on the main page.',
+    'Order: Outstanding amount → Billing pages → Statement → Things to know.',
+    'Hidden by clinic settings: Benefits (insurance benefits off), Invoices (client invoicing off). Pay buttons are hidden at clinics the child isn’t enrolled at.',
+    '<b>Build it like this:</b> a stack navigator with <code>BillingHub</code> as the only root, and pushed screens Statement, PaymentHistory, AllocationReport, Documents, PaymentMethods, EstimateDetail, Benefits and Pay (Amount → Card → Review → Result).',
+    'Fetch once per child + clinic and share the data with every screen. Refetch after a payment, card change or statement creation.']],
+  activity: ['Statement', [
+    'Based on: the clinic <b>Statement</b> tab. Lines = <code>statementRows()</code>: <code>sessions_due[]</code> + <code>meeting_sessions[]</code>, all listed and totalled the same way.',
+    'Header = the Statement tab header: Outstanding amount + Credit on account, with Pay now and Download PDF (clinic Print → Create statement).',
+    'Filters: All · Unpaid · Paid (the Statement’s <code>fully_paid</code> radio). Search covers Item and Description.',
+    'Each row = the Statement columns: Item, Type, Date, Description, Your share, You paid, Outstanding. Status: Due · Partially paid · Paid.',
+    'Not shown: claims still with insurance (the Statement leaves them out), S No., Actions.',
+    'Footer = the Statement “Total” row over the lines in view.']],
+  payments: ['Payment history', [
+    'Named <b>Payment history</b>, not “Payments”: it only lists money already paid.',
+    '<b>What it paid for</b> = the clinic’s payment allocation report, per payment only (it is defined against one payment, so it is not on the main page). It opens from the payment card, the payment details and the payment success screen, and lists each visit this payment went to, how much went there and what is left to pay on it, plus any amount kept as credit.',
+    'Based on: the Payments tab, <code>PaymentHistoryCard</code>, the receipt link (<code>paymentPDFLink</code>) and the payment allocation report.',
+    'Status in a parent’s words: <b>Received</b> (applied, partly applied or not applied yet are all “Received”), plus a “$X kept as credit” tag for any unapplied part · <b>Didn’t go through</b> (failed, with “Try again”) · <b>Refunded $X</b>. Filters: All · Received · Didn’t go through · Refunded.',
+    '“Refunded $X” comes from the payment’s edit history (refund edits). Refund steps: processing, then waiting for bank, then refunded.',
+    'Hidden from parents: staff names, payment source/call source, apply/unapply, attach/detach, change clinic.']],
+  documents: ['Documents', [
+    'Matches the apps: <b>Invoices</b> shows only the latest invoice per centre with <b>View invoice</b> (mobile shows one invoice button for the last cycle; parent web opens invoices from email links). Overdue invoices still show in Things to know.',
+    '<b>Estimates</b> = Good Faith Estimates (in the app they sit in the Benefits tab).',
+    'Statements and superbills are not saved lists: <b>Statement PDF</b> and <b>Get Superbill</b> are quick actions that make a PDF for a date range on demand, like the app’s Statement button and “Get Super Bill” (<code>useCreateSuperbill</code>). Default range: start of the month 3 months ago to the end of this month.']],
+  cards: ['Saved cards', [
+    'Based on: Saved Cards (<code>PaymentMethod.tsx</code> / <code>NewCardUi</code>), set default, delete, and the HSA/FSA switch.',
+    'Remove is hidden when the clinic setting <code>allow_parent_delete_payment_method</code> is off.',
+    'No autopay note: neither the parent app nor parent web shows autopay to parents.']],
+  benefits: ['Insurance benefits', [
+    'Shown only when the clinic turns on <code>client_account.showInsuranceBenefits</code> (“Show Insurance Benefits to Parents”, off by default). Turn off “Show insurance benefits” in the left panel to see it hidden.',
+    'Coverage card: payer, plan, member ID (hidden until tapped), group number, coverage dates and card photos, from the profile <code>insurance[]</code>. A switcher covers Primary and Secondary.',
+    'Benefits by therapy come from the eligibility results (<code>GfeCoverageBenefits.byServiceInformation</code>): deductible and out-of-pocket (total vs remaining), copay, evaluation copay, coinsurance %, visit limits, and shared limits.',
+    '“What you usually pay per visit” comes from <code>patient_responsibilites</code> (copay, coinsurance % or fixed amount, per therapy).',
+    'Authorizations come from <code>authorizations[]</code> (visits or units remaining, dates, approved or pending). Low or expiring authorizations show up in “Things to know”.',
+    'Benefit maximums come from <code>billingExtraInformation</code> (total vs remaining, hard limit).',
+    'Hidden: CPT codes, payer IDs, internal notes, auth history, pricing presets.']],
+  estimate: ['Estimate detail', ['Services and codes, subtotal, taxes, total estimated cost and funding status. View-only, like any other document: what the parent owes is always the statement’s outstanding amount.']],
+  'pay-amount': ['Pay · Amount', [
+    'Ways in: Pay now / Pay more on the Outstanding card or the Statement page, an invoice’s Pay link, Try again on a failed payment, and statement or invoice links from email or text (which prefill the amount). There is no per-line Pay, matching the Statement and parent web.',
+    'Amount must be above 0, with at most 2 decimals. Paying more than is due is allowed and becomes credit.']],
+  'pay-card': ['Pay · Card', [
+    'Saved cards are listed for both Stripe and Payrix, with the default card pre-selected. (Stripe needs backend support: today only Payrix lists saved cards.)',
+    'When a convenience fee applies, the HSA/FSA and card type questions are required for a new card. Changing them recalculates the fee.',
+    'Card fields are the processor’s hosted iframes (PayFields or Stripe Elements). The app never touches the card number.']],
+  'pay-review': ['Pay · Review', [
+    'Stripe pass-through fee: (amount + 0.30) / 0.971 − amount. Flat fee: the clinic’s standardFee. HSA/FSA, debit and prepaid cards show “Exempt”.',
+    'Consent text comes from the clinic’s <code>paymentPageStripeMessage</code>, with a default when empty.',
+    'Try: turn on “Next payment fails” in the left panel.']],
+  'pay-result': ['Pay · Result', [
+    'New: a success screen with the receipt and “What it paid for”. Web has none today (receipts only show later in Payments).',
+    'The clinic’s payment system applies the payment to charges; any leftover shows as Credit (unapplied). The mockup applies oldest dues first just for the demo.']]
+};
+function renderNotes() {
+  const [t, list] = NOTES[S.route] || ['', []];
+  document.getElementById('notes').innerHTML = `<h3>Design notes</h3><h2>${t}</h2><ul>${list.map(x => `<li>${x}</li>`).join('')}</ul>
+    <h3>Word list</h3><ul>
+      <li>Patient responsibility → <b>Your share</b></li><li>Outstanding → <b>Outstanding</b> (same word as the clinic)</li><li>Unapplied credit → <b>Credit on account</b></li>
+      <li>Tentative / not billed yet → <b>a regular charge (no special label)</b></li><li>Payments tab → <b>Payment history</b></li><li>Paid By Payer → <b>Insurance paid</b></li><li>GFE → <b>Estimate</b></li></ul>`;
+}
+
+/* ============================================================
+   Panel wiring
+   ============================================================ */
+const JUMPS = [
+  ['Hub', () => tab('home')], ['Statement', () => tab('activity')], ['Payment history', () => { tab('home'); go('payments'); }],
+  ['What a payment paid for', () => { tab('home'); go('payments'); openAlloc('p1'); }], 
+  ['Documents', () => tab('documents')], ['Cards', () => tab('cards')], ['Estimates', () => { S.docsTab = 'estimates'; tab('documents'); }], ['Benefits', () => { tab('home'); go('benefits'); }],
+  ['Pay flow', () => { tab('home'); startPay('balance'); }],
+  ['Session sheet', () => { tab('activity'); openItem('s1'); }], ['Other charge', () => { tab('activity'); openItem('m1'); }],
+  ['Visit charge', () => { tab('activity'); openItem('t1'); }], ['Refunded payment', () => { tab('activity'); openItem('p4'); }],
+  ['Failed payment', () => { tab('activity'); openItem('p3'); }], ['No dues + credit (Meera)', () => { S.child = 'meera'; S.clinicIdx = 0; tab('home'); }],
+  ['Pay the other clinic', () => { S.child = 'aarav'; tab('home'); payClinic(1); }],
+  ['Multi-centre: 4 currencies (Kabir)', () => { S.child = 'kabir'; S.clinicIdx = 0; tab('home'); }],
+  ['Kabir · Statement', () => { S.child = 'kabir'; tab('activity'); }], ['Kabir · Payment history', () => { S.child = 'kabir'; tab('home'); go('payments'); }],
+  ['Kabir · pay in £', () => { S.child = 'kabir'; tab('home'); payClinic(0); }]
+];
+document.getElementById('jump').innerHTML = JUMPS.map((j, i) => `<button onclick="JUMPS[${i}][1]()">${j[0]}</button>`).join('');
+const bind = (id, fn) => document.getElementById(id).addEventListener('change', e => { fn(e.target); render(); });
+bind('set-fee', el => S.settings.fee = el.value);
+bind('set-insurance', el => S.settings.insurance = el.checked);
+bind('set-delete', el => S.settings.allowDelete = el.checked);
+bind('set-invoices', el => S.settings.invoices = el.checked);
+bind('sc-loading', el => S.scenario.loading = el.checked);
+bind('sc-empty', el => { S.scenario.empty = el.checked; S.clinicIdx = 0; });
+bind('sc-fail', el => S.scenario.failPay = el.checked);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+
+render();
+</script>
+</body>
+</html>
