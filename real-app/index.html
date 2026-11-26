@@ -423,6 +423,65 @@ body{font-family:Poppins,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,s
 .toast{background:var(--ink);border-radius:12px}
 .info svg{flex:none;margin-top:1px}
 /* info button: explanations live behind an (i) and open in a bottom sheet (the app's help pattern) */
+/* ===== Insurance design additions (same tokens as the billing hub design) ===== */
+.inline-link{border:none;background:none;padding:0;color:var(--p-teal-dark);font-weight:600;font-size:inherit;cursor:pointer}
+.banner{display:flex;gap:10px;border-radius:18px;padding:12px;border:1px solid transparent}
+.banner svg{flex:none;margin-top:2px}
+.banner b{display:block;color:var(--ink);font-size:14px;font-weight:600}
+.banner span{display:block;color:var(--muted-ink);font-size:12px;margin-top:2px;line-height:1.45}
+.banner.blue{background:var(--p-blue-soft);border-color:var(--p-blue-muted);color:var(--p-blue)}
+.banner.green{background:var(--p-green-soft);color:var(--p-green)}
+.banner.red{background:var(--p-red-soft);color:var(--p-red)}
+.banner-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.banner-actions .btn{width:auto}
+.empty-card{text-align:center;align-items:center}
+.empty-card .em{font-size:34px}
+.empty-card b{color:var(--ink);font-size:15px}
+.cov .payer{color:var(--ink);font-size:16px;font-weight:600;margin-top:-2px}
+.cov .kvs .kv{padding:5px 0;font-size:13px}
+.cov .kvs .kv span:last-child{max-width:62%}
+.photos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ph{border:none;padding:0;background:none;display:flex;flex-direction:column;gap:4px;align-items:stretch;cursor:pointer}
+.ph .phimg{aspect-ratio:1.586;border-radius:10px;display:grid;place-items:center;text-align:center;font-size:12px;font-weight:600;line-height:1.3;padding:6px}
+.ph.has .phimg{background:linear-gradient(135deg,#1F5FA8,#3D82F6);color:#fff}
+.ph.has .phimg small{display:block;font-weight:400;opacity:.85}
+.ph.none .phimg{border:1.5px dashed var(--line);color:var(--p-teal-dark);background:var(--control)}
+.ph .phl{font-size:11px;color:var(--muted-ink);text-align:center}
+.bigcard{margin-top:12px;aspect-ratio:1.586;border-radius:14px;background:linear-gradient(135deg,#1F5FA8,#3D82F6);color:#fff;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:18px;font-size:13px}
+.bigcard b{font-size:18px}
+.steplabel{font-size:12px;color:var(--muted-ink);margin:-8px 0 12px}
+.covrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px;cursor:pointer}
+.covrow.err{border-color:var(--p-red);background:#FFFBFB}
+.covrow b{display:block;color:var(--ink);font-size:14px}
+.covrow .muted{display:block;margin-top:2px}
+.covrow .covstate{display:block;margin-top:6px}
+.covrow .ord{font-size:11px;font-weight:600;color:var(--p-blue);background:var(--p-blue-soft);border-radius:8px;padding:6px 8px;flex:none}
+.cardrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{margin-top:4px;aspect-ratio:1.586;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;position:relative;padding:6px}
+.tile.none{border:1.5px dashed var(--line);background:var(--control)}
+.tile.none.bad{border-color:var(--p-red)}
+.tile.none .btn{width:100%;min-height:30px;padding:4px 8px}
+.tile.has{background:linear-gradient(135deg,#1F5FA8,#3D82F6);color:#fff;font-size:12px;font-weight:600;text-align:center}
+.tile.has small{display:block;font-weight:400;opacity:.85}
+.tile:not(.has):not(.none){border:1px solid var(--line);background:#fff}
+.tile-x{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;border:none;background:#fff;color:var(--p-red);display:grid;place-items:center;cursor:pointer}
+.spin{width:22px;height:22px;border-radius:50%;border:3px solid var(--p-blue-muted);border-top-color:var(--p-teal-dark);animation:sp 0.8s linear infinite;display:inline-block}
+.spin.sm{width:14px;height:14px;border-width:2px;vertical-align:-2px}
+.spin.light{border-color:rgba(255,255,255,.35);border-top-color:#fff}
+@keyframes sp{to{transform:rotate(360deg)}}
+.grid2f{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.req{color:var(--p-red)}
+.ferr{color:var(--p-red);font-size:12px;margin-top:4px;min-height:0}
+.ferr:empty{display:none}
+.input.bad{border-color:var(--p-red);background:#FFFBFB}
+.input.filled{border-color:var(--p-blue);background:var(--p-blue-soft)}
+select.input{appearance:auto}
+.radiorow.bad button{border-color:#F7B3B5}
+.field label .pill{vertical-align:1px;margin-left:4px}
+.btn.okbtn{background:var(--p-green-soft);color:var(--p-green);border:1px solid var(--p-green-soft)}
+.danger-text{color:var(--p-red)!important;margin-top:4px}
+.info svg{flex:none;margin-top:1px}
+
 .classic-chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:#fff;color:var(--p-navy);border-radius:999px;padding:0 10px;min-height:32px;font-size:12px;font-weight:600;flex:none}
 .ibtn{border:none;background:none;padding:0;width:24px;height:24px;display:inline-grid;place-items:center;color:var(--p-blue);border-radius:50%;flex:none;vertical-align:middle;cursor:pointer}
 .ibtn:hover{background:var(--p-blue-soft)}
@@ -481,7 +540,6 @@ body{font-family:Poppins,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,s
     <h1>Parent Billing — real app design</h1>
     <div class="sub"><b>Built from the real parent app code</b>: <code>app/screens/ParentHomeV2</code> on <code>OFApp2026</code> (WidgetCard, WidgetButton, BillingWidget, ParentQuickAction, RemindersWidget, status badges, header, tab bar) and its colour system <code>TherapistHome/theme.ts</code>. Same screens and data as <code>parent-billing-hub.html</code>. One Billing page with a component for every billing area. Tap a component to open its full page; Back returns to the hub. Content is the same as <code>parent-billing-mobile.html</code> (clinic web Statement tab, Payments, Invoice and insurance data). Mock data only.</div>
 
-    <div style="margin-top:10px"><a href="insurance/" style="color:var(--p-teal-dark);font-weight:600;font-size:13px;text-decoration:none">Insurance design →</a></div>
     <h3>Jump to screen</h3>
     <div class="jump" id="jump"></div>
 
@@ -500,6 +558,16 @@ body{font-family:Poppins,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,s
     <label class="ctl"><span>Show loading state</span><input type="checkbox" id="sc-loading"></label>
     <label class="ctl"><span>Empty account</span><input type="checkbox" id="sc-empty"></label>
     <label class="ctl"><span>Next payment fails</span><input type="checkbox" id="sc-fail"></label>
+    <h3>Insurance</h3>
+    <div class="jump" id="ins-jump"></div>
+    <div class="ctl" style="margin-top:8px"><span>Insurance on file</span><select id="ins-onfile"><option value="as-set">As set up for the child</option><option value="empty">Nothing on file</option><option value="ended">Coverage ended</option></select></div>
+    <div class="ctl"><span>Last update outcome <span class="muted xs">(not built, needs backend)</span></span><select id="ins-outcome"><option value="none">Nothing</option><option value="approved">Approved</option><option value="rejected">Not approved + reason</option></select></div>
+    <label class="ctl"><span>Insurance loading</span><input type="checkbox" id="ins-loading"></label>
+    <label class="ctl"><span>Couldn’t load insurance</span><input type="checkbox" id="ins-loaderr"></label>
+    <label class="ctl"><span>Card photo upload fails</span><input type="checkbox" id="ins-upload"></label>
+    <label class="ctl"><span>Camera permission denied</span><input type="checkbox" id="ins-camera"></label>
+    <label class="ctl"><span>Auto-fill can’t read the card</span><input type="checkbox" id="ins-ocr"></label>
+    <label class="ctl"><span>Sending fails</span><input type="checkbox" id="ins-send"></label>
     <div style="margin-top:12px"><button class="btn secondary sm" onclick="location.reload()">Reset demo</button></div>
   </aside>
 
@@ -834,25 +902,25 @@ const TABS = [];
 const TITLES = { home: 'Billing', activity: 'Statement', payments: 'Payment history', documents: 'Documents', cards: 'Saved cards', estimates: 'Estimates',
   estimate: 'Estimate', benefits: 'Benefits', 'pay-existing': 'Pay', 'pay-amount': 'Make a payment', 'pay-card': 'Payment method', 'pay-review': 'Review & pay', 'pay-result': '' };
 function go(route, params = {}) { S.stack.push({ route: S.route, params: S.params }); S.route = route; S.params = params; render(); }
-function back() { const p = S.stack.pop(); if (!p) return; S.route = p.route; S.params = p.params; render(); }
+function back() { if (INS.interceptBack()) return; const p = S.stack.pop(); if (!p) return; S.route = p.route; S.params = p.params; render(); }
 /* open(route): reset to the hub, then push the page (so Back always lands on the hub). */
 function tab(route) { S.stack = []; S.route = 'home'; S.params = {}; closeSheet(true); if (route === 'home') render(); else go(route); }
 
-function render() {
-  const v = document.getElementById('view');
+function render(keepScroll) {
+  const v = document.getElementById('view'), top = v.scrollTop;
   const c = child();
   // Header = ParentHomeV2 header: on canvas, navy 16px title, profile switcher under it, 36px white icon buttons
   let tb = '';
   if (S.stack.length) tb += `<button class="iconbtn" aria-label="Back" onclick="back()">${BACK}</button>`;
-  tb += `<div class="hcopy"><h2>${TITLES[S.route] ?? ''}${S.route === 'activity' ? infoBtn('statement', 'About your statement') : ''}</h2>`;
-  if (S.route === 'home' || S.route === 'activity' || S.route === 'payments')
+  tb += `<div class="hcopy"><h2>${(S.route === 'edit-cov' ? INS.title() : TITLES[S.route]) ?? ''}${S.route === 'activity' ? infoBtn('statement', 'About your statement') : S.route === 'ins' ? infoBtn('how', 'How insurance updates work') : ''}</h2>`;
+  if (S.route === 'home' || S.route === 'activity' || S.route === 'payments' || S.route === 'ins')
     tb += `<button class="switcher" onclick="openChildSwitcher()" aria-label="Switch child"><span class="nm">${c.name}</span><span class="chev">${icon('down', 14)}</span></button>`;
   tb += `</div>`;
   if (S.route === 'home') tb += `<button class="classic-chip" aria-label="Switch to the classic billing view" onclick="toast('Opens the classic Transactions screen (kept as it is, with a New view button)')">${icon('history', 14)} Classic view</button><button class="iconbtn" aria-label="Notifications" onclick="toast('Notifications')">${icon('bell', 20)}</button>`;
   document.getElementById('topbar').innerHTML = tb;
   v.innerHTML = (SCREENS[S.route] || (() => ''))();
-  v.scrollTop = 0;
-  v.classList.remove('enter'); void v.offsetWidth; v.classList.add('enter');
+  v.scrollTop = keepScroll ? top : 0;
+  if (!keepScroll) { v.classList.remove('enter'); void v.offsetWidth; v.classList.add('enter'); }
   // Tab bar only on the root (the Billing hub is the "Transactions" tab: focused = filled #4185F3 circle with the currency glyph)
   const tbar = document.getElementById('tabbar');
   const root = S.route === 'home';
@@ -948,7 +1016,7 @@ function quickActions() {
   const groups = [
     ['wallet', 'Payments', [qa('receipt', 'Payment history', `go('payments')`, b.failed), qa('card', 'Saved cards', `go('cards')`)]],
     ['folder', 'Documents', [st.invoices && qa('doc', 'Invoices', docs('invoices'), b.overdue), qa('stmt', 'Statement PDF', `openStatementSheet()`), qa('est', 'Estimates', docs('estimates'))]],
-    ['shield', 'Insurance', [qa('shield', 'Insurance', `location.href='insurance/'`, insuranceItems().filter(x => x.act).length), qa('heart', 'Benefits', `go('benefits')`), qa('superbill', 'Get Superbill', `openSuperbillSheet()`)]]
+    ['shield', 'Insurance', [qa('shield', 'Insurance', `go('ins')`, INS.alerts().filter(a => a.act).length), qa('heart', 'Benefits', `go('benefits')`), qa('superbill', 'Get Superbill', `openSuperbillSheet()`)]]
   ];
   return `<section class="qsec"><div class="qwrap">
     <div class="qscroll" id="qscroll" onscroll="qaScroll(this)" onwheel="qaWheel(event,this)" onpointerdown="qaDrag(event,this)">${groups.flatMap(([, , tiles]) => tiles.filter(Boolean)).join('')}</div>
@@ -1032,7 +1100,7 @@ function balanceCard() {
 
 /* Things to know = RemindersWidget: section header with a count badge, then one card per item with a teal action. */
 function thingsToKnow() {
-  const items = [...each(cl => attention(cl)), ...insuranceItems().map(x => `<div class="rcard"><span class="ri ${x.tone}">${icon(x.ic, 18)}</span><span class="rt"><b>${x.t}</b><span>${x.s}</span></span><button class="rbtn" onclick="location.href='insurance/'">${x.btn}</button></div>`)];
+  const items = [...each(cl => attention(cl)), ...INS.alerts().map(x => `<div class="rcard"><span class="ri ${x.tone === 'blue' ? '' : x.tone}">${icon(x.ic, 18)}</span><span class="rt"><b>${x.t}</b><span>${x.s}</span></span><button class="rbtn" onclick="go('ins')">${x.btn}</button></div>`)];
   return `<section class="qsec"><div class="whead"><div class="wtitle"><span class="wicon">${icon('bell', 17)}</span><b>Things to know</b>${items.length ? `<span class="wcount">${items.length}</span>` : ''}</div></div>
     ${items.length ? items.join('') : `<div class="rcard"><span class="ri">${icon('info', 18)}</span><span class="rt"><b>Nothing needs your attention</b><span>We’ll let you know when something changes.</span></span></div>`}</section>`;
 }
@@ -1063,15 +1131,6 @@ const STATEMENT_NOTE = 'Your share is based on claims insurance has paid, plus o
 
 /* Failed charges recent enough to remind about (the app: last 30 days). */
 const recentFailed = cl => cl.payments.filter(p => p.status === 'failed' && daysAgo(p.date) <= 30);
-/* Insurance reminders (the app's insuranceAlerts): child-level, shown once after the centres' items.
-   act = the parent has something to do (counts on the Insurance tile). Details: the Insurance design page. */
-const INSURANCE_REMINDERS = {
-  aarav: [{ tone: 'amber', ic: 'shield', t: 'Add photos of the Texas Medicaid (CHIP) card', s: 'Front and back help the clinic bill correctly', btn: 'Add', act: true }],
-  kabir: [{ tone: '', ic: 'bell', t: 'Insurance update sent', s: 'Waiting for the clinic to review · sent Nov 20', btn: 'View', act: false },
-          { tone: 'amber', ic: 'alert', t: 'BlueCross BlueShield coverage ends Dec 5', s: 'Send your new card when you get it', btn: 'Update', act: false }],
-  meera: []
-};
-const insuranceItems = () => S.scenario.empty ? [] : (INSURANCE_REMINDERS[S.child] || []);
 
 function attention(cl) {
   const out = [], cur = cl.cur;
@@ -1642,7 +1701,7 @@ SCREENS['pay-result'] = () => {
 function openChildSwitcher() {
   openSheet(`<h3>Whose billing?</h3><div style="margin-top:12px">${Object.entries(DATA).map(([k, c]) => {
     const t = totals(c.clinics[0]);
-    return `<button class="opt ${S.child === k ? 'on' : ''}" onclick="S.child='${k}';S.clinicIdx=0;closeSheet();tab(S.route==='activity'?'activity':'home')">
+    return `<button class="opt ${S.child === k ? 'on' : ''}" onclick="S.child='${k}';S.clinicIdx=0;closeSheet();tab(S.route==='activity'?'activity':S.route==='ins'?'ins':'home')">
       <span class="avatar">${c.initials}</span><span style="flex:1"><b class="small">${c.name}</b><div class="muted xs">${c.clinics.length} centre${c.clinics.length > 1 ? 's' : ''} · ${[...new Set(c.clinics.map(x => x.cur))].join(', ')}</div></span>
       ${c.clinics.some(x => totals(x).amountDue > 0.005) ? pill(c.clinics.filter(x => totals(x).amountDue > 0.005).length + ' with dues', 'red') : pill('No dues', 'green')}</button>`;
   }).join('')}</div>`);
@@ -1659,7 +1718,7 @@ const emptyBlock = (em, t, s) => `<div class="empty"><div class="em">${em}</div>
    ============================================================ */
 const NOTES = {
   home: ['Billing hub · real app design', [
-    '<b>Built in the app</b> (PR #801, Android): this page shows what shipped. The Transactions tab opens this Billing page by default; <b>Classic view</b> switches to the old tabbed screen, kept as it is (it gets a <b>New view</b> button), and the choice is remembered. Paying, Saved cards and Benefits open the existing screens. Not built yet (no data): “What it paid for”, “Ask the clinic”, failure reasons on failed payments. Insurance: see the Insurance design (tile or left panel).',
+    '<b>Built in the app</b> (PR #801, Android): this page shows what shipped. The Transactions tab opens this Billing page by default; <b>Classic view</b> switches to the old tabbed screen, kept as it is (it gets a <b>New view</b> button), and the choice is remembered. Paying, Saved cards and Benefits open the existing screens. Not built yet (no data): “What it paid for”, “Ask the clinic”, failure reasons on failed payments. Insurance: the Insurance tile (cases in the left panel).',
     '<b>Source: the live parent Home</b> (<code>origin/OFApp2026: app/screens/ParentHomeV2</code>). Colours come from <code>TherapistHome/theme.ts</code>, which ParentHomeV2/theme.ts re-exports: canvas <code>#F1F6FB</code>, ink <code>#1B2D45</code>, muted <code>#6D829C</code>, border <code>#DCE7F1</code>, navy <code>#104F86</code>, teal.dark <code>#176EAE</code> (primary action / links), orange.dark <code>#A75E00</code> on orange.soft <code>#FFF4DB</code> (every widget header), coral <code>#EF5732</code> (amount due), green <code>#2E9E5B</code>, red <code>#EC2129</code>, blue <code>#3D82F6</code>. Layout: padding 16, section gap 16, card radius 18; type 16 / 14 / 12, Poppins.',
     '<b>Components used as they are in the app:</b> <code>WidgetCard</code> (white, 1px border, r18, p12; 32px orange icon box + orange 16px title + teal “View All”) · <code>BillingWidget</code> (“$X due” coral + green <code>#8AB319</code> Pay Now r10; divider rows; “Last payment” with outlined blue “View” receipt) · <code>WidgetButton</code> (control <code>#F3F7FA</code>, r12, min-h 44, navy label) · <code>ParentQuickAction</code> (48px white box r8, teal lucide icon, 12px label) for the billing pages · <code>RemindersWidget</code> cards for Things to know · status badges from <code>ParentAppointmentRow</code> (pill, green / orange / red soft) · the ParentHomeV2 header (navy title, profile switcher with the orange chevron box, 36px white icon buttons) · the DemoNavigator tab bar (icons only; billing = “Transactions”, focused = filled <code>#4185F3</code> circle with the currency glyph).',
     '<b>Every clinic at once, like the app</b> (StatementScreen on OFApp2026): no clinic switcher. The top card has one <code>ClinicBalanceCard</code> row per clinic (“$X due” / “No dues”, its own Pay Now / Pay More; only clinics the child is linked to can be paid; credit on the primary clinic). Statement lines, payments, documents and Things to know list every clinic together, each line tagged with its clinic and shown in that clinic’s currency. Totals across currencies are shown per currency (“$245.00 · CA$40.00”), never added up.',
@@ -1734,12 +1793,463 @@ function renderNotes() {
       <li>Tentative / not billed yet → <b>a regular charge (no special label)</b></li><li>Payments tab → <b>Payment history</b></li><li>Paid By Payer → <b>Insurance paid</b></li><li>GFE → <b>Estimate</b></li></ul>`;
 }
 
+
+/* ============================================================
+   Insurance (the app's Insurance page and update flow, PR #801)
+   Same page and data as the rest of the hub: the Insurance tile, Things to know and the left panel open it.
+   Kept in its own scope; only what its buttons call is global.
+   ============================================================ */
+const IS = { draft: null, sc: { loading: false, loadError: false, uploadFail: false, cameraDenied: false, ocrFail: false, sendFail: false, outcome: 'none', onFile: 'as-set' } };
+const INS = (() => {
+const dt = s => new Date(String(s).slice(0, 10) + 'T12:00:00');
+const fd = (s, o = { month: 'short', day: 'numeric' }) => s ? dt(s).toLocaleDateString('en-US', o) : '';
+const fdy = s => fd(s, { month: 'short', day: 'numeric', year: 'numeric' });
+const daysFromToday = s => Math.round((dt(s) - dt(TODAY)) / 864e5);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+Object.assign(ICONS, {
+  clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  camera: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+  upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+  wand: '<path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/>',
+  trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>'
+});
+
+/* ---------- insurance on file per child (profile.payment_type / coverages[] / adminApproval.billing) ---------- */
+const holder = { relationship: '19', holderName: 'Priya Sharma', first: 'Priya', last: 'Sharma', dob: '1988-04-12', gender: 'F', address: '41 Lake View Rd', city: 'Austin', state: 'TX', zip: '78704' };
+const INSDATA = {
+  aarav: { onFile: { payType: 'Insurance', coverages: [
+      { carrier: 'Aetna', memberId: 'W123456789', group: '0844129', start: '2026-01-01', end: '2026-12-31', lastCheck: '2026-11-20', photos: { front: true, back: true }, ...holder },
+      { carrier: 'Texas Medicaid (CHIP)', memberId: 'MCD99887766', group: '', start: '2026-03-01', end: '', lastCheck: null, photos: { front: false, back: false }, ...holder }
+    ] }, pending: null },
+  kabir: { onFile: { payType: 'Insurance', coverages: [
+      { carrier: 'BlueCross BlueShield', memberId: 'XYZ445566778', group: '77120', start: '2026-01-01', end: '2026-12-05', lastCheck: '2026-11-18', photos: { front: true, back: true },
+        relationship: '19', holderName: 'Neha Mehta', first: 'Neha', last: 'Mehta', dob: '1990-09-02', gender: 'F', address: '9 Bridge St', city: 'Seattle', state: 'WA', zip: '98101' }
+    ] },
+    pending: { requested: '2026-11-20', payType: 'Insurance', coverages: [
+      { carrier: 'BlueCross BlueShield', memberId: 'XYZ445566779', group: '77120', start: '2026-01-01', photos: { front: true, back: true },
+        relationship: '19', holderName: 'Neha Mehta', first: 'Neha', last: 'Mehta', dob: '1990-09-02', gender: 'F', address: '9 Bridge St', city: 'Seattle', state: 'WA', zip: '98101' },
+      { carrier: 'UnitedHealthcare', memberId: 'U5521984', group: 'G-4410', start: '2026-11-01', photos: { front: true, back: false },
+        relationship: '19', holderName: 'Arjun Mehta', first: 'Arjun', last: 'Mehta', dob: '1987-01-21', gender: 'M', address: '9 Bridge St', city: 'Seattle', state: 'WA', zip: '98101' }
+    ] } },
+  meera: { onFile: { payType: 'Private Pay', coverages: [] }, pending: null }
+};
+/* Left-panel cases that replace the current child's insurance: nothing on file, or a coverage that ended. */
+const overrideFor = (kind, k) => {
+  const [first, ...rest] = DATA[k].name.split(' ');
+  if (kind === 'empty') return { onFile: { payType: 'Insurance', coverages: [] }, pending: null };
+  return { onFile: { payType: 'Insurance', coverages: [
+    { carrier: 'Cigna', memberId: 'C77812003', group: '3301', start: '2025-11-01', end: '2026-10-31', lastCheck: '2026-09-02', photos: { front: true, back: false },
+      relationship: '19', holderName: '', first: 'Priya', last: rest.join(' ') || first, dob: '1988-04-12', gender: 'F', address: '41 Lake View Rd', city: 'Austin', state: 'TX', zip: '78704' }
+  ] }, pending: null };
+};
+const store = {};
+const ins = () => {
+  const k = S.child, ov = IS.sc.onFile, key = ov === 'as-set' ? k : `${k}:${ov}`;
+  if (!store[key]) store[key] = ov === 'as-set' ? clone(INSDATA[k] || { onFile: { payType: 'Insurance', coverages: [] }, pending: null }) : overrideFor(ov, k);
+  const o = store[key], b = DATA[k];
+  o.name = b.name; o.short = b.short; o.centres = b.clinics.map(c => c.name);
+  return o;
+};
+const multi = () => ins().centres.length > 1;
+const OCR = { carrier: 'UnitedHealthcare', memberId: 'U5521984', group: 'G-4410', holderName: 'Arjun Mehta', first: 'Arjun', last: 'Mehta', dob: '1987-01-21', gender: 'M', start: '2026-11-01' };
+const popRoute = () => { const p = S.stack.pop(); if (!p) return; S.route = p.route; S.params = p.params; render(); };
+const isEditing = () => S.route.startsWith('edit-');
+
+Object.assign(INFO, {
+  how: () => ['How insurance updates work', [
+    'You send your insurance details to the clinic from here. The clinic checks them before using them for billing.',
+    'Until the clinic approves your update, the insurance shown here is what they bill. Sending a new update replaces one that is still waiting.',
+    multi() ? `${ins().short}’s insurance is the same at all ${ins().centres.length} centres.` : null].filter(Boolean)],
+  photos: () => ['Why card photos help', ['The clinic uses the front and back of the card to check the member ID, group number and the phone numbers on the back.', 'Photos are cropped to the card shape and stored with your child’s documents.']],
+  autofill: () => ['Auto-fill from card', ['We read the photo of the card and fill in what we can find: the carrier, member ID, group number, the policy holder’s name and date of birth, and the start date.', 'Anything the card doesn’t show stays as you typed it. Always check the filled details.']],
+  relationship: () => ['Relationship to policy holder', ['The policy holder is the person the insurance belongs to, often a parent. Choose how your child is related to them: “Child” if the plan is a parent’s, “Self” if the plan is in your child’s own name.']]
+});
+/* ---------- reference lists (same as InsuranceInfo.tsx) ---------- */
+const RELATIONSHIPS = [['18', 'Self'], ['19', 'Child'], ['01', 'Spouse'], ['53', 'Life Partner'], ['20', 'Employee'], ['39', 'Organ Donor'], ['40', 'Cadaver Donor'], ['G8', 'Other'], ['21', 'Unknown']];
+const REL_LABEL = Object.fromEntries(RELATIONSHIPS);
+const GENDERS = [['M', 'Male'], ['F', 'Female'], ['O', 'Other']];
+const STATES = 'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' ');
+const ORDER = ['Primary', 'Secondary', 'Tertiary'];
+const MAX_COVERAGES = 3;
+const FIELD_LABEL = { carrier: 'Insurance carrier', memberId: 'Member ID', group: 'Group number', start: 'Coverage start date', relationship: 'Relationship to policy holder',
+  holderName: 'Policy holder name', first: 'First name', last: 'Last name', dob: 'Date of birth', gender: 'Gender', address: 'Street address', city: 'City', state: 'State', zip: 'ZIP code' };
+const REQUIRED = ['carrier', 'memberId', 'relationship', 'first', 'last', 'dob', 'gender', 'address', 'city', 'state', 'zip'];
+const COMPARED = ['carrier', 'memberId', 'group', 'start', 'relationship', 'holderName', 'first', 'last', 'dob', 'gender', 'address', 'city', 'state', 'zip'];
+
+/* ---------- rules ---------- */
+const masked = id => id ? '•••• ' + String(id).slice(-4) : '—';
+const zipOk = z => /^\d{5}(-?\d{4})?$/.test(String(z || '').trim());
+function fieldError(c, k) {
+  const v = String(c[k] ?? '').trim();
+  if (REQUIRED.includes(k) && !v) return 'Required';
+  if (k === 'zip' && v && !zipOk(v)) return 'Enter a 5-digit ZIP code';
+  if (k === 'dob' && v && v > TODAY) return 'Can’t be in the future';
+  return '';
+}
+const coverageErrors = c => Object.keys(FIELD_LABEL).filter(k => fieldError(c, k));
+const coverageComplete = c => coverageErrors(c).length === 0;
+function coverageStatus(c) {
+  if (c.start && c.start > TODAY) return ['Starts ' + fd(c.start), 'blue'];
+  if (c.end) {
+    const d = daysFromToday(c.end);
+    if (d < 0) return ['Ended ' + fd(c.end), 'red'];
+    if (d <= 30) return ['Ends ' + fd(c.end), 'amber'];
+  }
+  return ['Active', 'green'];
+}
+const photoCount = c => (c.photos?.front ? 1 : 0) + (c.photos?.back ? 1 : 0);
+function changedFields(next, prev) {
+  if (!prev) return ['new'];
+  const f = COMPARED.filter(k => String(next[k] ?? '').trim() !== String(prev[k] ?? '').trim());
+  if (!!next.photos?.front !== !!prev.photos?.front || !!next.photos?.back !== !!prev.photos?.back) f.push('photos');
+  return f;
+}
+/* Same comparison as hasPaymentUpdate(): against what the clinic has on file (not the pending request). */
+function draftChanges() {
+  const d = IS.draft, on = ins().onFile, out = { payType: d.payType !== on.payType, coverages: [], removed: 0, any: false };
+  if (d.payType === 'Insurance') {
+    out.coverages = d.coverages.map(c => changedFields(c, on.coverages.find(p => p.memberId && p.memberId === c.memberId.trim())));
+    out.removed = on.payType === 'Insurance' ? Math.max(0, on.coverages.filter(p => !d.coverages.some(c => c.memberId.trim() === p.memberId)).length) : 0;
+  }
+  out.any = out.payType || (d.payType === 'Insurance' && (out.removed > 0 || d.coverages.length !== on.coverages.length || out.coverages.some(f => f.length)));
+  return out;
+}
+/* Things to know items for insurance (the hub shows them with the billing ones). */
+function insuranceAlerts() {
+  const c = ins(), on = c.onFile, out = [];
+  if (IS.sc.outcome === 'rejected') out.push({ tone: 'red', ic: 'alert', t: 'Insurance update not approved', s: 'Tap to see why and send it again', btn: 'View', act: true });
+  if (c.pending) out.push({ tone: 'blue', ic: 'clock', t: 'Insurance update sent', s: `Waiting for the clinic to review · sent ${fd(c.pending.requested)}`, btn: 'View', act: false });
+  if (on.payType === 'Insurance' && !on.coverages.length && !c.pending) out.push({ tone: 'red', ic: 'shield', t: `Add ${c.short}’s insurance`, s: 'The clinic has no insurance on file', btn: 'Add', act: true });
+  on.coverages.forEach(cv => {
+    const [lab, tone] = coverageStatus(cv);
+    if (tone === 'red') out.push({ tone: 'red', ic: 'alert', t: `${cv.carrier} coverage ended ${fd(cv.end)}`, s: 'Send your new insurance card to the clinic', btn: 'Update', act: !c.pending });
+    else if (tone === 'amber') out.push({ tone: 'amber', ic: 'clock', t: `${cv.carrier} coverage ends ${fd(cv.end)}`, s: 'Send your new card when you get it', btn: 'Update', act: !c.pending });
+    if (photoCount(cv) < 2 && tone !== 'red' && !c.pending) out.push({ tone: 'amber', ic: 'camera', t: `Add photos of the ${cv.carrier} card`, s: photoCount(cv) ? `The ${cv.photos?.front ? 'back' : 'front'} of the card is missing` : 'Front and back help the clinic bill correctly', btn: 'Add', act: true });
+  });
+  return out;
+}
+
+/* ---------- Insurance page (read view) ---------- */
+SCREENS.ins = () => {
+  if (IS.sc.loading) return skeleton();
+  if (IS.sc.loadError) return `<div class="empty"><div class="em">⚠️</div><b>We couldn’t load ${ins().short}’s insurance</b><div class="small">Check your connection and try again.</div>
+      <button class="btn secondary sm" style="margin:12px auto 0" onclick="IS.sc.loadError=false;document.getElementById('ins-loaderr').checked=false;render()">Try again</button></div>`;
+  const c = ins(), on = c.onFile;
+  let h = '<div class="stack">';
+  h += banners();
+  // How you pay
+  h += `<div class="wcard"><div class="whead"><div class="wtitle"><span class="wicon">${icon('wallet', 17)}</span><b>How you pay</b></div>
+      <button class="wlink" onclick="startEdit()">Change</button></div>
+    <div class="wrow" style="padding:0;border:none"><span class="t">${on.payType === 'Insurance' ? 'Insurance' : 'Private pay'}</span>${on.payType === 'Insurance' ? pill(on.coverages.length ? `${on.coverages.length} on file` : 'None on file', on.coverages.length ? 'green' : 'red') : pill('No insurance billed', 'grey')}</div>
+    ${on.payType === 'Private Pay' ? `<div class="muted12">You pay for therapy yourself. Got insurance now? <button class="inline-link" onclick="startEdit('Insurance')">Add it</button></div>` : ''}</div>`;
+  // Coverages
+  if (on.payType === 'Insurance') {
+    if (!on.coverages.length) {
+      h += `<div class="wcard empty-card"><div class="em">🛡️</div><b>No insurance on file</b><div class="muted12">Add ${c.short}’s insurance card so the clinic can bill your plan.</div>
+        <button class="btn" style="margin-top:12px" onclick="startEdit()">Add insurance</button></div>`;
+    } else h += on.coverages.map((cv, i) => coverageCard(cv, i)).join('');
+  }
+  if (on.payType === 'Insurance' && on.coverages.length) h += `<button class="btn" onclick="startEdit()">Update insurance</button>`;
+  // Benefits link
+  h += `<div class="list"><button class="li" onclick="go('benefits')"><span class="ic" style="background:var(--p-teal-soft);color:var(--p-teal-dark)">${icon('heart', 18)}</span>
+      <span class="body"><div class="t">Benefits &amp; eligibility</div><div class="s">${!S.settings.insurance ? 'Eligibility checks and authorizations' : 'Deductible, copay, visits, authorizations, estimates'}</div></span>${CHEV}</button></div>`;
+  if (multi()) h += `<div class="info">${icon('info', 16)}<span>${c.short}’s insurance is the same at all ${c.centres.length} centres.</span></div>`;
+  return h + '</div>';
+};
+function banners() {
+  const c = ins(); let h = '';
+  if (IS.sc.outcome === 'rejected') h += `<div class="banner red">${icon('alert', 18)}<div><b>Your last update wasn’t approved</b><span>The clinic said: “The member ID doesn’t match the card photo.”</span>
+      <div class="banner-actions"><button class="btn sm" onclick="startEdit()">Update again</button></div></div></div>`;
+  if (IS.sc.outcome === 'approved') h += `<div class="banner green">${icon('check', 18)}<div><b>Update approved</b><span>The clinic approved your insurance update on ${fdy('2026-11-24')}. The details below are now in use.</span></div></div>`;
+  if (c.pending) h += `<div class="banner blue">${icon('clock', 18)}<div><b>Update waiting for review</b><span>Sent ${fdy(c.pending.requested)}. The details below stay in use until the clinic approves it.</span>
+      <div class="banner-actions"><button class="btn secondary sm" onclick="openPendingSheet()">View what you sent</button><button class="btn ghost sm" onclick="startEdit()">Edit update</button></div></div></div>`;
+  return h;
+}
+function coverageCard(cv, i) {
+  const [lab, tone] = coverageStatus(cv), pc = photoCount(cv);
+  const rel = REL_LABEL[cv.relationship];
+  const holderLine = cv.relationship === '18' ? `${ins().short} (own plan)` : `${esc(cv.holderName || `${cv.first} ${cv.last}`)}${rel ? ` · ${ins().short} is their ${rel.toLowerCase()}` : ''}`;
+  return `<div class="wcard cov">
+    <div class="whead"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${pill(ORDER[i], 'blue')}${pill(lab, tone)}</div>
+      ${cv.lastCheck ? `<span class="muted12" style="margin:0">Checked ${fd(cv.lastCheck)}</span>` : ''}</div>
+    <div class="payer">${esc(cv.carrier)}</div>
+    <div class="kvs">
+      <div class="kv"><span class="muted">Member ID</span><span id="mid-${i}">${masked(cv.memberId)} <button class="inline-link" onclick="document.getElementById('mid-${i}').innerHTML='${esc(cv.memberId)}'">Show</button></span></div>
+      ${cv.group ? `<div class="kv"><span class="muted">Group number</span><span>${esc(cv.group)}</span></div>` : ''}
+      <div class="kv"><span class="muted">Coverage</span><span>${cv.start ? (cv.end ? `${fd(cv.start)} – ${fdy(cv.end)}` : `From ${fdy(cv.start)}`) : '—'}</span></div>
+      <div class="kv"><span class="muted">Policy holder</span><span style="text-align:right">${holderLine}</span></div>
+    </div>
+    <div class="photos">${['front', 'back'].map(s => cv.photos?.[s]
+      ? `<button class="ph has" onclick="viewPhoto(${i},'${s}')"><span class="phimg">${s === 'front' ? esc(cv.carrier) + '<small>' + masked(cv.memberId) + '</small>' : '<small>Member services<br>1-800-555-0100</small>'}</span><span class="phl">${s === 'front' ? 'Front' : 'Back'}</span></button>`
+      : `<button class="ph none" onclick="startEdit(null,${i})"><span class="phimg">${icon('camera', 18)}</span><span class="phl">Add ${s}</span></button>`).join('')}</div>
+    ${pc < 2 ? `<div class="muted12" style="color:var(--p-orange-dark);display:flex;align-items:center;gap:4px">${pc ? `The ${cv.photos?.front ? 'back' : 'front'} of the card is missing.` : 'No card photos yet.'} ${infoBtn('photos', 'Why card photos help')}</div>` : ''}
+  </div>`;
+}
+function viewPhoto(i, side) {
+  const cv = ins().onFile.coverages[i];
+  openSheet(`<h3>${esc(cv.carrier)} · ${side === 'front' ? 'Front' : 'Back'}</h3><div class="bigcard">${side === 'front' ? `<b>${esc(cv.carrier)}</b><span>Member ${esc(cv.memberId)}</span><span>Group ${esc(cv.group || '—')}</span>` : '<span>Member services 1-800-555-0100</span><span>Claims PO Box 1100</span>'}</div>
+    <div class="muted xs" style="text-align:center;margin-top:6px">Mock photo. The app shows the uploaded image (signed URL).</div>
+    <button class="btn secondary" style="margin-top:14px" onclick="closeSheet(true);startEdit(null,${i})">Replace photo</button>`);
+}
+function openPendingSheet() {
+  const p = ins().pending;
+  openSheet(`<h3>Update you sent</h3><div class="muted small">Sent ${fdy(p.requested)} · waiting for review</div>
+    <div class="card" style="padding:8px 14px;margin-top:12px"><div class="kv"><span class="muted">How you pay</span><span>${p.payType === 'Insurance' ? 'Insurance' : 'Private pay'}</span></div></div>
+    ${p.payType === 'Insurance' ? p.coverages.map((c, i) => `<div class="card" style="padding:8px 14px;margin-top:8px"><div class="kv"><b>${ORDER[i]} · ${esc(c.carrier)}</b>${changedFields(c, ins().onFile.coverages.find(o => o.memberId === c.memberId)).length ? pill(ins().onFile.coverages.some(o => o.memberId === c.memberId) ? 'Changed' : 'New', 'amber') : pill('Same', 'grey')}</div>
+      <div class="kv small"><span class="muted">Member ID</span><span>${masked(c.memberId)}</span></div><div class="kv small"><span class="muted">Card photos</span><span>${photoCount(c)} of 2</span></div></div>`).join('') : ''}
+    <button class="btn" style="margin-top:14px" onclick="closeSheet(true);startEdit()">Edit update</button>
+    <div class="muted xs" style="text-align:center;margin-top:8px">Sending again replaces this update.</div>`);
+}
+
+/* ---------- Edit flow ---------- */
+const blank = () => ({ carrier: '', memberId: '', group: '', start: '', relationship: '', holderName: '', first: '', last: '', dob: '', gender: '', address: '', city: '', state: '', zip: '', photos: { front: false, back: false } });
+function startEdit(payType, coverageIndex) {
+  const c = ins();
+  // Same as today: a request still waiting for the clinic is what the parent last sent, so editing starts from it.
+  const src = c.pending ?? c.onFile;
+  IS.draft = { payType: payType || src.payType, coverages: clone(src.coverages).map(cv => ({ ...blank(), ...cv, photos: { ...cv.photos } })), fromPending: !!c.pending,
+    state: {}, showErrors: false, sending: false, sendError: false };
+  if (IS.draft.payType === 'Insurance' && !IS.draft.coverages.length) IS.draft.coverages.push(blank());
+  IS.draft.coverages.forEach((_, i) => IS.draft.state[i] = { up: {}, autofill: 'idle', filled: [], sessionPhoto: false });
+  closeSheet(true);
+  if (coverageIndex !== undefined && coverageIndex !== null) { go('edit-list'); go('edit-cov', { i: coverageIndex, focus: 'photos' }); }
+  else go('edit-pay');
+}
+const stepper = n => `<div class="stepper">${[0, 1, 2].map(i => `<span class="${i <= n ? 'on' : ''}"></span>`).join('')}</div><div class="steplabel">${['How you pay', 'Insurance details', 'Review & send'][n]} · Step ${n + 1} of 3</div>`;
+
+SCREENS['edit-pay'] = () => {
+  const d = IS.draft;
+  const opt = (v, t, s) => `<button class="opt ${d.payType === v ? 'on' : ''}" onclick="setPayType('${v}')"><span class="radio"></span><span style="flex:1"><b class="small">${t}</b><div class="muted xs">${s}</div></span></button>`;
+  return `${stepper(0)}${d.fromPending ? pendingNote() : ''}
+    <div class="section-title" style="margin-top:4px">How will you pay for therapy?</div>
+    ${opt('Insurance', 'Insurance', 'The clinic bills your plan. You pay your share.')}
+    ${opt('Private Pay', 'Private pay', 'You pay for therapy yourself. No insurance is billed.')}
+    ${d.payType === 'Private Pay' && ins().onFile.coverages.length ? `<div class="info warn">${icon('info', 16)}<span>The clinic will stop billing ${ins().onFile.coverages.map(c => esc(c.carrier)).join(' and ')} once they approve this.</span></div>` : ''}
+    <button class="btn" style="margin-top:18px" onclick="go(IS.draft.payType==='Insurance'?'edit-list':'edit-review')">Continue</button>`;
+};
+const pendingNote = () => `<div class="info">${icon('clock', 16)}<span>You’re editing the update you sent on ${fd(ins().pending.requested)}. Sending again replaces it.</span></div>`;
+function setPayType(v) { IS.draft.payType = v; if (v === 'Insurance' && !IS.draft.coverages.length) { IS.draft.coverages.push(blank()); IS.draft.state[0] = { up: {}, autofill: 'idle', filled: [], sessionPhoto: false }; } render(true); }
+
+SCREENS['edit-list'] = () => {
+  const d = IS.draft;
+  let h = `${stepper(1)}`;
+  h += d.coverages.map((c, i) => {
+    const errs = coverageErrors(c), done = !errs.length, pc = photoCount(c);
+    return `<button class="covrow ${d.showErrors && !done ? 'err' : ''}" onclick="go('edit-cov',{i:${i}})">
+      <span class="ord">${ORDER[i]}</span>
+      <span style="flex:1;min-width:0"><b>${esc(c.carrier) || 'New insurance'}</b>
+        <span class="muted xs">${c.memberId ? masked(c.memberId) + ' · ' : ''}${pc} of 2 card photos</span>
+        <span class="covstate">${done ? pill('Ready', 'green') : pill(`${errs.length} to fill in`, d.showErrors ? 'red' : 'amber')}</span></span>${CHEV}</button>`;
+  }).join('');
+  h += d.coverages.length < MAX_COVERAGES
+    ? `<button class="opt dashed" onclick="addCoverage()"><span style="flex:1;font-weight:500">+ Add another insurance</span><span class="muted xs">${d.coverages.length} of ${MAX_COVERAGES}</span></button>`
+    : `<div class="muted12" style="text-align:center">You can add up to ${MAX_COVERAGES} insurances.</div>`;
+  if (d.coverages.length > 1) h += `<div class="muted xs" style="margin-top:4px">The first insurance is billed first (primary), then the next ones.</div>`;
+  if (d.showErrors && d.coverages.some(c => !coverageComplete(c))) h += `<div class="info err">${icon('alert', 16)}<span>Some details are missing. Open the insurance marked in red to finish it.</span></div>`;
+  h += `<button class="btn" style="margin-top:16px" onclick="toReview()">Continue</button>`;
+  return h;
+};
+function addCoverage() { const d = IS.draft; if (d.coverages.length >= MAX_COVERAGES) return; d.coverages.push(blank()); d.state[d.coverages.length - 1] = { up: {}, autofill: 'idle', filled: [], sessionPhoto: false }; go('edit-cov', { i: d.coverages.length - 1 }); }
+function toReview() { const d = IS.draft; if (d.coverages.some(c => !coverageComplete(c))) { d.showErrors = true; render(true); return; } go('edit-review'); }
+
+SCREENS['edit-cov'] = () => {
+  const d = IS.draft, i = S.params.i, c = d.coverages[i], st = d.state[i] || (d.state[i] = { up: {}, autofill: 'idle', filled: [], sessionPhoto: false });
+  const showErr = d.showErrors || S.params.touchedAll;
+  const field = (k, type = 'text', extra = '') => {
+    const err = (showErr || (st.touched || {})[k]) ? fieldError(c, k) : '';
+    const filled = st.filled.includes(k);
+    return `<div class="field" id="f-${i}-${k}"><label>${FIELD_LABEL[k]}${REQUIRED.includes(k) ? ' <span class="req">*</span>' : ''}${filled ? ' ' + pill('From card', 'blue') : ''}</label>
+      <input class="input ${err ? 'bad' : ''} ${filled ? 'filled' : ''}" type="${type}" value="${esc(c[k])}" ${extra} oninput="setField(${i},'${k}',this.value)" onblur="touch(${i},'${k}')" aria-label="${FIELD_LABEL[k]}">
+      <div class="ferr">${err}</div></div>`;
+  };
+  const chips = (k, opts, extraLabel = '') => {
+    const err = (showErr || (st.touched || {})[k]) ? fieldError(c, k) : '';
+    return `<div class="field"><label>${FIELD_LABEL[k]} <span class="req">*</span>${extraLabel}${st.filled.includes(k) ? ' ' + pill('From card', 'blue') : ''}</label>
+      <div class="radiorow ${err ? 'bad' : ''}">${opts.map(([v, l]) => `<button class="${c[k] === v ? 'on' : ''}" onclick="setField(${i},'${k}','${v}',true)">${l}</button>`).join('')}</div>${err ? `<div class="ferr">${err}</div>` : ''}</div>`;
+  };
+  const side = s => {
+    const up = st.up[s];
+    if (up === 'uploading') return `<div class="tile"><div class="spin"></div><span class="muted xs">Uploading…</span></div>`;
+    if (c.photos[s]) return `<div class="tile has"><span class="phimg">${s === 'front' ? esc(c.carrier || 'Card') + '<small>front</small>' : '<small>back</small>'}</span>
+        <button class="tile-x" aria-label="Remove ${s} photo" onclick="removePhoto(${i},'${s}')">${icon('trash', 14)}</button></div>`;
+    return `<div class="tile none ${up === 'failed' ? 'bad' : ''}"><button class="btn sm" onclick="pickPhoto(${i},'${s}',false)">${icon('upload', 14)} Upload</button>
+        <button class="btn sm secondary" onclick="pickPhoto(${i},'${s}',true)">${icon('camera', 14)} Take photo</button>${up === 'failed' ? `<span class="ferr">Couldn’t upload. Try again.</span>` : ''}</div>`;
+  };
+  const af = st.autofill;
+  let h = `${stepper(1)}`;
+  h += `<div class="section-title" style="margin-top:4px;justify-content:flex-start;gap:4px">Card photos${infoBtn('photos', 'Why card photos help')}</div>
+    <div class="cardrow"><div><div class="muted xs">Front of card</div>${side('front')}</div><div><div class="muted xs">Back of card</div>${side('back')}</div></div>`;
+  if (st.sessionPhoto) h += `<button class="btn ${af === 'done' ? 'okbtn' : af === 'failed' ? 'danger' : 'secondary'}" style="margin-top:8px" ${af === 'running' ? 'disabled' : ''} onclick="autoFill(${i})">
+      ${af === 'running' ? '<span class="spin sm"></span> Reading the card…' : af === 'done' ? icon('check', 16) + ' Filled from card. Please check' : af === 'failed' ? 'Couldn’t read the card. Try again' : icon('wand', 16) + ' Auto-fill from card'}</button>
+      <div class="muted xs" style="display:flex;align-items:center;gap:2px">${af === 'failed' ? 'Try a clearer photo, or fill the details in yourself.' : 'Reads the photo and fills what it can.'}${infoBtn('autofill', 'About auto-fill')}</div>`;
+  h += `<div class="section-title">Insurance</div>${field('carrier')}${field('memberId')}${field('group')}${field('start', 'date')}`;
+  h += `<div class="section-title">Policy holder</div>${chips('relationship', RELATIONSHIPS, infoBtn('relationship', 'About the relationship'))}${field('holderName')}
+    <div class="grid2f">${field('first')}${field('last')}</div>${field('dob', 'date', `max="${TODAY}"`)}${chips('gender', GENDERS)}
+    ${field('address')}${field('city')}
+    <div class="grid2f"><div class="field"><label>State <span class="req">*</span></label><select class="input ${(showErr || (st.touched || {}).state) && fieldError(c, 'state') ? 'bad' : ''}" onchange="setField(${i},'state',this.value,true)" aria-label="State">
+      <option value="">Select</option>${STATES.map(s => `<option ${c.state === s ? 'selected' : ''}>${s}</option>`).join('')}</select>${(showErr || (st.touched || {}).state) && fieldError(c, 'state') ? '<div class="ferr">Required</div>' : ''}</div>
+      ${field('zip', 'text', 'inputmode="numeric"')}</div>`;
+  h += `<button class="btn" style="margin-top:18px" onclick="saveCoverage(${i})">Save insurance</button>`;
+  if (d.coverages.length > 1) h += `<button class="btn ghost danger-text" onclick="confirmRemoveCoverage(${i})">${icon('trash', 16)} Remove this insurance</button>`;
+  return h;
+};
+function setField(i, k, v, rerender) {
+  IS.draft.coverages[i][k] = v; const st = IS.draft.state[i];
+  if (st.filled.includes(k)) { st.filled = st.filled.filter(f => f !== k); const tag = document.querySelector(`#f-${i}-${k} label .pill`); if (tag) tag.remove(); document.querySelector(`#f-${i}-${k} .input`)?.classList.remove('filled'); }
+  if (rerender) { (st.touched ||= {})[k] = true; render(true); }
+}
+function touch(i, k) {
+  (IS.draft.state[i].touched ||= {})[k] = true;
+  const wrap = document.getElementById(`f-${i}-${k}`); if (!wrap) return;
+  const err = fieldError(IS.draft.coverages[i], k);
+  wrap.querySelector('.input').classList.toggle('bad', !!err);
+  wrap.querySelector('.ferr').textContent = err;
+}
+function pickPhoto(i, side, camera) {
+  if (camera && IS.sc.cameraDenied) return openSheet(`<h3>Allow camera access</h3><div class="muted small" style="margin:6px 0 14px">To take a photo of the card, allow OceanFriends to use the camera in your phone’s Settings. You can also upload a photo instead.</div>
+      <button class="btn" onclick="closeSheet();toast('Opens phone Settings')">Open Settings</button><button class="btn ghost" onclick="closeSheet();pickPhoto(${i},'${side}',false)">Upload a photo instead</button>`);
+  const st = IS.draft.state[i]; st.up[side] = 'uploading'; render(true);
+  setTimeout(() => {
+    if (IS.sc.uploadFail) { st.up[side] = 'failed'; render(true); return; }
+    st.up[side] = null; IS.draft.coverages[i].photos[side] = true; st.sessionPhoto = true; if (st.autofill !== 'running') st.autofill = 'idle'; render(true);
+  }, 900);
+}
+function removePhoto(i, side) { IS.draft.coverages[i].photos[side] = false; render(true); }
+function autoFill(i) {
+  const st = IS.draft.state[i]; st.autofill = 'running'; render(true);
+  setTimeout(() => {
+    if (IS.sc.ocrFail) { st.autofill = 'failed'; render(true); return; }
+    const c = IS.draft.coverages[i]; st.filled = [];
+    Object.entries(OCR).forEach(([k, v]) => { if (v) { c[k] = v; st.filled.push(k); } });
+    st.autofill = 'done'; render(true);
+  }, 1200);
+}
+function saveCoverage(i) {
+  const c = IS.draft.coverages[i];
+  if (!coverageComplete(c)) { S.params.touchedAll = true; render(true); toast('Please fill in the highlighted fields'); return; }
+  popRoute(); toast(`${ORDER[i]} insurance saved`);
+}
+function confirmRemoveCoverage(i) {
+  const c = IS.draft.coverages[i];
+  openSheet(`<h3>Remove ${esc(c.carrier) || 'this insurance'}?</h3><div class="muted small" style="margin:6px 0 14px">${i === 0 && IS.draft.coverages.length > 1 ? `${esc(IS.draft.coverages[1].carrier) || 'The next insurance'} becomes the primary insurance. ` : ''}The clinic stops billing it once they approve your update.</div>
+    <button class="btn danger" onclick="removeCoverage(${i})">Remove</button><button class="btn ghost" onclick="closeSheet()">Cancel</button>`);
+}
+function removeCoverage(i) {
+  const d = IS.draft; d.coverages.splice(i, 1);
+  const st = {}; d.coverages.forEach((_, j) => st[j] = d.state[j >= i ? j + 1 : j] || { up: {}, autofill: 'idle', filled: [], sessionPhoto: false }); d.state = st;
+  if (!d.coverages.length) { d.coverages.push(blank()); d.state[0] = { up: {}, autofill: 'idle', filled: [], sessionPhoto: false }; }
+  closeSheet(true); if (S.route === 'edit-cov') popRoute(); else render(true); toast('Insurance removed');
+}
+function confirmDiscard() {
+  openSheet(`<h3>Discard your changes?</h3><div class="muted small" style="margin:6px 0 14px">Nothing has been sent to the clinic yet.</div>
+    <button class="btn danger" onclick="INS.discard()">Discard</button><button class="btn ghost" onclick="closeSheet()">Keep editing</button>`);
+}
+function popRouteSilent() { const p = S.stack.pop(); if (!p) return; S.route = p.route; S.params = p.params; }
+
+SCREENS['edit-review'] = () => {
+  const d = IS.draft, ch = draftChanges();
+  let h = `${stepper(2)}${d.fromPending ? pendingNote() : ''}`;
+  h += `<div class="card" style="padding:8px 14px"><div class="kv"><span class="muted">How you pay</span><span>${d.payType === 'Insurance' ? 'Insurance' : 'Private pay'} ${ch.payType ? pill('Changed', 'amber') : ''}</span></div>
+      <div class="kv"><span></span><button class="inline-link" onclick="go('edit-pay')">Edit</button></div></div>`;
+  if (d.payType === 'Insurance') h += d.coverages.map((c, i) => {
+    const f = ch.coverages[i], tag = f[0] === 'new' ? pill('New', 'amber') : f.length ? pill('Changed', 'amber') : pill('No changes', 'grey');
+    return `<div class="card" style="padding:8px 14px;margin-top:8px">
+      <div class="kv"><b>${ORDER[i]} · ${esc(c.carrier)}</b>${tag}</div>
+      <div class="kv small"><span class="muted">Member ID</span><span>${masked(c.memberId)}</span></div>
+      ${c.group ? `<div class="kv small"><span class="muted">Group</span><span>${esc(c.group)}</span></div>` : ''}
+      <div class="kv small"><span class="muted">Policy holder</span><span>${esc(c.first)} ${esc(c.last)} · ${REL_LABEL[c.relationship] || ''}</span></div>
+      <div class="kv small"><span class="muted">Card photos</span><span>${photoCount(c)} of 2</span></div>
+      ${f.length && f[0] !== 'new' ? `<div class="muted xs" style="margin-top:2px">Changed: ${f.map(k => k === 'photos' ? 'card photos' : FIELD_LABEL[k].toLowerCase()).join(', ')}</div>` : ''}
+      <div class="kv small"><span></span><button class="inline-link" onclick="go('edit-cov',{i:${i}})">Edit</button></div></div>`;
+  }).join('');
+  if (ch.removed) h += `<div class="info warn">${icon('info', 16)}<span>${ch.removed} insurance${ch.removed > 1 ? 's' : ''} on file will be removed.</span></div>`;
+  h += `<div class="consent">The clinic checks these details before using them. Until then, your current insurance stays in use.${d.fromPending ? ' This replaces the update you sent on ' + fd(ins().pending.requested) + '.' : ''}</div>`;
+  if (d.sendError) h += `<div class="info err">${icon('alert', 16)}<span>We couldn’t send your insurance details. Check your connection and try again.</span></div>`;
+  if (!ch.any) h += `<div class="info">${icon('info', 16)}<span>Nothing has changed yet. These details already match what the clinic has on file.</span></div>`;
+  h += `<button class="btn" id="sendbtn" style="margin-top:12px" ${!ch.any || d.sending ? 'disabled' : ''} onclick="send()">${d.sending ? '<span class="spin sm light"></span> Sending…' : d.sendError ? 'Try again' : 'Send to clinic'}</button>`;
+  return h;
+};
+function send() {
+  const d = IS.draft; d.sending = true; d.sendError = false; render(true);
+  setTimeout(() => {
+    d.sending = false;
+    if (IS.sc.sendFail) { d.sendError = true; render(true); return; }
+    const c = ins(); c.pending = { requested: TODAY, payType: d.payType, coverages: d.payType === 'Insurance' ? clone(d.coverages) : [] };
+    IS.sc.outcome = 'none'; document.getElementById('ins-outcome').value = 'none';
+    IS.draft = null; S.stack = [{ route: 'home', params: {} }, { route: 'ins', params: {} }]; S.route = 'ins-sent'; S.params = {}; render();
+  }, 1100);
+}
+SCREENS['ins-sent'] = () => `<div class="result pop"><div class="big ok">✓</div><h2 style="margin:0">Sent to your clinic</h2>
+    <div class="muted" style="margin-top:6px">They’ll review your insurance details. We’ll use them once they’re approved.</div></div>
+  <div style="display:grid;gap:8px;margin-top:32px"><button class="btn" onclick="S.stack=[{route:'home',params:{}}];S.route='ins';render()">Done</button></div>`;
+
+const skeleton = () => { const b = (h, mt = 10) => `<div class="sk" style="height:${h}px;margin-top:${mt}px"></div>`; return b(70, 0) + b(210) + b(210) + b(48); };
+
+const OPEN_Q = [
+  '<b>Approved / not approved</b>: the app only reads <code>status = Pending</code>. To tell parents the outcome (and why it was refused), the clinic side needs to keep the final status, the date and a reason on <code>adminApproval.billing</code>.',
+  '<b>Multi-centre review</b>: insurance is on the child’s profile. Which centre’s staff review a parent’s update when the child has several? The app says “the clinic” until this is decided.',
+  '<b>Coverage end date / last eligibility check</b> are on the clinic’s coverage records. Confirm they are returned to the parent app (the current form doesn’t read them).'
+];
+Object.assign(NOTES, {
+  ins: ['Insurance page (new read view)', [
+    '<b>Built in the app</b> (PR #801): the read view, the reminders and the update flow below. Not built (needs backend): the Approved / Not approved banners.',
+    '<b>Today</b> the Insurance tab opens straight into the edit form. <b>New</b>: it opens on what the clinic has on file, and “Update insurance” starts the edit. Parents mostly come to check, not to edit.',
+    '<b>How you pay</b>: Insurance or Private pay, from <code>profile.payment_type</code>.',
+    '<b>One card per insurance</b> (Primary / Secondary / Tertiary, max 3) from <code>coverages[]</code>: carrier, member ID (masked, “Show”), group number, coverage dates (<code>coverage_start_date</code> – <code>coverage_end_date</code>), policy holder and relationship, card photos (front/back; tap to view, missing ones say “Add”), and “Checked <date>” from <code>last_eligibility_check</code>.',
+    '<b>Status</b> on each card: Active · Starts <date> · Ends <date> (within 30 days) · Ended <date>.',
+    '<b>Banners</b>: <i>Update waiting for review</i> (<code>adminApproval.billing.status = Pending</code>, with “View what you sent” and “Edit update”). <i>Update approved</i> and <i>Not approved + reason</i> need backend support, see Open questions. Use the left panel to show them.',
+    '<b>Empty cases</b>: Private pay (with “Got insurance now? Add it”), Insurance with nothing on file (“Add insurance”). <b>Loading</b> skeleton and <b>load error</b> with Try again.',
+    '<b>Multi-centre</b>: insurance belongs to the child, not to a centre, so one Insurance page serves every centre. A note says which centre reviews updates.',
+    '<b>Benefits &amp; eligibility</b> row links to the existing Benefits screen.']],
+  'edit-pay': ['Update · Step 1: How you pay', [
+    'Same choice as today: Insurance or Private pay. Private pay skips straight to Review.',
+    'Switching an insured child to Private pay warns which plans the clinic will stop billing.',
+    'If an update is still waiting for review, editing starts from it (as today) and says so: “Sending again replaces it.”']],
+  'edit-list': ['Update · Step 2: Insurances', [
+    'The long single form is split into one page per insurance. This list shows each with a Ready / “N to fill in” state.',
+    '“+ Add another insurance” up to 3 (same limit as today). The order is the billing order: primary, secondary, tertiary.',
+    'Continue checks every insurance; any unfinished one turns red with a message (replaces today’s “Missing details” alert).']],
+  'edit-cov': ['Update · One insurance', [
+    '<b>Card photos</b>: front and back, each with Upload and Take photo (cropped to card shape, as today). States: empty, uploading, uploaded (remove), upload failed (inline error). Camera permission denied opens a sheet with Open Settings / Upload instead.',
+    '<b>Auto-fill from card</b> appears once a photo is added in this session (same as today), with Reading… / “Filled from card. Please check” / “Couldn’t read the card”. Filled fields get a “From card” tag until edited.',
+    '<b>Fields</b> (same as today): carrier*, member ID*, group, coverage start date; policy holder: relationship* (9 options), policy holder name, first*, last*, date of birth* (not in the future), gender*, street*, city*, state* (US), ZIP* (5 or 9 digits).',
+    'Errors show under the field after it is left, or all at once on Save.',
+    '“Remove this insurance” asks first; removing the primary makes the next one primary.']],
+  'edit-review': ['Update · Step 3: Review & send', [
+    'Summary of what will be sent, with New / Changed / No changes per insurance and the list of changed fields, compared with what the clinic has on file (same rule as today’s <code>hasPaymentUpdate</code>).',
+    'Nothing changed: Send is disabled with a note (replaces today’s “No changes” alert).',
+    'Send writes the same pending request as today (<code>requestInsuranceUpdate</code> → <code>adminApproval.billing</code>). Sending… / failed (inline, “Try again”) / success screen.',
+    'Leaving the flow with unsent changes asks “Discard your changes?”.']],
+  'ins-sent': ['Sent', ['Success screen, then the Insurance page shows the “Update waiting for review” banner and Things to know shows “Insurance update sent”.']]
+});
+['ins', 'edit-pay', 'edit-list', 'edit-cov', 'edit-review', 'ins-sent'].forEach(k => { NOTES[k] = [NOTES[k][0], [...NOTES[k][1], ...OPEN_Q.map(q => '<i>Open question:</i> ' + q)]]; });
+Object.assign(TITLES, { ins: 'Insurance', 'edit-pay': 'Update insurance', 'edit-list': 'Update insurance', 'edit-review': 'Review & send', 'ins-sent': '' });
+
+/* Back out of the update flow: ask before throwing changes away (billing back() calls this first). */
+const interceptBack = () => {
+  if (!isEditing() || !IS.draft) return false;
+  const prev = S.stack[S.stack.length - 1]?.route;
+  if (prev && prev.startsWith('edit-')) return false;
+  if (draftChanges().any) { confirmDiscard(); return true; }
+  IS.draft = null;
+  return false;
+};
+const discard = () => { closeSheet(true); IS.draft = null; while (S.stack.length && S.route.startsWith('edit-')) popRouteSilent(); render(); };
+/* Things to know items and the Insurance tile count, from the same data as the page. */
+const alerts = () => S.scenario.empty ? [] : insuranceAlerts();
+const title = () => S.route === 'edit-cov' ? `${ORDER[S.params.i] || 'New'} insurance` : TITLES[S.route];
+Object.assign(window, { startEdit, openPendingSheet, viewPhoto, setPayType, toReview, addCoverage, setField, touch, pickPhoto, removePhoto,
+  autoFill, saveCoverage, confirmRemoveCoverage, removeCoverage, confirmDiscard, popRouteSilent, send });
+return { interceptBack, discard, alerts, title };
+})();
+
 /* ============================================================
    Panel wiring
    ============================================================ */
 const JUMPS = [
   ['Hub', () => tab('home')], ['Statement', () => tab('activity')], ['Payment history', () => { tab('home'); go('payments'); }],
-  ['Insurance design', () => { location.href = 'insurance/'; }],
   ['Documents', () => tab('documents')], ['Cards', () => tab('cards')], ['Estimates', () => { S.docsTab = 'estimates'; tab('documents'); }], ['Benefits', () => { tab('home'); go('benefits'); }],
   ['Pay (existing screen)', () => { tab('home'); payClinic(0); }],
   ['Session sheet', () => { tab('activity'); openItem('s1'); }], ['Other charge', () => { tab('activity'); openItem('m1'); }],
@@ -1762,6 +2272,31 @@ bind('sc-fail', el => S.scenario.failPay = el.checked);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
 
 render();
+/* Insurance cases (left panel) */
+const INS_JUMPS = [
+  ['Insurance · 2 plans (Aarav)', () => { S.child = 'aarav'; tab('ins'); }],
+  ['Pending update + 4 centres (Kabir)', () => { S.child = 'kabir'; tab('ins'); }],
+  ['Private pay (Meera)', () => { S.child = 'meera'; tab('ins'); }],
+  ['Update · step 1', () => { S.child = 'aarav'; tab('ins'); startEdit(); }],
+  ['Update · insurances list', () => { S.child = 'aarav'; tab('ins'); startEdit(); go('edit-list'); }],
+  ['Update · one insurance', () => { S.child = 'aarav'; tab('ins'); startEdit(); go('edit-list'); go('edit-cov', { i: 1 }); }],
+  ['Update · review (no changes)', () => { S.child = 'aarav'; tab('ins'); startEdit(); go('edit-list'); go('edit-review'); }],
+  ['Update · switch to private pay', () => { S.child = 'aarav'; tab('ins'); startEdit('Private Pay'); }],
+  ['Sent', () => { S.child = 'aarav'; tab('ins'); S.stack = [{ route: 'home', params: {} }, { route: 'ins', params: {} }]; S.route = 'ins-sent'; render(); }]
+];
+document.getElementById('ins-jump').innerHTML = INS_JUMPS.map((j, i) => `<button onclick="INS_JUMPS[${i}][1]()">${j[0]}</button>`).join('');
+const bindIns = (id, fn) => document.getElementById(id).addEventListener('change', e => { fn(e.target); render(true); });
+bindIns('ins-onfile', el => { IS.sc.onFile = el.value; IS.draft = null; if (S.route.startsWith('edit-') || S.route === 'ins-sent') tab('ins'); });
+bindIns('ins-outcome', el => IS.sc.outcome = el.value);
+bindIns('ins-loading', el => IS.sc.loading = el.checked);
+bindIns('ins-loaderr', el => IS.sc.loadError = el.checked);
+bindIns('ins-upload', el => IS.sc.uploadFail = el.checked);
+bindIns('ins-camera', el => IS.sc.cameraDenied = el.checked);
+bindIns('ins-ocr', el => IS.sc.ocrFail = el.checked);
+bindIns('ins-send', el => IS.sc.sendFail = el.checked);
+/* Old links to the separate insurance page land here: ...real-app/#insurance */
+if (location.hash === '#insurance') tab('ins');
+
 </script>
 </body>
 </html>
