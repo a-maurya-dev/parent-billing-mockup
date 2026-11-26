@@ -701,13 +701,13 @@ function draftChanges() {
 function insuranceAlerts() {
   const c = child(), on = c.onFile, out = [];
   if (S.sc.outcome === 'rejected') out.push({ tone: 'red', ic: 'alert', t: 'Insurance update not approved', s: 'Tap to see why and send it again', btn: 'View', act: true });
-  if (c.pending) out.push({ tone: 'blue', ic: 'clock', t: 'Insurance update sent', s: `Waiting for ${multi() ? reviewer() : 'the clinic'} to review · sent ${fd(c.pending.requested)}`, btn: 'View', act: false });
+  if (c.pending) out.push({ tone: 'blue', ic: 'clock', t: 'Insurance update sent', s: `Waiting for the clinic to review · sent ${fd(c.pending.requested)}`, btn: 'View', act: false });
   if (on.payType === 'Insurance' && !on.coverages.length && !c.pending) out.push({ tone: 'red', ic: 'shield', t: `Add ${c.short}’s insurance`, s: 'The clinic has no insurance on file', btn: 'Add', act: true });
   on.coverages.forEach(cv => {
     const [lab, tone] = coverageStatus(cv);
-    if (tone === 'red') out.push({ tone: 'red', ic: 'alert', t: `${cv.carrier} coverage ended ${fd(cv.end)}`, s: 'Send your new insurance card to the clinic', btn: 'Update', act: true });
-    else if (tone === 'amber') out.push({ tone: 'amber', ic: 'clock', t: `${cv.carrier} coverage ends ${fd(cv.end)}`, s: 'Send your new card when you get it', btn: 'Update', act: true });
-    if (photoCount(cv) < 2 && tone !== 'red') out.push({ tone: 'amber', ic: 'camera', t: `Add photos of the ${cv.carrier} card`, s: photoCount(cv) ? 'The back of the card is missing' : 'Front and back help the clinic bill correctly', btn: 'Add', act: true });
+    if (tone === 'red') out.push({ tone: 'red', ic: 'alert', t: `${cv.carrier} coverage ended ${fd(cv.end)}`, s: 'Send your new insurance card to the clinic', btn: 'Update', act: !c.pending });
+    else if (tone === 'amber') out.push({ tone: 'amber', ic: 'clock', t: `${cv.carrier} coverage ends ${fd(cv.end)}`, s: 'Send your new card when you get it', btn: 'Update', act: !c.pending });
+    if (photoCount(cv) < 2 && tone !== 'red' && !c.pending) out.push({ tone: 'amber', ic: 'camera', t: `Add photos of the ${cv.carrier} card`, s: photoCount(cv) ? `The ${cv.photos?.front ? 'back' : 'front'} of the card is missing` : 'Front and back help the clinic bill correctly', btn: 'Add', act: true });
   });
   return out;
 }
@@ -808,15 +808,15 @@ SCREENS.ins = () => {
   // Benefits link
   h += `<div class="list"><button class="li" onclick="go('benefits')"><span class="ic" style="background:var(--p-teal-soft);color:var(--p-teal-dark)">${icon('heart', 18)}</span>
       <span class="body"><div class="t">Benefits &amp; eligibility</div><div class="s">${S.sc.benefitsOff ? 'Eligibility checks and authorizations' : 'Deductible, copay, visits, authorizations, estimates'}</div></span>${CHEV}</button></div>`;
-  if (multi()) h += `<div class="info">${icon('info', 16)}<span>${c.short}’s insurance is the same at all ${c.centres.length} centres. Updates are reviewed by ${reviewer()}.</span></div>`;
+  if (multi()) h += `<div class="info">${icon('info', 16)}<span>${c.short}’s insurance is the same at all ${c.centres.length} centres.</span></div>`;
   return h + '</div>';
 };
 function banners() {
   const c = child(); let h = '';
-  if (S.sc.outcome === 'rejected') h += `<div class="banner red">${icon('alert', 18)}<div><b>Your last update wasn’t approved</b><span>${multi() ? reviewer() : 'The clinic'} said: “The member ID doesn’t match the card photo.”</span>
+  if (S.sc.outcome === 'rejected') h += `<div class="banner red">${icon('alert', 18)}<div><b>Your last update wasn’t approved</b><span>The clinic said: “The member ID doesn’t match the card photo.”</span>
       <div class="banner-actions"><button class="btn sm" onclick="startEdit()">Update again</button></div></div></div>`;
   if (S.sc.outcome === 'approved') h += `<div class="banner green">${icon('check', 18)}<div><b>Update approved</b><span>The clinic approved your insurance update on ${fdy('2026-11-24')}. The details below are now in use.</span></div></div>`;
-  if (c.pending) h += `<div class="banner blue">${icon('clock', 18)}<div><b>Update waiting for review</b><span>Sent ${fdy(c.pending.requested)}. The details below stay in use until ${multi() ? reviewer() : 'the clinic'} approves it.</span>
+  if (c.pending) h += `<div class="banner blue">${icon('clock', 18)}<div><b>Update waiting for review</b><span>Sent ${fdy(c.pending.requested)}. The details below stay in use until the clinic approves it.</span>
       <div class="banner-actions"><button class="btn secondary sm" onclick="openPendingSheet()">View what you sent</button><button class="btn ghost sm" onclick="startEdit()">Edit update</button></div></div></div>`;
   return h;
 }
@@ -837,7 +837,7 @@ function coverageCard(cv, i) {
     <div class="photos">${['front', 'back'].map(s => cv.photos?.[s]
       ? `<button class="ph has" onclick="viewPhoto(${i},'${s}')"><span class="phimg">${s === 'front' ? esc(cv.carrier) + '<small>' + masked(cv.memberId) + '</small>' : '<small>Member services<br>1-800-555-0100</small>'}</span><span class="phl">${s === 'front' ? 'Front' : 'Back'}</span></button>`
       : `<button class="ph none" onclick="startEdit(null,${i})"><span class="phimg">${icon('camera', 18)}</span><span class="phl">Add ${s}</span></button>`).join('')}</div>
-    ${pc < 2 ? `<div class="muted12" style="color:var(--p-orange-dark);display:flex;align-items:center;gap:4px">${pc ? 'The back of the card is missing.' : 'No card photos yet.'} ${infoBtn('photos', 'Why card photos help')}</div>` : ''}
+    ${pc < 2 ? `<div class="muted12" style="color:var(--p-orange-dark);display:flex;align-items:center;gap:4px">${pc ? `The ${cv.photos?.front ? 'back' : 'front'} of the card is missing.` : 'No card photos yet.'} ${infoBtn('photos', 'Why card photos help')}</div>` : ''}
   </div>`;
 }
 function viewPhoto(i, side) {
@@ -945,7 +945,7 @@ SCREENS['edit-cov'] = () => {
       <option value="">Select</option>${STATES.map(s => `<option ${c.state === s ? 'selected' : ''}>${s}</option>`).join('')}</select>${(showErr || (st.touched || {}).state) && fieldError(c, 'state') ? '<div class="ferr">Required</div>' : ''}</div>
       ${field('zip', 'text', 'inputmode="numeric"')}</div>`;
   h += `<button class="btn" style="margin-top:18px" onclick="saveCoverage(${i})">Save insurance</button>`;
-  if (d.coverages.length > 1 || child().onFile.coverages.length) h += `<button class="btn ghost danger-text" onclick="confirmRemove(${i})">${icon('trash', 16)} Remove this insurance</button>`;
+  if (d.coverages.length > 1) h += `<button class="btn ghost danger-text" onclick="confirmRemove(${i})">${icon('trash', 16)} Remove this insurance</button>`;
   return h;
 };
 function setField(i, k, v, rerender) {
@@ -1018,7 +1018,7 @@ SCREENS['edit-review'] = () => {
       <div class="kv small"><span></span><button class="inline-link" onclick="go('edit-cov',{i:${i}})">Edit</button></div></div>`;
   }).join('');
   if (ch.removed) h += `<div class="info warn">${icon('info', 16)}<span>${ch.removed} insurance${ch.removed > 1 ? 's' : ''} on file will be removed.</span></div>`;
-  h += `<div class="consent">${multi() ? reviewer() : 'The clinic'} checks these details before using them. Until then, your current insurance stays in use.${d.fromPending ? ' This replaces the update you sent on ' + fd(child().pending.requested) + '.' : ''}</div>`;
+  h += `<div class="consent">The clinic checks these details before using them. Until then, your current insurance stays in use.${d.fromPending ? ' This replaces the update you sent on ' + fd(child().pending.requested) + '.' : ''}</div>`;
   if (d.sendError) h += `<div class="info err">${icon('alert', 16)}<span>We couldn’t send your insurance details. Check your connection and try again.</span></div>`;
   if (!ch.any) h += `<div class="info">${icon('info', 16)}<span>Nothing has changed yet. These details already match what the clinic has on file.</span></div>`;
   h += `<button class="btn" id="sendbtn" style="margin-top:12px" ${!ch.any || d.sending ? 'disabled' : ''} onclick="send()">${d.sending ? '<span class="spin sm light"></span> Sending…' : d.sendError ? 'Try again' : 'Send to clinic'}</button>`;
@@ -1034,7 +1034,7 @@ function send() {
     S.draft = null; S.stack = [{ route: 'home', params: {} }, { route: 'ins', params: {} }]; S.route = 'sent'; S.params = {}; render();
   }, 1100);
 }
-SCREENS.sent = () => `<div class="result pop"><div class="big ok">✓</div><h2 style="margin:0">Sent to ${multi() ? reviewer() : 'your clinic'}</h2>
+SCREENS.sent = () => `<div class="result pop"><div class="big ok">✓</div><h2 style="margin:0">Sent to your clinic</h2>
     <div class="muted" style="margin-top:6px">They’ll review your insurance details. We’ll use them once they’re approved.</div></div>
   <div style="display:grid;gap:8px;margin-top:32px"><button class="btn" onclick="S.stack=[{route:'home',params:{}}];S.route='ins';render()">Done</button></div>`;
 
@@ -1065,6 +1065,7 @@ const NOTES = {
     'The statement charge sheet’s “See your plan benefits” keeps opening Benefits.',
     'Try the children in the switcher: Aarav (2 insurances, one without photos), Kabir (4 centres, update pending, coverage ending), Meera (private pay), Riya (nothing on file), Dev (coverage ended, back photo missing).']],
   ins: ['Insurance page (new read view)', [
+    '<b>Built in the app</b> (PR #801): the read view, the reminders and the update flow below. Not built (needs backend): the Approved / Not approved banners.',
     '<b>Today</b> the Insurance tab opens straight into the edit form. <b>New</b>: it opens on what the clinic has on file, and “Update insurance” starts the edit. Parents mostly come to check, not to edit.',
     '<b>How you pay</b>: Insurance or Private pay, from <code>profile.payment_type</code>.',
     '<b>One card per insurance</b> (Primary / Secondary / Tertiary, max 3) from <code>coverages[]</code>: carrier, member ID (masked, “Show”), group number, coverage dates (<code>coverage_start_date</code> – <code>coverage_end_date</code>), policy holder and relationship, card photos (front/back; tap to view, missing ones say “Add”), and “Checked <date>” from <code>last_eligibility_check</code>.',
@@ -1097,7 +1098,7 @@ const NOTES = {
 };
 const OPEN_Q = [
   '<b>Approved / not approved</b>: the app only reads <code>status = Pending</code>. To tell parents the outcome (and why it was refused), the clinic side needs to keep the final status, the date and a reason on <code>adminApproval.billing</code>.',
-  '<b>Multi-centre review</b>: insurance is on the child’s profile. Which centre’s staff review a parent’s update when the child has several? The mockup says the child’s main centre.',
+  '<b>Multi-centre review</b>: insurance is on the child’s profile. Which centre’s staff review a parent’s update when the child has several? The app says “the clinic” until this is decided.',
   '<b>Coverage end date / last eligibility check</b> are on the clinic’s coverage records. Confirm they are returned to the parent app (the current form doesn’t read them).'
 ];
 function renderNotes() {

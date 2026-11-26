@@ -423,6 +423,7 @@ body{font-family:Poppins,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,s
 .toast{background:var(--ink);border-radius:12px}
 .info svg{flex:none;margin-top:1px}
 /* info button: explanations live behind an (i) and open in a bottom sheet (the app's help pattern) */
+.classic-chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:#fff;color:var(--p-navy);border-radius:999px;padding:0 10px;min-height:32px;font-size:12px;font-weight:600;flex:none}
 .ibtn{border:none;background:none;padding:0;width:24px;height:24px;display:inline-grid;place-items:center;color:var(--p-blue);border-radius:50%;flex:none;vertical-align:middle;cursor:pointer}
 .ibtn:hover{background:var(--p-blue-soft)}
 .wbadge{white-space:nowrap;padding:3px 8px;font-size:11px}
@@ -573,6 +574,8 @@ const ICONS = {
   info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
   down: '<path d="m6 9 6 6 6-6"/>',
   list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  history: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
+  heart: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>',
   grid: '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>'
 };
 const icon = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`;
@@ -763,7 +766,7 @@ const EMPTY_CLINIC = { id: 'empty', name: 'Sunrise Therapy Center', cur: 'USD', 
    ============================================================ */
 const S = {
   child: 'aarav', clinicIdx: 0, route: 'home', params: {}, stack: [],
-  filter: 'all', search: '', range: '90', payFilter: 'all', docsTab: 'invoices', footerOpen: false, trendOpen: false,
+  filter: 'all', search: '', range: 'all', payFilter: 'all', docsTab: 'invoices', footerOpen: false, trendOpen: false,
   settings: { fee: 'stripe', flat: 3, blocked: ['debit', 'prepaid'], insurance: true, allowDelete: true, invoices: true, autopay: true, autopayMax: 200, checkIn: true,
               consent: '' },
   scenario: { loading: false, empty: false, failPay: false },
@@ -779,7 +782,7 @@ function locate(id) {                       // point clinic() at the clinic that
   const i = child().clinics.findIndex(c => c.items.some(x => x.id === id) || c.payments.some(x => x.id === id));
   if (i >= 0) S.clinicIdx = i;
 }
-function payClinic(i, src = 'balance', ref) { S.clinicIdx = i; startPay(src, ref); }
+function payClinic(i, src = 'balance', ref) { S.clinicIdx = i; const cl = clinic(), t = totals(cl); go('pay-existing', { amount: src === 'retry' ? Math.max(t.amountDue, 0) : Math.max(t.amountDue, 0) }); }
 function openAlloc(id) { locate(id); openSheet(allocationSheet(clinic().payments.find(x => x.id === id), clinic())); }
 /* The app prints CAD and USD both as "$". When two of this child's centres share a symbol, the currency code is added
    next to the amount so the parent can tell them apart (design addition; the app shows the centre name only). */
@@ -829,7 +832,7 @@ function totals(cl) {
 /* Single-page hub: no tab bar. 'home' (the hub) is the only root; every other page is pushed on top of it. */
 const TABS = [];
 const TITLES = { home: 'Billing', activity: 'Statement', payments: 'Payment history', documents: 'Documents', cards: 'Saved cards', estimates: 'Estimates',
-  estimate: 'Estimate', benefits: 'Insurance benefits', 'pay-amount': 'Make a payment', 'pay-card': 'Payment method', 'pay-review': 'Review & pay', 'pay-result': '' };
+  estimate: 'Estimate', benefits: 'Benefits', 'pay-existing': 'Pay', 'pay-amount': 'Make a payment', 'pay-card': 'Payment method', 'pay-review': 'Review & pay', 'pay-result': '' };
 function go(route, params = {}) { S.stack.push({ route: S.route, params: S.params }); S.route = route; S.params = params; render(); }
 function back() { const p = S.stack.pop(); if (!p) return; S.route = p.route; S.params = p.params; render(); }
 /* open(route): reset to the hub, then push the page (so Back always lands on the hub). */
@@ -845,7 +848,7 @@ function render() {
   if (S.route === 'home' || S.route === 'activity' || S.route === 'payments')
     tb += `<button class="switcher" onclick="openChildSwitcher()" aria-label="Switch child"><span class="nm">${c.name}</span><span class="chev">${icon('down', 14)}</span></button>`;
   tb += `</div>`;
-  if (S.route === 'home') tb += `<button class="iconbtn" aria-label="Help" onclick="toast('Billing guide')">${icon('help', 18)}</button><button class="iconbtn" aria-label="Notifications" onclick="toast('Notifications')">${icon('bell', 20)}</button>`;
+  if (S.route === 'home') tb += `<button class="classic-chip" aria-label="Switch to the classic billing view" onclick="toast('Opens the classic Transactions screen (kept as it is, with a New view button)')">${icon('history', 14)} Classic view</button><button class="iconbtn" aria-label="Notifications" onclick="toast('Notifications')">${icon('bell', 20)}</button>`;
   document.getElementById('topbar').innerHTML = tb;
   v.innerHTML = (SCREENS[S.route] || (() => ''))();
   v.scrollTop = 0;
@@ -930,10 +933,9 @@ SCREENS.home = () => {
 /* ---------- top-right menu: the billing pages, grouped by feature ---------- */
 function menuBadges() {
   const cs = clinics(), st = S.settings;
-  const failed = sum(cs, c => c.payments.filter(p => p.status === 'failed').length);
+  const failed = sum(cs, c => recentFailed(c).length);
   const overdue = st.invoices ? sum(cs, c => c.invoices.filter(i => i.status === 'overdue').length) : 0;
-  const lowAuth = st.insurance && !S.scenario.empty ? (child().benefits?.auths || []).filter(a => a.status === 'approved' && a.remaining <= 3).length : 0;
-  return { failed, overdue, lowAuth, total: failed + overdue + lowAuth };
+  return { failed, overdue, total: failed + overdue };
 }
 /* Billing pages as the app's QuickActionsWidget: a horizontally scrolling row of ParentQuickAction tiles
    (48px white box, teal lucide icon, 12px label) with the small teal scroll indicator under it.
@@ -946,7 +948,7 @@ function quickActions() {
   const groups = [
     ['wallet', 'Payments', [qa('receipt', 'Payment history', `go('payments')`, b.failed), qa('card', 'Saved cards', `go('cards')`)]],
     ['folder', 'Documents', [st.invoices && qa('doc', 'Invoices', docs('invoices'), b.overdue), qa('stmt', 'Statement PDF', `openStatementSheet()`), qa('est', 'Estimates', docs('estimates'))]],
-    ['shield', 'Insurance', [st.insurance && qa('shield', 'Coverage', `go('benefits')`, b.lowAuth), qa('superbill', 'Get Superbill', `openSuperbillSheet()`)]]
+    ['shield', 'Insurance', [qa('shield', 'Insurance', `location.href='insurance/'`, insuranceItems().filter(x => x.act).length), qa('heart', 'Benefits', `go('benefits')`), qa('superbill', 'Get Superbill', `openSuperbillSheet()`)]]
   ];
   return `<section class="qsec"><div class="qwrap">
     <div class="qscroll" id="qscroll" onscroll="qaScroll(this)" onwheel="qaWheel(event,this)" onpointerdown="qaDrag(event,this)">${groups.flatMap(([, , tiles]) => tiles.filter(Boolean)).join('')}</div>
@@ -1030,7 +1032,7 @@ function balanceCard() {
 
 /* Things to know = RemindersWidget: section header with a count badge, then one card per item with a teal action. */
 function thingsToKnow() {
-  const items = each(cl => attention(cl));
+  const items = [...each(cl => attention(cl)), ...insuranceItems().map(x => `<div class="rcard"><span class="ri ${x.tone}">${icon(x.ic, 18)}</span><span class="rt"><b>${x.t}</b><span>${x.s}</span></span><button class="rbtn" onclick="location.href='insurance/'">${x.btn}</button></div>`)];
   return `<section class="qsec"><div class="whead"><div class="wtitle"><span class="wicon">${icon('bell', 17)}</span><b>Things to know</b>${items.length ? `<span class="wcount">${items.length}</span>` : ''}</div></div>
     ${items.length ? items.join('') : `<div class="rcard"><span class="ri">${icon('info', 18)}</span><span class="rt"><b>Nothing needs your attention</b><span>We’ll let you know when something changes.</span></span></div>`}</section>`;
 }
@@ -1059,18 +1061,27 @@ function showInfo(key) {
 }
 const STATEMENT_NOTE = 'Your share is based on claims insurance has paid, plus other charges. Claims still being processed, or rejected, aren’t included yet.';
 
+/* Failed charges recent enough to remind about (the app: last 30 days). */
+const recentFailed = cl => cl.payments.filter(p => p.status === 'failed' && daysAgo(p.date) <= 30);
+/* Insurance reminders (the app's insuranceAlerts): child-level, shown once after the centres' items.
+   act = the parent has something to do (counts on the Insurance tile). Details: the Insurance design page. */
+const INSURANCE_REMINDERS = {
+  aarav: [{ tone: 'amber', ic: 'shield', t: 'Add photos of the Texas Medicaid (CHIP) card', s: 'Front and back help the clinic bill correctly', btn: 'Add', act: true }],
+  kabir: [{ tone: '', ic: 'bell', t: 'Insurance update sent', s: 'Waiting for the clinic to review · sent Nov 20', btn: 'View', act: false },
+          { tone: 'amber', ic: 'alert', t: 'BlueCross BlueShield coverage ends Dec 5', s: 'Send your new card when you get it', btn: 'Update', act: false }],
+  meera: []
+};
+const insuranceItems = () => S.scenario.empty ? [] : (INSURANCE_REMINDERS[S.child] || []);
+
 function attention(cl) {
   const out = [], cur = cl.cur;
   const tag = multi() ? `<span class="ctag">${cl.name}</span> · ` : '';
   const card = (ic, tone, t, s, btn, on, noTag) => `<div class="rcard"><span class="ri ${tone}">${icon(ic, 18)}</span><span class="rt"><b>${t}</b><span>${noTag ? '' : tag}${s}</span></span><button class="rbtn" onclick="${on}">${btn}</button></div>`;
-  const failed = cl.payments.filter(p => p.status === 'failed');
-  if (failed.length) out.push(card('alert', 'red', `${failed.length} payment${failed.length > 1 ? 's' : ''} didn’t go through`, failed[0].failure, 'Retry', `go('payments',{filter:'failed'})`));
+  const failed = recentFailed(cl);
+  if (failed.length) out.push(card('alert', 'red', `${failed.length} payment${failed.length > 1 ? 's' : ''} didn’t go through`, `${fd(failed[0].date)} · ${fmt(failed[0].amount, cur)}`, 'View', `go('payments',{filter:'failed'})`));
   if (S.settings.invoices) {
     cl.invoices.filter(i => i.status === 'overdue').forEach(i => out.push(card('doc', 'red', `Invoice ${i.num} is overdue`, `${fmt(i.amount - i.paid, cur)} · was due ${fd(i.due)}`, 'View', `S.docsTab='invoices';go('documents')`)));
     cl.invoices.filter(i => i.status === 'outstanding' && daysAgo(i.issued) <= 14).forEach(i => out.push(card('doc', '', `New invoice ${i.num}`, `${fmt(i.amount - i.paid, cur)} · due ${fd(i.due)}`, 'View', `S.docsTab='invoices';go('documents')`)));
-  }
-  if (S.settings.insurance && !S.scenario.empty && cl === clinics()[0]) {
-    benefitAlerts(child().benefits).forEach(a => out.push(card('shield', a.tone === 'red' ? 'red' : 'amber', a.title, a.sub, 'View', `go('benefits')`, true)));
   }
   cl.payments.filter(p => p.refundStatus === 'processing').forEach(p => out.push(card('receipt', 'amber', 'Refund in progress', methodLabel(p), 'View', `openItem('${p.id}')`)));
   return out;
@@ -1122,7 +1133,7 @@ function activityList() {
   // Multi-centre: no totals bar. The app never adds amounts across currencies; each centre's balance is at the top.
   if (multi()) return h + `<div class="muted12" style="text-align:center;margin-top:12px">${b.length} lines · each centre’s balance is at the top</div>`;
   h += `<div class="footer-totals"><button class="main" onclick="S.footerOpen=!S.footerOpen;refreshActivity()" aria-expanded="${S.footerOpen}">
-      <span style="white-space:nowrap">Outstanding <span class="muted12">· ${b.length} lines</span></span><span style="text-align:right">${mj(rowOut)} ${S.footerOpen ? '▾' : '▴'}</span></button>
+      <span style="white-space:nowrap">Outstanding <span class="muted12">· ${b.length} lines</span></span><span style="text-align:right">${mj(rowOut)} ${S.footerOpen ? '▴' : '▾'}</span></button>
     ${S.footerOpen ? `<div class="grid"><span>Amount charged</span><b>${mj(i => i.charged)}</b><span>Insurance paid</span><b>${mj(i => i.ins)}</b>
       <span>Your share</span><b>${mj(i => i.share)}</b><span>You paid</span><b>${mj(i => i.paid)}</b><span>Outstanding</span><b>${mj(rowOut)}</b></div>` : ''}</div>`;
   return h;
@@ -1168,8 +1179,6 @@ function sessionSheet(it, cl) {
     h += `<div class="acc open"><button onclick="toggleAcc(this)">Your payments on this visit (${it.payments.length}) ${CHEV}</button><div class="in">${paymentsTable(it.payments, cur)}</div></div>`;
   }
   if (isS && S.settings.insurance) h += `<button class="btn ghost sm" style="padding-left:0;margin-top:6px" onclick="closeSheet(true);go('benefits')">See your plan benefits ›</button>`;
-  h += `<div style="display:grid;gap:8px;margin-top:12px">
-    <button class="btn secondary" onclick="askClinic('${(isS ? it.title + ' session' : it.title)} on ${fd(it.date)}')">Ask the clinic about this</button></div>`;
   return h;
 }
 
@@ -1192,13 +1201,12 @@ function paymentSheet(p, cl) {
       ${p.status !== 'failed' && p.remaining > 0.005 ? `<div class="kv"><span class="muted">Kept as credit</span><span style="color:var(--navy)">${fmt(p.remaining, cur)}</span></div>` : ''}
     </div>`;
   if (p.status === 'failed') {
-    h += `<div class="info err">⚠️ <span>${p.failure}</span></div>
-      ${cl.enrolled ? `<button class="btn" style="margin-top:16px" onclick="startPay('retry','${p.id}')">Try again</button>` : ''}`;
+    h += `<div class="info err">⚠️ <span>This payment didn’t go through.</span></div>
+      ${cl.enrolled ? `<button class="btn" style="margin-top:16px" onclick="closeSheet(true);payClinic(S.clinicIdx,'retry','${p.id}')">Try again</button>` : ''}`;
     return h;
   }
   h += `<div class="btnrow" style="margin-top:12px">
-    ${p.receipt ? `<button class="btn secondary" onclick="toast('Opening receipt PDF…')">${icon('receipt', 18)} Receipt</button>` : ''}
-    ${p.alloc?.length ? `<button class="btn secondary" onclick="openAlloc('${p.id}')">${icon('alloc', 18)} What it paid for</button>` : ''}</div>`;
+    ${p.receipt ? `<button class="btn secondary" onclick="toast('Opening receipt PDF…')">${icon('receipt', 18)} Receipt</button>` : ''}</div>`;
   if (p.history?.length) {
     const col = { Original: '#389e0d', Edited: '#096dd9', Refunded: '#cf1322' };
     h += `<div class="section-title" style="justify-content:flex-start;gap:4px">Refund timeline${infoBtn('refundFee', 'About refunds')}</div><div class="tl">${p.history.map(e => `<div class="ev" style="--c:${col[e.type]}">
@@ -1250,6 +1258,7 @@ SCREENS.payments = () => {
     : `<div class="wcard" style="margin-bottom:12px"><div>
     <div class="wrow"><span class="t n">Payments received</span><span class="v" style="color:var(--ink)">${fmt(t0.received, cs[0].cur)}</span></div>
     <div class="wrow"><span class="t n">Credit on account</span><span class="v" style="color:var(--p-blue)">${fmt(t0.credit, cs[0].cur)}</span></div></div></div>`;
+  if (each(c => c.payments).length) h = h.replace(/<\/div><\/div>$/, `</div><div class="wbtns"><button class="wbtn" onclick="toast('Payments PDF (the list in view) opening…')">${icon('doc', 16)} Download PDF</button></div></div>`);
   h += `<div class="chips">${F.map(([k, l]) => `<button class="chip ${S.payFilter === k ? 'on' : ''}" onclick="S.payFilter='${k}';render()">${l}</button>`).join('')}</div><div style="height:8px"></div>`;
   if (!each(c => c.payments).length) return h + emptyBlock('💳', 'No payments yet', 'Payments you make will show up here with receipts.');
   if (!ps.length) return h + `<div class="empty"><b>No payments match this filter</b></div>`;
@@ -1259,11 +1268,10 @@ SCREENS.payments = () => {
       <div class="whead"><span class="amount" style="color:var(--ink)">${fmtc(p.amount, cur)}</span>
         <span style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${rf ? pill('Refunded ' + fmt(rf, cur), 'red') : ''}${payStatus(p, cur)}</span></div>
       <div class="muted12" style="margin-top:-6px">${fdy(p.date)} · ${methodLabel(p)}${p.desc ? ` · “${p.desc}”` : ''}${multi() ? `<br><span class="ctag">${cl.name}</span>` : ''}</div>
-      ${p.status === 'failed' ? `<div class="muted12" style="color:var(--p-red);margin-top:0">${p.failure}</div>` : ''}
+      ${p.status === 'failed' ? `<div class="muted12" style="color:var(--p-red);margin-top:0">This payment didn’t go through.</div>` : ''}
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         ${p.status === 'failed' ? (cl.enrolled ? `<button class="paynow" onclick="payClinic(${p._i},'retry','${p.id}')">Try again</button>` : '') :
-          `${p.receipt ? `<button class="outline-sm" onclick="toast('Opening receipt PDF…')">View receipt</button>` : ''}
-           ${p.alloc?.length ? `<button class="outline-sm" onclick="openAlloc('${p.id}')">What it paid for</button>` : ''}`}
+          `${p.receipt ? `<button class="outline-sm" onclick="toast('Opening receipt PDF…')">View receipt</button>` : ''}`}
         <button class="wlink" style="margin-left:auto;font-size:12px" onclick="openItem('${p.id}')">Details</button></div></div>`;
   }).join('');
   return h;
@@ -1308,7 +1316,7 @@ const rangeDefault = () => { const d = dt(TODAY); const a = new Date(d.getFullYe
 function pdfSheet(kind) {
   const [a, b] = rangeDefault(), isS = kind === 'statement';
   openSheet(`<h3>${isS ? 'Download statement' : 'Get a superbill'}</h3>
-    <div class="muted small">${isS ? `A PDF of every charge and payment in these dates${multi() ? ', for every centre' : ''}.` : 'A PDF of your visits with the codes your insurer needs, so you can claim the cost back yourself.'}</div>
+    <div class="muted small">${isS ? `A PDF of every charge and payment${multi() ? ' at ' + clinics()[0].name : ''} in these dates.` : `A PDF of your visits${multi() ? ' at ' + clinics()[0].name : ''} with the codes your insurer needs, so you can claim the cost back yourself.`}</div>
     <div class="field"><label>From</label><input type="date" class="input" id="pdf-from" value="${a}"></div>
     <div class="field"><label>To</label><input type="date" class="input" id="pdf-to" value="${b}"></div>
     <button class="btn" style="margin-top:16px" onclick="makePdf('${kind}')">${isS ? 'Download PDF' : 'Create superbill'}</button>`);
@@ -1321,9 +1329,10 @@ function makePdf(kind) {
 }
 
 /* ---------- Cards ---------- */
+const existingScreen = name => `<div class="info" style="margin:0 0 12px">${icon('info', 16)}<span>In the app this opens the existing <b>${name}</b> screen, unchanged in this release. Shown here as a reference.</span></div>`;
 SCREENS.cards = () => {
   const c = child(), st = S.settings;
-  let h = c.cards.map(k => `<div class="ccard ${k.brand === 'Visa' ? 'visa' : 'mc'}">
+  let h = existingScreen('Saved cards') + c.cards.map(k => `<div class="ccard ${k.brand === 'Visa' ? 'visa' : 'mc'}">
       <div class="top"><span>${k.brand.toUpperCase()}</span>${k.isDefault ? pill('★ Default', 'blue') : ''}</div>
       <div class="num">•••• •••• •••• ${k.last4}</div>
       <div class="bot"><span>Exp ${k.exp} · ${k.type}</span><span>${k.hsa ? 'HSA / FSA' : ''}</span></div></div>
@@ -1414,7 +1423,8 @@ function meter(label, total, remaining, kind) {
   return `<div class="meter"><div class="top"><span>${label}</span><span class="small">${txt}</span></div>
     <div class="bar ${tone}" role="progressbar" aria-valuenow="${Math.round(pct * 100)}" aria-valuemin="0" aria-valuemax="100" aria-label="${label}"><i style="transform:scaleX(${pct})"></i></div></div>`;
 }
-SCREENS.benefits = () => {
+SCREENS.benefits = () => existingScreen('Benefits') + benefitsBody();
+const benefitsBody = () => {
   if (!S.settings.insurance) return emptyBlock('🛡️', 'Benefits aren’t shared yet', 'Your clinic hasn’t turned on insurance benefits in the app. Ask them for a summary.');
   const b = child().benefits;
   if (!b || !b.coverages.length) return emptyBlock('🛡️', 'No insurance on file', 'If your child has insurance, share the card with the clinic.');
@@ -1468,7 +1478,6 @@ SCREENS.benefits = () => {
     h += `<div class="section-title">Benefit maximums</div><div class="card">${b.caps.map(x => meter(x.info + (x.hard ? ' (hard limit)' : ''), x.total, x.remaining)).join('')}</div>`;
   }
 
-  h += `<button class="btn secondary" style="margin-top:14px" onclick="askClinic('my insurance benefits')">Ask the clinic about my coverage</button>`;
   return h;
 };
 
@@ -1490,6 +1499,17 @@ function startPay(source, ref) {
 }
 const stepper = n => `<div class="stepper">${[0, 1, 2].map(i => `<span class="${i <= n ? 'on' : ''}"></span>`).join('')}</div>`;
 
+/* Paying: the app opens its existing payment screen (ProfilePayments), unchanged in this release. */
+SCREENS['pay-existing'] = () => {
+  const cl = clinic(), cur = cl.cur, amt = S.params.amount || 0;
+  return `<div class="info">${icon('info', 16)}<span>Pay Now / Pay More open the app’s <b>existing payment screen</b>, unchanged in this release (cards, convenience fee, Stripe / Payrix as today). Shown here only to say what it opens with.</span></div>
+    <div class="card" style="padding:8px 14px;margin-top:12px">
+      <div class="kv"><span class="muted">Recipient</span><span>${cl.name}</span></div>
+      <div class="kv"><span class="muted">Currency</span><span>${cur} (${symFor(cur)})</span></div>
+      <div class="kv"><span class="muted">Amount prefilled</span><span>${amt > 0 ? fmt(amt, cur) : 'Empty (Pay More)'}</span></div></div>
+    <div class="muted xs" style="margin-top:8px">With several centres, each centre is paid on its own, in its own currency. A centre the child is no longer linked to can’t be paid.</div>
+    <button class="btn" style="margin-top:16px" onclick="back()">Back</button>`;
+};
 SCREENS['pay-amount'] = () => {
   const cl = clinic(), cur = cl.cur, P = S.pay;
   return `${stepper(0)}<div class="muted small">Pay ${cl.name}</div>
@@ -1639,6 +1659,7 @@ const emptyBlock = (em, t, s) => `<div class="empty"><div class="em">${em}</div>
    ============================================================ */
 const NOTES = {
   home: ['Billing hub · real app design', [
+    '<b>Built in the app</b> (PR #801, Android): this page shows what shipped. The Transactions tab opens this Billing page by default; <b>Classic view</b> switches to the old tabbed screen, kept as it is (it gets a <b>New view</b> button), and the choice is remembered. Paying, Saved cards and Benefits open the existing screens. Not built yet (no data): “What it paid for”, “Ask the clinic”, failure reasons on failed payments. Insurance: see the Insurance design (tile or left panel).',
     '<b>Source: the live parent Home</b> (<code>origin/OFApp2026: app/screens/ParentHomeV2</code>). Colours come from <code>TherapistHome/theme.ts</code>, which ParentHomeV2/theme.ts re-exports: canvas <code>#F1F6FB</code>, ink <code>#1B2D45</code>, muted <code>#6D829C</code>, border <code>#DCE7F1</code>, navy <code>#104F86</code>, teal.dark <code>#176EAE</code> (primary action / links), orange.dark <code>#A75E00</code> on orange.soft <code>#FFF4DB</code> (every widget header), coral <code>#EF5732</code> (amount due), green <code>#2E9E5B</code>, red <code>#EC2129</code>, blue <code>#3D82F6</code>. Layout: padding 16, section gap 16, card radius 18; type 16 / 14 / 12, Poppins.',
     '<b>Components used as they are in the app:</b> <code>WidgetCard</code> (white, 1px border, r18, p12; 32px orange icon box + orange 16px title + teal “View All”) · <code>BillingWidget</code> (“$X due” coral + green <code>#8AB319</code> Pay Now r10; divider rows; “Last payment” with outlined blue “View” receipt) · <code>WidgetButton</code> (control <code>#F3F7FA</code>, r12, min-h 44, navy label) · <code>ParentQuickAction</code> (48px white box r8, teal lucide icon, 12px label) for the billing pages · <code>RemindersWidget</code> cards for Things to know · status badges from <code>ParentAppointmentRow</code> (pill, green / orange / red soft) · the ParentHomeV2 header (navy title, profile switcher with the orange chevron box, 36px white icon buttons) · the DemoNavigator tab bar (icons only; billing = “Transactions”, focused = filled <code>#4185F3</code> circle with the currency glyph).',
     '<b>Every clinic at once, like the app</b> (StatementScreen on OFApp2026): no clinic switcher. The top card has one <code>ClinicBalanceCard</code> row per clinic (“$X due” / “No dues”, its own Pay Now / Pay More; only clinics the child is linked to can be paid; credit on the primary clinic). Statement lines, payments, documents and Things to know list every clinic together, each line tagged with its clinic and shown in that clinic’s currency. Totals across currencies are shown per currency (“$245.00 · CA$40.00”), never added up.',
@@ -1718,9 +1739,9 @@ function renderNotes() {
    ============================================================ */
 const JUMPS = [
   ['Hub', () => tab('home')], ['Statement', () => tab('activity')], ['Payment history', () => { tab('home'); go('payments'); }],
-  ['What a payment paid for', () => { tab('home'); go('payments'); openAlloc('p1'); }], 
+  ['Insurance design', () => { location.href = 'insurance/'; }],
   ['Documents', () => tab('documents')], ['Cards', () => tab('cards')], ['Estimates', () => { S.docsTab = 'estimates'; tab('documents'); }], ['Benefits', () => { tab('home'); go('benefits'); }],
-  ['Pay flow', () => { tab('home'); startPay('balance'); }],
+  ['Pay (existing screen)', () => { tab('home'); payClinic(0); }],
   ['Session sheet', () => { tab('activity'); openItem('s1'); }], ['Other charge', () => { tab('activity'); openItem('m1'); }],
   ['Visit charge', () => { tab('activity'); openItem('t1'); }], ['Refunded payment', () => { tab('activity'); openItem('p4'); }],
   ['Failed payment', () => { tab('activity'); openItem('p3'); }], ['No dues + credit (Meera)', () => { S.child = 'meera'; S.clinicIdx = 0; tab('home'); }],
